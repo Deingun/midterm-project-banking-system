@@ -19,24 +19,17 @@ public abstract class Account {
     private int branch;
     @Column(name = "balance")
     private BigDecimal balance;
-    @ManyToOne
-    @JoinColumn(name = "primary_owner_id")
-    private AccountHolder primaryOwner;
-    @ManyToOne
-    @JoinColumn(name = "secondary_owner_id")
-    private AccountHolder secondaryOwner;
+
     @Column(name = "penalty_fee")
     private BigDecimal penaltyFee;
 
     public Account() {
     }
 
-    public Account(int entity, int branch, BigDecimal balance, AccountHolder primaryOwner, AccountHolder secundaryOwner, BigDecimal penaltyFee) {
+    public Account(int entity, int branch, BigDecimal balance, BigDecimal penaltyFee) {
         this.entity = entity;
         this.branch = branch;
         this.balance = balance;
-        this.primaryOwner = primaryOwner;
-        this.secondaryOwner = secondaryOwner;
         this.penaltyFee = penaltyFee;
     }
 
@@ -70,22 +63,6 @@ public abstract class Account {
 
     public void setBalance(BigDecimal balance) {
         this.balance = balance;
-    }
-
-    public AccountHolder getPrimaryOwner() {
-        return primaryOwner;
-    }
-
-    public void setPrimaryOwner(AccountHolder primaryOwner) {
-        this.primaryOwner = primaryOwner;
-    }
-
-    public AccountHolder getSecondaryOwner() {
-        return secondaryOwner;
-    }
-
-    public void setSecondaryOwner(AccountHolder secondaryOwner) {
-        this.secondaryOwner = secondaryOwner;
     }
 
     public BigDecimal getPenaltyFee() {

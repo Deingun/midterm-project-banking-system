@@ -16,6 +16,12 @@ public class CreditCardAccount extends Account{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @ManyToOne
+    @JoinColumn(name = "primary_owner_id")
+    private AccountHolder primaryOwner;
+    @ManyToOne
+    @JoinColumn(name = "secondary_owner_id")
+    private AccountHolder secondaryOwner;
     @Column(name = "penalty_fee")
     private BigDecimal penaltyFee;
     @Column(name = "credit_limit")
@@ -26,8 +32,10 @@ public class CreditCardAccount extends Account{
     public CreditCardAccount() {
     }
 
-    public CreditCardAccount(int entity, int branch, BigDecimal balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal penaltyFee, BigDecimal penaltyFee1, BigDecimal creditLimit, Float interestRate) {
-        super(entity, branch, balance, primaryOwner, secondaryOwner, penaltyFee);
+    public CreditCardAccount(int entity, int branch, BigDecimal balance, BigDecimal penaltyFee, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal penaltyFee1, BigDecimal creditLimit, Float interestRate) {
+        super(entity, branch, balance, penaltyFee);
+        this.primaryOwner = primaryOwner;
+        this.secondaryOwner = secondaryOwner;
         this.penaltyFee = penaltyFee1;
         this.creditLimit = creditLimit;
         this.interestRate = interestRate;
@@ -41,6 +49,22 @@ public class CreditCardAccount extends Account{
     @Override
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public AccountHolder getPrimaryOwner() {
+        return primaryOwner;
+    }
+
+    public void setPrimaryOwner(AccountHolder primaryOwner) {
+        this.primaryOwner = primaryOwner;
+    }
+
+    public AccountHolder getSecondaryOwner() {
+        return secondaryOwner;
+    }
+
+    public void setSecondaryOwner(AccountHolder secondaryOwner) {
+        this.secondaryOwner = secondaryOwner;
     }
 
     @Override

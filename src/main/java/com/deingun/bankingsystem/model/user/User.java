@@ -24,7 +24,7 @@ public class User implements java.io.Serializable{
     @NotBlank
     private String password;
     @Column(name = "password_date",nullable = false)
-    @NotBlank
+
     private LocalDate passwordDate;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)

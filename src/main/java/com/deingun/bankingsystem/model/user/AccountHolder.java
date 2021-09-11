@@ -4,6 +4,7 @@ import com.deingun.bankingsystem.utils.Address;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
@@ -20,7 +21,7 @@ public class AccountHolder extends User {
     @NotEmpty(message = "NIF must be provided")
     private String nif;
     @Column(name = "date_of_birth", nullable = false)
-    @NotEmpty(message = "Date of birth must be provided")
+
     private LocalDate dateOfBirth;
 
     @Embedded
