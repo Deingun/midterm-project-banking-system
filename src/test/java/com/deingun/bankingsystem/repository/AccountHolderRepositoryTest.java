@@ -18,7 +18,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class UserRepositoryTest {
+class AccountHolderRepositoryTest {
 
     @Autowired
     UserRepository userRepository;
@@ -29,6 +29,8 @@ class UserRepositoryTest {
     User userTest4;
     User userTest5;
 
+    @Autowired
+    AccountHolderRepository accountHolderRepository;
 
     @BeforeEach
     void setUp() {
@@ -43,16 +45,16 @@ class UserRepositoryTest {
 
     @AfterEach
     void tearDown() {
-//        userRepository.deleteAll();
+         userRepository.deleteAll();
     }
 
-    @Test
-    void findById_validId_isPresent() {
-        Optional<User> optionalUser = userRepository.findById(userTest1.getId());
-        assertTrue(optionalUser.isPresent());
-        assertEquals("accountHolderTest1", optionalUser.get().getUsername());
-        assertEquals(LocalDate.now(), optionalUser.get().getPasswordDate());
-    }
+//    @Test
+//    void findById_validId_isPresent() {
+//        Optional<AccountHolder> optionalAccountHolder = accountHolderRepository.findById(userTest1.getId()instanceof AccountHolder);
+//        assertTrue(optionalAccountHolder.isPresent());
+//        assertEquals("accountHolderTest1", optionalUser.get().getUsername());
+//        assertEquals(LocalDate.now(), optionalUser.get().getPasswordDate());
+//    }
 
     @Test
     void findById_invalidId_isEmpty() {
@@ -62,14 +64,10 @@ class UserRepositoryTest {
     }
 
     @Test
-    void findAll_noParams_UserList() {
-        List<User> userList = userRepository.findAll();
-        assertEquals(5, userList.size());
-        assertEquals("accountHolderTest1", userList.get(0).getUsername());
-        assertEquals("accountHolderTest2", userList.get(1).getUsername());
-        assertEquals("adminTest1", userList.get(2).getUsername());
-        assertEquals("thirdPartyTest1", userList.get(3).getUsername());
-        assertEquals("thirdPartyTest2", userList.get(4).getUsername());
+    void findByUsername() {
     }
 
+    @Test
+    void findAll() {
+    }
 }

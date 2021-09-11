@@ -14,6 +14,11 @@ import java.util.Set;
 @Table(name = "account_holder")
 public class AccountHolder extends User {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", unique = true, nullable = false)
+    private Long id;
+
     @Column(name = "name", nullable = false, length = 64)
     @NotEmpty(message = "Name must be provided")
     private String name;
@@ -94,5 +99,15 @@ public class AccountHolder extends User {
 
     public void setMailingAddress(String mailingAddress) {
         this.mailingAddress = mailingAddress;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 }

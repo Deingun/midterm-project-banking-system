@@ -1,9 +1,6 @@
 package com.deingun.bankingsystem.model.user;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 import java.util.Set;
@@ -13,6 +10,10 @@ import java.util.Set;
 @Table(name = "third_party")
 public class ThirdParty extends User{
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", unique = true, nullable = false)
+    private Long id;
     @Column(name = "name", nullable = false, length = 64)
     @NotEmpty(message = "Name must be provided")
     private String name;
@@ -50,5 +51,15 @@ public class ThirdParty extends User{
 
     public void setHashedKey(String hashedKey) {
         this.hashedKey = hashedKey;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 }
