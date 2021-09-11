@@ -1,7 +1,9 @@
 package com.deingun.bankingsystem.repository;
 
 import com.deingun.bankingsystem.enums.Roles;
-import com.deingun.bankingsystem.model.user.*;
+import com.deingun.bankingsystem.model.user.AccountHolder;
+import com.deingun.bankingsystem.model.user.Admin;
+import com.deingun.bankingsystem.model.user.Role;
 import com.deingun.bankingsystem.utils.Address;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -23,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 @SpringBootTest
-class AccountHolderRepositoryTest {
+class AdminRepositoryTest {
 
     @Autowired
     UserRepository userRepository;
@@ -32,8 +34,7 @@ class AccountHolderRepositoryTest {
     RoleRepostory roleRepostory;
 
     @Autowired
-    AccountHolderRepository accountHolderRepository;
-
+    AdminRepository adminRepository;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -45,9 +46,7 @@ class AccountHolderRepositoryTest {
     private MockMvc mockMvc;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    AccountHolder accountHolder1;
-    AccountHolder accountHolder2;
-    Admin admin;
+    Admin admin1;
 
 
     @BeforeEach
@@ -56,44 +55,39 @@ class AccountHolderRepositoryTest {
                 .apply(springSecurity())
                 .build();
         Address addressTest = new Address("streetTest", "cityTest", "countryTest", 22222);
-        accountHolder1 = new AccountHolder("accountHolderTest1", passwordEncoder.encode("123456"), LocalDate.now(), "NameTest1", "11111111A", LocalDate.of(1980, 10, 5), addressTest, "test@gmail.com");
-        accountHolder2 = new AccountHolder("accountHolderTest2", passwordEncoder.encode("123456"), LocalDate.now(), "NameTest2", "22222222F", LocalDate.of(1990, 2, 15), addressTest, "test@gmail.com");
-        accountHolderRepository.saveAll(List.of(accountHolder1, accountHolder2));
-        Role roleTest1 = new Role(Roles.ACCOUNTHOLDER,accountHolder1);
-        Role roleTest2 = new Role(Roles.ACCOUNTHOLDER,accountHolder2);
-        roleRepostory.saveAll(List.of(roleTest1,roleTest2));
-        accountHolder1.setRoleSet(Set.of(roleTest1));
-        accountHolder2.setRoleSet(Set.of(roleTest2));
-        accountHolderRepository.saveAll(List.of(accountHolder1, accountHolder2));
 
+        admin1 = new Admin("adminTest1", passwordEncoder.encode("123456"), LocalDate.now(), "admin");
+        adminRepository.save(admin1);
+        Role roleTest3 = new Role(Roles.ADMIN, admin1);
+        roleRepostory.save(roleTest3);
+        admin1.setRoleSet(Set.of(roleTest3));
+        adminRepository.save(admin1);
     }
 
     @AfterEach
     void tearDown() {
         roleRepostory.deleteAll();
         userRepository.deleteAll();
-        accountHolderRepository.deleteAll();
+        adminRepository.deleteAll();
     }
 
     @Test
     void findByUserId_validId_isPresent() {
-        Optional<AccountHolder> optionalAccountHolder = accountHolderRepository.findById(accountHolder1.getId());
-        assertTrue(optionalAccountHolder.isPresent());
+        Optional<Admin> optionalAdmin = adminRepository.findById(admin1.getId());
+        assertTrue(optionalAdmin.isPresent());
     }
 
     @Test
     void findByUserId_invalidId_isEmpty() {
-        Optional<AccountHolder> optionalUser = accountHolderRepository.findById(99L);
-        assertTrue(optionalUser.isEmpty());
+        Optional<Admin> optionalAdmin = adminRepository.findById(99L);
+        assertTrue(optionalAdmin.isEmpty());
 
     }
 
-
     @Test
     void findAll_noParams_AccountHoldersList() {
-        List<AccountHolder> accountHolderList = accountHolderRepository.findAll();
-        assertEquals(2, accountHolderList.size());
-        assertEquals("accountHolderTest1", accountHolderList.get(0).getUsername());
-        assertEquals("accountHolderTest2", accountHolderList.get(1).getUsername());
+        List<Admin> accountHolderList = adminRepository.findAll();
+        assertEquals(1, accountHolderList.size());
+        assertEquals("adminTest1", accountHolderList.get(0).getUsername());
     }
 }

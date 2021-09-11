@@ -1,5 +1,6 @@
 package com.deingun.bankingsystem.model.user;
 
+import com.deingun.bankingsystem.enums.Roles;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
@@ -15,9 +16,8 @@ public class Role {
     @Column(name = "id", unique = true, nullable = false)
     private Long id;
     @Column(name = "name", nullable = false, length = 64)
-    @NotEmpty(message = "Name must be provided")
-    @Size(max = 32)
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private Roles role;
 
     @ManyToOne
     @JsonBackReference
@@ -27,8 +27,8 @@ public class Role {
     public Role() {
     }
 
-    public Role(String name, User user) {
-        this.name = name;
+    public Role(Roles role, User user) {
+        this.role = role;
         this.user = user;
     }
 
@@ -40,12 +40,12 @@ public class Role {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public Roles getRole() {
+        return role;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setRole(Roles role) {
+        this.role = role;
     }
 
     public User getUser() {
