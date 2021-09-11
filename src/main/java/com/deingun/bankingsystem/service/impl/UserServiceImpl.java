@@ -4,7 +4,7 @@ import com.deingun.bankingsystem.enums.Roles;
 import com.deingun.bankingsystem.model.user.AccountHolder;
 import com.deingun.bankingsystem.model.user.Role;
 import com.deingun.bankingsystem.model.user.User;
-import com.deingun.bankingsystem.repository.UserRepository;
+import com.deingun.bankingsystem.repository.user.UserRepository;
 import com.deingun.bankingsystem.security.SecurityConfiguration;
 import com.deingun.bankingsystem.service.interfaces.UserService;
 import com.deingun.bankingsystem.utils.Address;
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;

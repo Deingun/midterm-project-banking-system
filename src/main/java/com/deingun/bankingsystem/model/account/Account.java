@@ -12,25 +12,27 @@ public abstract class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "entity", nullable = false)
-    private int entity;
-    @Column(name = "branch", nullable = false)
+    @Column(name = "entity_number", nullable = false)
+    private String entityNumber;
+    @Column(name = "branch_number", nullable = false)
     @NotEmpty(message = "Branch must be provided")
-    private int branch;
+    private String branchNumber;
     @Column(name = "balance")
     private BigDecimal balance;
 
     @Column(name = "penalty_fee")
-    private BigDecimal penaltyFee;
+    private final BigDecimal PENALTYFEE = new BigDecimal("40");
+
+    @Column(name = "account_number")
+    private String accountNumber;
 
     public Account() {
     }
 
-    public Account(int entity, int branch, BigDecimal balance, BigDecimal penaltyFee) {
-        this.entity = entity;
-        this.branch = branch;
+    public Account(String entityNumber, String branchNumber, BigDecimal balance) {
+        this.entityNumber = entityNumber;
+        this.branchNumber = branchNumber;
         this.balance = balance;
-        this.penaltyFee = penaltyFee;
     }
 
     public Long getId() {
@@ -41,20 +43,20 @@ public abstract class Account {
         this.id = id;
     }
 
-    public int getEntity() {
-        return entity;
+    public String getEntityNumber() {
+        return entityNumber;
     }
 
-    public void setEntity(int entity) {
-        this.entity = entity;
+    public void setEntityNumber(String entityNumber) {
+        this.entityNumber = entityNumber;
     }
 
-    public int getBranch() {
-        return branch;
+    public String getBranchNumber() {
+        return branchNumber;
     }
 
-    public void setBranch(int branch) {
-        this.branch = branch;
+    public void setBranchNumber(String branchNumber) {
+        this.branchNumber = branchNumber;
     }
 
     public BigDecimal getBalance() {
@@ -66,10 +68,15 @@ public abstract class Account {
     }
 
     public BigDecimal getPenaltyFee() {
-        return penaltyFee;
+        return PENALTYFEE;
     }
 
-    public void setPenaltyFee(BigDecimal penaltyFee) {
-        this.penaltyFee = penaltyFee;
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
     }
 }

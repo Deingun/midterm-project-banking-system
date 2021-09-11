@@ -1,7 +1,7 @@
 package com.deingun.bankingsystem.service.impl;
 
 import com.deingun.bankingsystem.model.user.User;
-import com.deingun.bankingsystem.repository.UserRepository;
+import com.deingun.bankingsystem.repository.user.UserRepository;
 import com.deingun.bankingsystem.security.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

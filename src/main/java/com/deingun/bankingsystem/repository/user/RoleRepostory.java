@@ -1,4 +1,4 @@
-package com.deingun.bankingsystem.repository;
+package com.deingun.bankingsystem.repository.user;
 
 import com.deingun.bankingsystem.model.user.Role;
 import org.springframework.data.jpa.repository.JpaRepository;

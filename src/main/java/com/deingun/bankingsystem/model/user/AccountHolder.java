@@ -1,11 +1,16 @@
 package com.deingun.bankingsystem.model.user;
 
+import com.deingun.bankingsystem.model.account.CheckingAccount;
+import com.deingun.bankingsystem.model.account.CreditCardAccount;
+import com.deingun.bankingsystem.model.account.SavingAccount;
+import com.deingun.bankingsystem.model.account.StudentCheckingAccount;
 import com.deingun.bankingsystem.utils.Address;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -28,6 +33,30 @@ public class AccountHolder extends User {
     @Column(name = "date_of_birth", nullable = false)
 
     private LocalDate dateOfBirth;
+
+    @OneToMany(mappedBy = "primaryOwner")
+    private List<CheckingAccount> checkingAccountsAsPrimaryOwner;
+
+    @OneToMany(mappedBy = "secondaryOwner")
+    private List<CheckingAccount> checkingAccountsAsSecondaryOwner;
+
+    @OneToMany(mappedBy = "primaryOwner")
+    private List<CreditCardAccount> creditCardAccountsAsPrimaryOwner;
+
+    @OneToMany(mappedBy = "secondaryOwner")
+    private List<CreditCardAccount> creditCardAccountsAsSecondaryOwner;
+
+    @OneToMany(mappedBy = "primaryOwner")
+    private List<SavingAccount> savingAccountsAsPrimaryOwner;
+
+    @OneToMany(mappedBy = "secondaryOwner")
+    private List<SavingAccount> savingAccountsAsSecondaryOwner;
+
+    @OneToMany(mappedBy = "primaryOwner")
+    private List<StudentCheckingAccount> studentCheckingAccountsAsPrimaryOwner;
+
+    @OneToMany(mappedBy = "secondaryOwner")
+    private List<StudentCheckingAccount> studentCheckingAccountsAsSecondaryOwner;
 
     @Embedded
     @AttributeOverrides({
@@ -109,5 +138,69 @@ public class AccountHolder extends User {
     @Override
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public List<CheckingAccount> getCheckingAccountsAsPrimaryOwner() {
+        return checkingAccountsAsPrimaryOwner;
+    }
+
+    public void setCheckingAccountsAsPrimaryOwner(List<CheckingAccount> checkingAccountsAsPrimaryOwner) {
+        this.checkingAccountsAsPrimaryOwner = checkingAccountsAsPrimaryOwner;
+    }
+
+    public List<CheckingAccount> getCheckingAccountsAsSecondaryOwner() {
+        return checkingAccountsAsSecondaryOwner;
+    }
+
+    public void setCheckingAccountsAsSecondaryOwner(List<CheckingAccount> checkingAccountsAsSecondaryOwner) {
+        this.checkingAccountsAsSecondaryOwner = checkingAccountsAsSecondaryOwner;
+    }
+
+    public List<CreditCardAccount> getCreditCardAccountsAsPrimaryOwner() {
+        return creditCardAccountsAsPrimaryOwner;
+    }
+
+    public void setCreditCardAccountsAsPrimaryOwner(List<CreditCardAccount> creditCardAccountsAsPrimaryOwner) {
+        this.creditCardAccountsAsPrimaryOwner = creditCardAccountsAsPrimaryOwner;
+    }
+
+    public List<CreditCardAccount> getCreditCardAccountsAsSecondaryOwner() {
+        return creditCardAccountsAsSecondaryOwner;
+    }
+
+    public void setCreditCardAccountsAsSecondaryOwner(List<CreditCardAccount> creditCardAccountsAsSecondaryOwner) {
+        this.creditCardAccountsAsSecondaryOwner = creditCardAccountsAsSecondaryOwner;
+    }
+
+    public List<SavingAccount> getSavingAccountsAsPrimaryOwner() {
+        return savingAccountsAsPrimaryOwner;
+    }
+
+    public void setSavingAccountsAsPrimaryOwner(List<SavingAccount> savingAccountsAsPrimaryOwner) {
+        this.savingAccountsAsPrimaryOwner = savingAccountsAsPrimaryOwner;
+    }
+
+    public List<SavingAccount> getSavingAccountsAsSecondaryOwner() {
+        return savingAccountsAsSecondaryOwner;
+    }
+
+    public void setSavingAccountsAsSecondaryOwner(List<SavingAccount> savingAccountsAsSecondaryOwner) {
+        this.savingAccountsAsSecondaryOwner = savingAccountsAsSecondaryOwner;
+    }
+
+    public List<StudentCheckingAccount> getStudentCheckingAccountsAsPrimaryOwner() {
+        return studentCheckingAccountsAsPrimaryOwner;
+    }
+
+    public void setStudentCheckingAccountsAsPrimaryOwner(List<StudentCheckingAccount> studentCheckingAccountsAsPrimaryOwner) {
+        this.studentCheckingAccountsAsPrimaryOwner = studentCheckingAccountsAsPrimaryOwner;
+    }
+
+    public List<StudentCheckingAccount> getStudentCheckingAccountsAsSecondaryOwner() {
+        return studentCheckingAccountsAsSecondaryOwner;
+    }
+
+    public void setStudentCheckingAccountsAsSecondaryOwner(List<StudentCheckingAccount> studentCheckingAccountsAsSecondaryOwner) {
+        this.studentCheckingAccountsAsSecondaryOwner = studentCheckingAccountsAsSecondaryOwner;
     }
 }

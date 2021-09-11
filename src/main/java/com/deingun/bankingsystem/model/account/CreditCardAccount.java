@@ -4,6 +4,8 @@ import com.deingun.bankingsystem.enums.Status;
 import com.deingun.bankingsystem.model.user.AccountHolder;
 
 import javax.persistence.*;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -22,23 +24,46 @@ public class CreditCardAccount extends Account{
     @ManyToOne
     @JoinColumn(name = "secondary_owner_id")
     private AccountHolder secondaryOwner;
-    @Column(name = "penalty_fee")
-    private BigDecimal penaltyFee;
     @Column(name = "credit_limit")
+    @DecimalMax(value = "100000")
     private BigDecimal creditLimit;
     @Column(name = "interest_rate")
+    @DecimalMin(value = "0.1")
     private Float interestRate;
 
     public CreditCardAccount() {
     }
 
-    public CreditCardAccount(int entity, int branch, BigDecimal balance, BigDecimal penaltyFee, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal penaltyFee1, BigDecimal creditLimit, Float interestRate) {
-        super(entity, branch, balance, penaltyFee);
+    public CreditCardAccount(String entityNumber, String branchNumber, BigDecimal balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal creditLimit, Float interestRate) {
+        super(entityNumber, branchNumber, balance);
         this.primaryOwner = primaryOwner;
         this.secondaryOwner = secondaryOwner;
-        this.penaltyFee = penaltyFee1;
         this.creditLimit = creditLimit;
         this.interestRate = interestRate;
+    }
+
+    public CreditCardAccount(String entityNumber, String branchNumber, BigDecimal balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, Float interestRate) {
+        super(entityNumber, branchNumber, balance);
+        this.primaryOwner = primaryOwner;
+        this.secondaryOwner = secondaryOwner;
+        this.creditLimit = new BigDecimal("100");
+        this.interestRate = interestRate;
+    }
+
+    public CreditCardAccount(String entityNumber, String branchNumber, BigDecimal balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal creditLimit) {
+        super(entityNumber, branchNumber, balance);
+        this.primaryOwner = primaryOwner;
+        this.secondaryOwner = secondaryOwner;
+        this.creditLimit = creditLimit;
+        this.interestRate = 0.2F;
+    }
+
+    public CreditCardAccount(String entityNumber, String branchNumber, BigDecimal balance, AccountHolder primaryOwner, AccountHolder secondaryOwner) {
+        super(entityNumber, branchNumber, balance);
+        this.primaryOwner = primaryOwner;
+        this.secondaryOwner = secondaryOwner;
+        this.creditLimit = new BigDecimal("100");
+        this.interestRate = 0.2F;
     }
 
     @Override
@@ -67,16 +92,6 @@ public class CreditCardAccount extends Account{
         this.secondaryOwner = secondaryOwner;
     }
 
-    @Override
-    public BigDecimal getPenaltyFee() {
-        return penaltyFee;
-    }
-
-    @Override
-    public void setPenaltyFee(BigDecimal penaltyFee) {
-        this.penaltyFee = penaltyFee;
-    }
-
     public BigDecimal getCreditLimit() {
         return creditLimit;
     }
@@ -92,4 +107,6 @@ public class CreditCardAccount extends Account{
     public void setInterestRate(Float interestRate) {
         this.interestRate = interestRate;
     }
+
+
 }

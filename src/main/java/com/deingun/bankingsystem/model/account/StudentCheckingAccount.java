@@ -34,8 +34,8 @@ public class StudentCheckingAccount extends Account{
     public StudentCheckingAccount() {
     }
 
-    public StudentCheckingAccount(int entity, int branch, BigDecimal balance, BigDecimal penaltyFee, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, LocalDate creationDate, Status status) {
-        super(entity, branch, balance, penaltyFee);
+    public StudentCheckingAccount(String entityNumber, String branchNumber, BigDecimal balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, LocalDate creationDate, Status status) {
+        super(entityNumber, branchNumber, balance);
         this.primaryOwner = primaryOwner;
         this.secondaryOwner = secondaryOwner;
         this.secretKey = secretKey;

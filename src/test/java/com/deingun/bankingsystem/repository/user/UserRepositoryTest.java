@@ -1,7 +1,8 @@
-package com.deingun.bankingsystem.repository;
+package com.deingun.bankingsystem.repository.user;
 
 import com.deingun.bankingsystem.enums.Roles;
 import com.deingun.bankingsystem.model.user.*;
+import com.deingun.bankingsystem.repository.user.*;
 import com.deingun.bankingsystem.utils.Address;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -40,15 +41,9 @@ class UserRepositoryTest {
     @Autowired
     AdminRepository adminRepository;
 
-    @Autowired
-    private WebApplicationContext webApplicationContext;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-
-    private MockMvc mockMvc;
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     User userTest1;
     User userTest2;
@@ -59,9 +54,7 @@ class UserRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-                .apply(springSecurity())
-                .build();
+
         Address addressTest = new Address("streetTest", "cityTest", "countryTest", 22222);
         userTest1 = new AccountHolder("accountHolderTest1", passwordEncoder.encode("123456"), LocalDate.now(), "NameTest1", "11111111A", LocalDate.of(1980, 10, 5), addressTest, "test@gmail.com");
         userTest2 = new AccountHolder("accountHolderTest2", passwordEncoder.encode("123456"), LocalDate.now(), "NameTest2", "22222222F", LocalDate.of(1990, 2, 15), addressTest, "test@gmail.com");
@@ -104,7 +97,7 @@ class UserRepositoryTest {
 
     @Test
     void findById_invalidId_isEmpty() {
-        Optional<User> optionalUser = userRepository.findById(99L);
+        Optional<User> optionalUser = userRepository.findById(-1L);
         assertTrue(optionalUser.isEmpty());
 
     }

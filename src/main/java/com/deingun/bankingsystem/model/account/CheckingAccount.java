@@ -25,9 +25,9 @@ public class CheckingAccount extends Account{
     @NotEmpty(message = "Secret Key must be provided")
     private String secretKey;
     @Column(name = "minimum_balance")
-    private BigDecimal minimumBalance;
+    private final BigDecimal MINIMUMBALANCE = new BigDecimal("250");
     @Column(name = "monthly_maintenance_fee")
-    private BigDecimal monthlyMaintenanceFee;
+    private final BigDecimal MONTHLYMAINTENANCEFEE= new BigDecimal("12");
     @Column(name = "creation_date")
     private LocalDate creationDate;
     @Enumerated(EnumType.STRING)
@@ -37,13 +37,11 @@ public class CheckingAccount extends Account{
     public CheckingAccount() {
     }
 
-    public CheckingAccount(int entity, int branch, BigDecimal balance, BigDecimal penaltyFee, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, BigDecimal minimumBalance, BigDecimal monthlyMaintenanceFee, LocalDate creationDate, Status status) {
-        super(entity, branch, balance, penaltyFee);
+    public CheckingAccount(String entityNumber, String branchNumber, BigDecimal balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, LocalDate creationDate, Status status) {
+        super(entityNumber, branchNumber, balance);
         this.primaryOwner = primaryOwner;
         this.secondaryOwner = secondaryOwner;
         this.secretKey = secretKey;
-        this.minimumBalance = minimumBalance;
-        this.monthlyMaintenanceFee = monthlyMaintenanceFee;
         this.creationDate = creationDate;
         this.status = status;
     }
@@ -83,20 +81,13 @@ public class CheckingAccount extends Account{
     }
 
     public BigDecimal getMinimumBalance() {
-        return minimumBalance;
-    }
-
-    public void setMinimumBalance(BigDecimal minimumBalance) {
-        this.minimumBalance = minimumBalance;
+        return MINIMUMBALANCE;
     }
 
     public BigDecimal getMonthlyMaintenanceFee() {
-        return monthlyMaintenanceFee;
+        return MONTHLYMAINTENANCEFEE;
     }
 
-    public void setMonthlyMaintenanceFee(BigDecimal monthlyMaintenanceFee) {
-        this.monthlyMaintenanceFee = monthlyMaintenanceFee;
-    }
 
     public LocalDate getCreationDate() {
         return creationDate;
@@ -113,4 +104,5 @@ public class CheckingAccount extends Account{
     public void setStatus(Status status) {
         this.status = status;
     }
+
 }

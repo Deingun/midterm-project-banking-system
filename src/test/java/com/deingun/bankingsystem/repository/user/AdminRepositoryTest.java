@@ -1,10 +1,11 @@
-package com.deingun.bankingsystem.repository;
+package com.deingun.bankingsystem.repository.user;
 
 import com.deingun.bankingsystem.enums.Roles;
-import com.deingun.bankingsystem.model.user.AccountHolder;
 import com.deingun.bankingsystem.model.user.Admin;
 import com.deingun.bankingsystem.model.user.Role;
-import com.deingun.bankingsystem.utils.Address;
+import com.deingun.bankingsystem.repository.user.AdminRepository;
+import com.deingun.bankingsystem.repository.user.RoleRepostory;
+import com.deingun.bankingsystem.repository.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,32 +37,22 @@ class AdminRepositoryTest {
     @Autowired
     AdminRepository adminRepository;
 
-    @Autowired
-    private WebApplicationContext webApplicationContext;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-
-    private MockMvc mockMvc;
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-    Admin admin1;
+    Admin adminTest1;
 
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-                .apply(springSecurity())
-                .build();
-        Address addressTest = new Address("streetTest", "cityTest", "countryTest", 22222);
 
-        admin1 = new Admin("adminTest1", passwordEncoder.encode("123456"), LocalDate.now(), "admin");
-        adminRepository.save(admin1);
-        Role roleTest3 = new Role(Roles.ADMIN, admin1);
-        roleRepostory.save(roleTest3);
-        admin1.setRoleSet(Set.of(roleTest3));
-        adminRepository.save(admin1);
+        adminTest1 = new Admin("adminTest1", passwordEncoder.encode("123456"), LocalDate.now(), "admin");
+        adminRepository.save(adminTest1);
+        Role roleTest1 = new Role(Roles.ADMIN, adminTest1);
+        roleRepostory.save(roleTest1);
+        adminTest1.setRoleSet(Set.of(roleTest1));
+        adminRepository.save(adminTest1);
     }
 
     @AfterEach
@@ -73,13 +64,13 @@ class AdminRepositoryTest {
 
     @Test
     void findByUserId_validId_isPresent() {
-        Optional<Admin> optionalAdmin = adminRepository.findById(admin1.getId());
+        Optional<Admin> optionalAdmin = adminRepository.findById(adminTest1.getId());
         assertTrue(optionalAdmin.isPresent());
     }
 
     @Test
     void findByUserId_invalidId_isEmpty() {
-        Optional<Admin> optionalAdmin = adminRepository.findById(99L);
+        Optional<Admin> optionalAdmin = adminRepository.findById(-1L);
         assertTrue(optionalAdmin.isEmpty());
 
     }
@@ -89,5 +80,18 @@ class AdminRepositoryTest {
         List<Admin> accountHolderList = adminRepository.findAll();
         assertEquals(1, accountHolderList.size());
         assertEquals("adminTest1", accountHolderList.get(0).getUsername());
+    }
+
+    @Test
+    void findByName_validName_isPresent() {
+        Optional<Admin> optionalAdmin = adminRepository.findByName("admin");
+        assertTrue(optionalAdmin.isPresent());
+        assertEquals("adminTest1",optionalAdmin.get().getUsername());
+    }
+
+    @Test
+    void findByName_invalidName_isEmpty() {
+        Optional<Admin> optionalAdmin = adminRepository.findByName("invalidName");
+        assertTrue(optionalAdmin.isEmpty());
     }
 }
