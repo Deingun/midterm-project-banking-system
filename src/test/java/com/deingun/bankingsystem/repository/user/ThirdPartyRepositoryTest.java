@@ -47,15 +47,10 @@ class ThirdPartyRepositoryTest {
     @BeforeEach
     void setUp() {
 
-        thirdPartyTest1 = new ThirdParty("thirdPartyTest1", passwordEncoder.encode("123456"), LocalDate.now(), "nameTest1", "123abc");
-        thirdPartyTest2 = new ThirdParty("thirdPartyTest2", passwordEncoder.encode("123456"), LocalDate.now(), "nameTest2", "123abc");
+        thirdPartyTest1 = new ThirdParty("thirdPartyTest1", passwordEncoder.encode("123456"), LocalDate.now(),Set.of(new Role(Roles.THIRDPARTY)), "nameTest1", "123abc");
+        thirdPartyTest2 = new ThirdParty("thirdPartyTest2", passwordEncoder.encode("123456"), LocalDate.now(),Set.of(new Role(Roles.THIRDPARTY)), "nameTest2", "123abc");
         thirdPartyRepository.saveAll(List.of(thirdPartyTest1, thirdPartyTest2));
-        Role roleTest1 = new Role(Roles.THIRDPARTY, thirdPartyTest1);
-        Role roleTest2 = new Role(Roles.THIRDPARTY, thirdPartyTest2);
-        roleRepostory.saveAll(List.of(roleTest1, roleTest2));
-        thirdPartyTest1.setRoleSet(Set.of(roleTest1));
-        thirdPartyTest2.setRoleSet(Set.of(roleTest2));
-        roleRepostory.saveAll(List.of(roleTest1, roleTest2));
+
     }
 
     @AfterEach

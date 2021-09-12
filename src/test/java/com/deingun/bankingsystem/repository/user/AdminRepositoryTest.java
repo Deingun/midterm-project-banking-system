@@ -47,12 +47,9 @@ class AdminRepositoryTest {
     @BeforeEach
     void setUp() {
 
-        adminTest1 = new Admin("adminTest1", passwordEncoder.encode("123456"), LocalDate.now(), "admin");
+        adminTest1 = new Admin("adminTest1", passwordEncoder.encode("123456"), LocalDate.now(),Set.of(new Role(Roles.THIRDPARTY)), "admin");
         adminRepository.save(adminTest1);
-        Role roleTest1 = new Role(Roles.ADMIN, adminTest1);
-        roleRepostory.save(roleTest1);
-        adminTest1.setRoleSet(Set.of(roleTest1));
-        adminRepository.save(adminTest1);
+
     }
 
     @AfterEach

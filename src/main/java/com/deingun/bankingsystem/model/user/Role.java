@@ -15,21 +15,17 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, nullable = false)
     private Long id;
-    @Column(name = "name", nullable = false, length = 64)
+    @Column(name = "name", nullable = false)
     @Enumerated(EnumType.STRING)
     private Roles role;
 
-    @ManyToOne
-    @JsonBackReference
-    @JoinColumn(name = "user_id")
-    private User user;
+
 
     public Role() {
     }
 
-    public Role(Roles role, User user) {
+    public Role(Roles role) {
         this.role = role;
-        this.user = user;
     }
 
     public Long getId() {
@@ -48,11 +44,4 @@ public class Role {
         this.role = role;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 }

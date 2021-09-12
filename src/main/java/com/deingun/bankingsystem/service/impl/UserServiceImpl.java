@@ -49,9 +49,7 @@ public class UserServiceImpl implements UserService {
             } else if (password == null) {
                 throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Password must be provided");
             } else {
-                User user = new AccountHolder(username,password,passwordDate,name,nif,dateOfBirth,address,mailingAddress);
-                Role newRole = new Role(Roles.ACCOUNTHOLDER,user);
-                user.setRoleSet(Set.of(newRole));
+                User user = new AccountHolder(username,password,passwordDate,Set.of(new Role(Roles.ACCOUNTHOLDER)),name,nif,dateOfBirth,address,mailingAddress);
 
                 return userRepository.save(user);
             }
