@@ -26,6 +26,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 @SpringBootTest
 class UserRepositoryTest {
 
+
     @Autowired
     UserRepository userRepository;
 
@@ -67,6 +68,7 @@ class UserRepositoryTest {
 
     @AfterEach
     void tearDown() {
+
         roleRepostory.deleteAll();
         userRepository.deleteAll();
         accountHolderRepository.deleteAll();

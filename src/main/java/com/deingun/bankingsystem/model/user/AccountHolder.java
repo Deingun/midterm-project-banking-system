@@ -5,6 +5,7 @@ import com.deingun.bankingsystem.model.account.CreditCardAccount;
 import com.deingun.bankingsystem.model.account.SavingAccount;
 import com.deingun.bankingsystem.model.account.StudentCheckingAccount;
 import com.deingun.bankingsystem.utils.Address;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -34,28 +35,36 @@ public class AccountHolder extends User {
 
     private LocalDate dateOfBirth;
 
-    @OneToMany(mappedBy = "primaryOwner")
+    @OneToMany(mappedBy = "primaryOwner",fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<CheckingAccount> checkingAccountsAsPrimaryOwner;
 
-    @OneToMany(mappedBy = "secondaryOwner")
+    @OneToMany(mappedBy = "secondaryOwner",fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<CheckingAccount> checkingAccountsAsSecondaryOwner;
 
-    @OneToMany(mappedBy = "primaryOwner")
+    @OneToMany(mappedBy = "primaryOwner",fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<CreditCardAccount> creditCardAccountsAsPrimaryOwner;
 
-    @OneToMany(mappedBy = "secondaryOwner")
+    @OneToMany(mappedBy = "secondaryOwner",fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<CreditCardAccount> creditCardAccountsAsSecondaryOwner;
 
-    @OneToMany(mappedBy = "primaryOwner")
+    @OneToMany(mappedBy = "primaryOwner",fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<SavingAccount> savingAccountsAsPrimaryOwner;
 
-    @OneToMany(mappedBy = "secondaryOwner")
+    @OneToMany(mappedBy = "secondaryOwner",fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<SavingAccount> savingAccountsAsSecondaryOwner;
 
-    @OneToMany(mappedBy = "primaryOwner")
+    @OneToMany(mappedBy = "primaryOwner",fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<StudentCheckingAccount> studentCheckingAccountsAsPrimaryOwner;
 
-    @OneToMany(mappedBy = "secondaryOwner")
+    @OneToMany(mappedBy = "secondaryOwner",fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<StudentCheckingAccount> studentCheckingAccountsAsSecondaryOwner;
 
     @Embedded
