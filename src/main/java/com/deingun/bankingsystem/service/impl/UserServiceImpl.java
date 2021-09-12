@@ -10,6 +10,8 @@ import com.deingun.bankingsystem.service.interfaces.UserService;
 import com.deingun.bankingsystem.utils.Address;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -21,8 +23,8 @@ import java.util.Set;
 @Service
 public class UserServiceImpl implements UserService {
 
-    SecurityConfiguration securityConfiguration = new SecurityConfiguration();
-
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     UserRepository userRepository;
@@ -43,7 +45,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AccountHolder findById(Long id) {
-        return null;
+        return accountHolderRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account holder with id " + id + " not found"));
     }
 
     @Override
@@ -73,7 +75,7 @@ public class UserServiceImpl implements UserService {
             }
             else {
                 Address address = new Address(street,city,country,postalCode);
-                AccountHolder accountHolder = new AccountHolder(username,password,LocalDate.now(),name,nif,dateOfBirth,address,mailingAddress);
+                AccountHolder accountHolder = new AccountHolder(username,passwordEncoder.encode(password),LocalDate.now(),name,nif,dateOfBirth,address,mailingAddress);
                 return accountHolderRepository.save(accountHolder);
             }
     }
