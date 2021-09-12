@@ -83,16 +83,7 @@ public class AccountHolder extends User {
     }
 
     public AccountHolder(String username, String password, LocalDate passwordDate, String name, String nif, LocalDate dateOfBirth, Address address, String mailingAddress) {
-        super(username, password, passwordDate);
-        this.name = name;
-        this.nif = nif;
-        this.dateOfBirth = dateOfBirth;
-        this.address = address;
-        this.mailingAddress = mailingAddress;
-    }
-
-    public AccountHolder(String username, String password, LocalDate passwordDate, Role role, String name, String nif, LocalDate dateOfBirth, Address address, String mailingAddress) {
-        super(username, password, passwordDate, role);
+        super(username, password, passwordDate, Role.ACCOUNTHOLDER);
         this.name = name;
         this.nif = nif;
         this.dateOfBirth = dateOfBirth;

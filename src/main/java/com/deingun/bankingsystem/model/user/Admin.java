@@ -24,12 +24,7 @@ public class Admin extends User{
     }
 
     public Admin(String username, String password, LocalDate passwordDate, String name) {
-        super(username, password, passwordDate);
-        this.name = name;
-    }
-
-    public Admin(String username, String password, LocalDate passwordDate, Role role, String name) {
-        super(username, password, passwordDate, role);
+        super(username, password, passwordDate, Role.ADMIN);
         this.name = name;
     }
 

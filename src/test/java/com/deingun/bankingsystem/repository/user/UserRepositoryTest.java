@@ -49,11 +49,11 @@ class UserRepositoryTest {
     void setUp() {
 
         Address addressTest = new Address("streetTest", "cityTest", "countryTest", 22222);
-        userTest1 = new AccountHolder("accountHolderTest1", passwordEncoder.encode("123456"), LocalDate.now(),Role.ACCOUNTHOLDER, "NameTest1", "11111111A", LocalDate.of(1980, 10, 5), addressTest, "test@gmail.com");
-        userTest2 = new AccountHolder("accountHolderTest2", passwordEncoder.encode("123456"), LocalDate.now(),Role.ACCOUNTHOLDER, "NameTest2", "22222222F", LocalDate.of(1990, 2, 15), addressTest, "test@gmail.com");
-        userTest3 = new Admin("adminTest1", passwordEncoder.encode("123456"), LocalDate.now(),Role.ADMIN, "NameTest3");
-        userTest4 = new ThirdParty("thirdPartyTest1", passwordEncoder.encode("123456"), LocalDate.now(),Role.THIRDPARTY, "NameTest4", "abc123");
-        userTest5 = new ThirdParty("thirdPartyTest2", passwordEncoder.encode("123456"), LocalDate.now(),Role.THIRDPARTY, "NameTest5", "abc123");
+        userTest1 = new AccountHolder("accountHolderTest1", passwordEncoder.encode("123456"), LocalDate.now(), "NameTest1", "11111111A", LocalDate.of(1980, 10, 5), addressTest, "test@gmail.com");
+        userTest2 = new AccountHolder("accountHolderTest2", passwordEncoder.encode("123456"), LocalDate.now(), "NameTest2", "22222222F", LocalDate.of(1990, 2, 15), addressTest, "test@gmail.com");
+        userTest3 = new Admin("adminTest1", passwordEncoder.encode("123456"), LocalDate.now(), "NameTest3");
+        userTest4 = new ThirdParty("thirdPartyTest1", passwordEncoder.encode("123456"), LocalDate.now(), "NameTest4", "abc123");
+        userTest5 = new ThirdParty("thirdPartyTest2", passwordEncoder.encode("123456"), LocalDate.now(), "NameTest5", "abc123");
         userRepository.saveAll(List.of(userTest1, userTest2, userTest3, userTest4, userTest5));
 
     }

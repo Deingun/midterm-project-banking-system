@@ -36,8 +36,8 @@ class ThirdPartyRepositoryTest {
     @BeforeEach
     void setUp() {
 
-        thirdPartyTest1 = new ThirdParty("thirdPartyTest1", passwordEncoder.encode("123456"), LocalDate.now(),Role.THIRDPARTY, "nameTest1", "123abc");
-        thirdPartyTest2 = new ThirdParty("thirdPartyTest2", passwordEncoder.encode("123456"), LocalDate.now(),Role.THIRDPARTY, "nameTest2", "123abc");
+        thirdPartyTest1 = new ThirdParty("thirdPartyTest1", passwordEncoder.encode("123456"), LocalDate.now(), "nameTest1", "123abc");
+        thirdPartyTest2 = new ThirdParty("thirdPartyTest2", passwordEncoder.encode("123456"), LocalDate.now(), "nameTest2", "123abc");
         thirdPartyRepository.saveAll(List.of(thirdPartyTest1, thirdPartyTest2));
 
     }

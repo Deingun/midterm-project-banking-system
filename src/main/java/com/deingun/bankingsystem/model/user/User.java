@@ -37,12 +37,6 @@ public class User implements Serializable {
     public User() {
     }
 
-    public User(String username, String password, LocalDate passwordDate) {
-        this.username = username;
-        this.password = password;
-        this.passwordDate = passwordDate;
-    }
-
     public User(String username, String password, LocalDate passwordDate, Role role) {
         this.username = username;
         this.password = password;

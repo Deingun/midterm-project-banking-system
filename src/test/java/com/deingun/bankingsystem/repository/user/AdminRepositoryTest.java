@@ -37,7 +37,7 @@ class AdminRepositoryTest {
     @BeforeEach
     void setUp() {
 
-        adminTest1 = new Admin("adminTest1", passwordEncoder.encode("123456"), LocalDate.now(),Role.ADMIN, "admin");
+        adminTest1 = new Admin("adminTest1", passwordEncoder.encode("123456"), LocalDate.now(), "admin");
         adminRepository.save(adminTest1);
 
     }

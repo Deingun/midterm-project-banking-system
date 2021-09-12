@@ -1,5 +1,7 @@
 package com.deingun.bankingsystem.controller.interfaces;
 
+import com.deingun.bankingsystem.controller.dto.AccountHolderDTO;
+import com.deingun.bankingsystem.model.user.AccountHolder;
 import com.deingun.bankingsystem.model.user.User;
 import com.deingun.bankingsystem.utils.Address;
 
@@ -10,5 +12,13 @@ public interface UserController {
 
     List<User> findAll();
 
-    User createAccountHolder(String username, String password, LocalDate passwordDate, String name, String nif, LocalDate dateOfBirth, Address address, String mailingAddress);
+    AccountHolder findById(Long id);
+
+    List<AccountHolder> findAllAccountHolders();
+
+    AccountHolder createAccountHolder(AccountHolderDTO accountHolderDTO);
+
+    void updateAccountHolder (Long id, String username, String password, String name, String nif, LocalDate dateOfBirth, Address address, String mailingAddress);
+
+    void deleteAccountHolder(Long id);
 }

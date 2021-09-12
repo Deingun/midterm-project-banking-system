@@ -54,8 +54,8 @@ class CheckingAccountRepositoryTest {
         Address addressTest = new Address("streetTest", "cityTest", "countryTest", 22222);
         BigDecimal balance = new BigDecimal("1000").setScale(3, RoundingMode.HALF_EVEN);
 
-        accountHolderTest1 = new AccountHolder("accountHolderTest1", passwordEncoder.encode("123456"), LocalDate.now(),Role.ACCOUNTHOLDER, "NameTest1", "11111111A", LocalDate.of(1980, 10, 5), addressTest, "test@gmail.com");
-        accountHolderTest2 = new AccountHolder("accountHolderTest2", passwordEncoder.encode("123456"), LocalDate.now(),Role.ACCOUNTHOLDER, "NameTest2", "22222222F", LocalDate.of(1990, 2, 15), addressTest, "test@gmail.com");
+        accountHolderTest1 = new AccountHolder("accountHolderTest1", passwordEncoder.encode("123456"), LocalDate.now(), "NameTest1", "11111111A", LocalDate.of(1980, 10, 5), addressTest, "test@gmail.com");
+        accountHolderTest2 = new AccountHolder("accountHolderTest2", passwordEncoder.encode("123456"), LocalDate.now(), "NameTest2", "22222222F", LocalDate.of(1990, 2, 15), addressTest, "test@gmail.com");
         accountHolderRepository.saveAll(List.of(accountHolderTest1, accountHolderTest2));
 
 
