@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -51,14 +52,16 @@ class CheckingAccountRepositoryTest {
     void setUp() {
 
         Address addressTest = new Address("streetTest", "cityTest", "countryTest", 22222);
+        BigDecimal balance = new BigDecimal("1000").setScale(3, RoundingMode.HALF_EVEN);
+
         accountHolderTest1 = new AccountHolder("accountHolderTest1", passwordEncoder.encode("123456"), LocalDate.now(),Role.ACCOUNTHOLDER, "NameTest1", "11111111A", LocalDate.of(1980, 10, 5), addressTest, "test@gmail.com");
         accountHolderTest2 = new AccountHolder("accountHolderTest2", passwordEncoder.encode("123456"), LocalDate.now(),Role.ACCOUNTHOLDER, "NameTest2", "22222222F", LocalDate.of(1990, 2, 15), addressTest, "test@gmail.com");
         accountHolderRepository.saveAll(List.of(accountHolderTest1, accountHolderTest2));
 
 
-        checkingAccountTest1 = new CheckingAccount("0049","1500",new BigDecimal("1000"),accountHolderTest1,accountHolderTest2,"123abc",
+        checkingAccountTest1 = new CheckingAccount("0049","1500",balance,accountHolderTest1,accountHolderTest2,"123abc",
                 LocalDate.now(), Status.ACTIVE);
-        checkingAccountTest2 = new CheckingAccount("0049","2020",new BigDecimal("1000"),accountHolderTest2,accountHolderTest1,"123abc",
+        checkingAccountTest2 = new CheckingAccount("0049","2020",balance,accountHolderTest2,accountHolderTest1,"123abc",
                 LocalDate.now(), Status.ACTIVE);
 
         checkingAccountRepository.saveAll(List.of(checkingAccountTest1,checkingAccountTest2));
@@ -93,6 +96,10 @@ class CheckingAccountRepositoryTest {
         assertEquals(1, checkingAccountList.size());
         Assertions.assertThat(checkingAccountList.get(0).getBalance())
                 .isEqualByComparingTo(BigDecimal.valueOf(1000));
+        Assertions.assertThat(checkingAccountList.get(0).getMinimumBalance())
+                .isEqualByComparingTo(BigDecimal.valueOf(250));
+        Assertions.assertThat(checkingAccountList.get(0).getMonthlyMaintenanceFee())
+                .isEqualByComparingTo(BigDecimal.valueOf(12));
     }
 
     @Test

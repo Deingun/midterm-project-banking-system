@@ -6,6 +6,7 @@ import com.deingun.bankingsystem.model.user.AccountHolder;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 @Entity
@@ -25,9 +26,9 @@ public class CheckingAccount extends Account{
     @NotEmpty(message = "Secret Key must be provided")
     private String secretKey;
     @Column(name = "minimum_balance")
-    private final BigDecimal MINIMUMBALANCE = new BigDecimal("250");
+    private final BigDecimal MINIMUMBALANCE = new BigDecimal("250").setScale(3, RoundingMode.HALF_EVEN);
     @Column(name = "monthly_maintenance_fee")
-    private final BigDecimal MONTHLYMAINTENANCEFEE= new BigDecimal("12");
+    private final BigDecimal MONTHLYMAINTENANCEFEE= new BigDecimal("12").setScale(3, RoundingMode.HALF_EVEN);
     @Column(name = "creation_date")
     private LocalDate creationDate;
     @Enumerated(EnumType.STRING)

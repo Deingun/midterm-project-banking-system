@@ -9,6 +9,7 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 @Entity
@@ -70,7 +71,7 @@ public class SavingAccount extends Account{
         this.primaryOwner = primaryOwner;
         this.secondaryOwner = secondaryOwner;
         this.secretKey = secretKey;
-        this.minimumBalance = new BigDecimal("1000");
+        this.minimumBalance = new BigDecimal("1000").setScale(3, RoundingMode.HALF_EVEN);
         this.creationDate = creationDate;
         this.status = status;
         this.interestRate = interestRate;
@@ -81,7 +82,7 @@ public class SavingAccount extends Account{
         this.primaryOwner = primaryOwner;
         this.secondaryOwner = secondaryOwner;
         this.secretKey = secretKey;
-        this.minimumBalance = new BigDecimal("1000");
+        this.minimumBalance = new BigDecimal("1000").setScale(3, RoundingMode.HALF_EVEN);
         this.creationDate = creationDate;
         this.status = status;
         this.interestRate = 0.0025F;

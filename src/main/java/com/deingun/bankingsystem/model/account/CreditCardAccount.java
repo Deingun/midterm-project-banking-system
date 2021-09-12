@@ -8,6 +8,7 @@ import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 @Entity
@@ -31,6 +32,7 @@ public class CreditCardAccount extends Account{
     @DecimalMin(value = "0.1")
     private Float interestRate;
 
+
     public CreditCardAccount() {
     }
 
@@ -46,7 +48,7 @@ public class CreditCardAccount extends Account{
         super(entityNumber, branchNumber, balance);
         this.primaryOwner = primaryOwner;
         this.secondaryOwner = secondaryOwner;
-        this.creditLimit = new BigDecimal("100");
+        this.creditLimit = new BigDecimal("100").setScale(3, RoundingMode.HALF_EVEN);
         this.interestRate = interestRate;
     }
 
@@ -62,7 +64,7 @@ public class CreditCardAccount extends Account{
         super(entityNumber, branchNumber, balance);
         this.primaryOwner = primaryOwner;
         this.secondaryOwner = secondaryOwner;
-        this.creditLimit = new BigDecimal("100");
+        this.creditLimit = new BigDecimal("100").setScale(3, RoundingMode.HALF_EVEN);
         this.interestRate = 0.2F;
     }
 
