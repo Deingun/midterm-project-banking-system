@@ -1,5 +1,7 @@
 package com.deingun.bankingsystem.model.user;
 
+import com.deingun.bankingsystem.enums.Role;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
@@ -31,8 +33,8 @@ public class ThirdParty extends User{
         this.hashedKey = hashedKey;
     }
 
-    public ThirdParty(String username, String password, LocalDate passwordDate, Set<Role> roleSet, String name, String hashedKey) {
-        super(username, password, passwordDate, roleSet);
+    public ThirdParty(String username, String password, LocalDate passwordDate, Role role, String name, String hashedKey) {
+        super(username, password, passwordDate, role);
         this.name = name;
         this.hashedKey = hashedKey;
     }

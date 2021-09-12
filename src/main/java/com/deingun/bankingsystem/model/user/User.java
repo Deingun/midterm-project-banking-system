@@ -1,5 +1,7 @@
 package com.deingun.bankingsystem.model.user;
 
+import com.deingun.bankingsystem.enums.Role;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -26,12 +28,10 @@ public class User implements Serializable {
     @NotBlank
     private String password;
     @Column(name = "password_date",nullable = false)
-
     private LocalDate passwordDate;
-
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name ="role_id"))
-    private Set<Role> roleSet = new HashSet<>();
+    @Column(name = "role",nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
 
     public User() {
@@ -43,11 +43,11 @@ public class User implements Serializable {
         this.passwordDate = passwordDate;
     }
 
-    public User(String username, String password, LocalDate passwordDate, Set<Role> roleSet) {
+    public User(String username, String password, LocalDate passwordDate, Role role) {
         this.username = username;
         this.password = password;
         this.passwordDate = passwordDate;
-        this.roleSet = roleSet;
+        this.role = role;
     }
 
     public Long getId() {
@@ -82,12 +82,12 @@ public class User implements Serializable {
         this.passwordDate = passwordDate;
     }
 
-    public Set<Role> getRoleSet() {
-        return roleSet;
+    public Role getRole() {
+        return role;
     }
 
-    public void setRoleSet(Set<Role> roleSet) {
-        this.roleSet = roleSet;
+    public void setRoleSet(Role role) {
+        this.role = role;
     }
 }
 

@@ -1,21 +1,13 @@
 package com.deingun.bankingsystem.repository.user;
 
-import com.deingun.bankingsystem.enums.Roles;
+import com.deingun.bankingsystem.enums.Role;
 import com.deingun.bankingsystem.model.user.Admin;
-import com.deingun.bankingsystem.model.user.Role;
-import com.deingun.bankingsystem.repository.user.AdminRepository;
-import com.deingun.bankingsystem.repository.user.RoleRepostory;
-import com.deingun.bankingsystem.repository.user.UserRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -31,8 +23,6 @@ class AdminRepositoryTest {
     @Autowired
     UserRepository userRepository;
 
-    @Autowired
-    RoleRepostory roleRepostory;
 
     @Autowired
     AdminRepository adminRepository;
@@ -47,14 +37,14 @@ class AdminRepositoryTest {
     @BeforeEach
     void setUp() {
 
-        adminTest1 = new Admin("adminTest1", passwordEncoder.encode("123456"), LocalDate.now(),Set.of(new Role(Roles.ADMIN)), "admin");
+        adminTest1 = new Admin("adminTest1", passwordEncoder.encode("123456"), LocalDate.now(),Role.ADMIN, "admin");
         adminRepository.save(adminTest1);
 
     }
 
     @AfterEach
     void tearDown() {
-        roleRepostory.deleteAll();
+
         userRepository.deleteAll();
         adminRepository.deleteAll();
     }

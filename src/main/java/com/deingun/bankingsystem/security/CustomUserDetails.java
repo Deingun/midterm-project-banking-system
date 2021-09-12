@@ -1,20 +1,14 @@
 package com.deingun.bankingsystem.security;
 
-import com.deingun.bankingsystem.model.user.Role;
 import com.deingun.bankingsystem.model.user.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.Column;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CustomUserDetails implements UserDetails {
 
@@ -34,7 +28,7 @@ public class CustomUserDetails implements UserDetails {
 
     public static CustomUserDetails build(User user){
         List<GrantedAuthority> authorities =
-                user.getRoleSet().stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRole().name())).collect(Collectors.toList());
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
         return new CustomUserDetails(user.getId(), user.getUsername(), user.getPassword(), user.getPasswordDate(),authorities);
     }
     @Override

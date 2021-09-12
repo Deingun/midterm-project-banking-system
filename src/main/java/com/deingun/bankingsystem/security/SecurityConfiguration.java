@@ -1,6 +1,6 @@
 package com.deingun.bankingsystem.security;
 
-import com.deingun.bankingsystem.enums.Roles;
+import com.deingun.bankingsystem.enums.Role;
 import com.deingun.bankingsystem.service.impl.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -41,7 +41,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.authorizeRequests()
 
-                .mvcMatchers(HttpMethod.GET, "/users").hasRole(Roles.ADMIN.toString())
+                .mvcMatchers(HttpMethod.GET, "/users").hasRole(Role.ADMIN.toString())
         ;
 
     }

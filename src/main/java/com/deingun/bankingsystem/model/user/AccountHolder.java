@@ -1,5 +1,6 @@
 package com.deingun.bankingsystem.model.user;
 
+import com.deingun.bankingsystem.enums.Role;
 import com.deingun.bankingsystem.model.account.CheckingAccount;
 import com.deingun.bankingsystem.model.account.CreditCardAccount;
 import com.deingun.bankingsystem.model.account.SavingAccount;
@@ -90,8 +91,8 @@ public class AccountHolder extends User {
         this.mailingAddress = mailingAddress;
     }
 
-    public AccountHolder(String username, String password, LocalDate passwordDate, Set<Role> roleSet, String name, String nif, LocalDate dateOfBirth, Address address, String mailingAddress) {
-        super(username, password, passwordDate, roleSet);
+    public AccountHolder(String username, String password, LocalDate passwordDate, Role role, String name, String nif, LocalDate dateOfBirth, Address address, String mailingAddress) {
+        super(username, password, passwordDate, role);
         this.name = name;
         this.nif = nif;
         this.dateOfBirth = dateOfBirth;

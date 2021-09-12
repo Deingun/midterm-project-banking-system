@@ -1,5 +1,7 @@
 package com.deingun.bankingsystem.model.user;
 
+import com.deingun.bankingsystem.enums.Role;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
@@ -26,8 +28,8 @@ public class Admin extends User{
         this.name = name;
     }
 
-    public Admin(String username, String password, LocalDate passwordDate, Set<Role> roleSet, String name) {
-        super(username, password, passwordDate, roleSet);
+    public Admin(String username, String password, LocalDate passwordDate, Role role, String name) {
+        super(username, password, passwordDate, role);
         this.name = name;
     }
 

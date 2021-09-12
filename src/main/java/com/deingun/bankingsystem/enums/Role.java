@@ -1,5 +1,5 @@
 package com.deingun.bankingsystem.enums;
 
-public enum Roles {
+public enum Role {
     ACCOUNTHOLDER, ADMIN, THIRDPARTY
 }

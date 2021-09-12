@@ -1,8 +1,7 @@
 package com.deingun.bankingsystem.service.impl;
 
-import com.deingun.bankingsystem.enums.Roles;
+import com.deingun.bankingsystem.enums.Role;
 import com.deingun.bankingsystem.model.user.AccountHolder;
-import com.deingun.bankingsystem.model.user.Role;
 import com.deingun.bankingsystem.model.user.User;
 import com.deingun.bankingsystem.repository.user.UserRepository;
 import com.deingun.bankingsystem.security.SecurityConfiguration;
@@ -49,7 +48,7 @@ public class UserServiceImpl implements UserService {
             } else if (password == null) {
                 throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Password must be provided");
             } else {
-                User user = new AccountHolder(username,password,passwordDate,Set.of(new Role(Roles.ACCOUNTHOLDER)),name,nif,dateOfBirth,address,mailingAddress);
+                User user = new AccountHolder(username,password,passwordDate,Role.ACCOUNTHOLDER,name,nif,dateOfBirth,address,mailingAddress);
 
                 return userRepository.save(user);
             }
