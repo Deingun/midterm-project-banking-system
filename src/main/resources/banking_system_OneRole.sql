@@ -14,21 +14,6 @@ password_date DATE NOT NULL,
 role VARCHAR(255) NOT NULL
 );
 
-DROP TABLE IF EXISTS role;
-
-CREATE TABLE role (
-id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
-name VARCHAR(255) NOT NULL
-);
-
-DROP TABLE IF EXISTS user_role;
-
-CREATE TABLE user_role (
-user_id BIGINT  NOT NULL,
-role_id BIGINT  NOT NULL,
-PRIMARY KEY(user_id,role_id)
-);
-
 DROP TABLE IF EXISTS account_holder;
 
 CREATE TABLE account_holder(
@@ -72,6 +57,7 @@ entity_number VARCHAR(5),
 branch_number VARCHAR(5),
 account_number VARCHAR(25),
 balance DECIMAL,
+currency VARCHAR(5),
 primary_owner_id BIGINT,
 secondary_owner_id BIGINT,
 penalty_fee DECIMAL,
@@ -97,6 +83,7 @@ entity_number VARCHAR(5),
 branch_number VARCHAR(5),
 account_number VARCHAR(25),
 balance DECIMAL,
+currency VARCHAR(5),
 primary_owner_id BIGINT,
 secondary_owner_id BIGINT,
 penalty_fee DECIMAL,
@@ -115,6 +102,7 @@ entity_number VARCHAR(5),
 branch_number VARCHAR(5),
 account_number VARCHAR(25),
 balance DECIMAL,
+currency VARCHAR(5),
 primary_owner_id BIGINT,
 secondary_owner_id BIGINT,
 penalty_fee DECIMAL,
@@ -135,6 +123,7 @@ entity_number VARCHAR(5),
 branch_number VARCHAR(5),
 account_number VARCHAR(25),
 balance DECIMAL,
+currency VARCHAR(5),
 primary_owner_id BIGINT,
 secondary_owner_id BIGINT,
 penalty_fee DECIMAL,
@@ -150,6 +139,8 @@ select * from admin;
 select * from role;
 select * from role;
 select * from checking_account;
+delete from user where id = 12;
+delete from account_holder where id = 6;
 
 select u.username, a.nif from user u left join account_holder a on u.id = a.user_id where a.nif is NOT NULL;
 

@@ -8,6 +8,7 @@ import com.deingun.bankingsystem.model.user.AccountHolder;
 import com.deingun.bankingsystem.repository.user.AccountHolderRepository;
 import com.deingun.bankingsystem.repository.user.UserRepository;
 import com.deingun.bankingsystem.utils.Address;
+import com.deingun.bankingsystem.utils.Money;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +48,7 @@ class StudentCheckingAccountRepositoryTest {
     void setUp() {
 
         Address addressTest = new Address("streetTest", "cityTest", "countryTest", 22222);
-        BigDecimal balance = new BigDecimal("1000").setScale(3, RoundingMode.HALF_EVEN);
+        Money balance = new Money(new BigDecimal("1000"));
 
         accountHolderTest1 = new AccountHolder("accountHolderTest1", passwordEncoder.encode("123456"), LocalDate.now(), "NameTest1", "11111111A", LocalDate.of(1980, 10, 5), addressTest, "test@gmail.com");
         accountHolderTest2 = new AccountHolder("accountHolderTest2", passwordEncoder.encode("123456"), LocalDate.now(), "NameTest2", "22222222F", LocalDate.of(1990, 2, 15), addressTest, "test@gmail.com");
@@ -90,7 +91,7 @@ class StudentCheckingAccountRepositoryTest {
     void findByPrimaryOwnerId_validId_isPresent() {
         List<StudentCheckingAccount> studentCheckingAccountList = studentCheckingAccountRepository.findByPrimaryOwnerId(accountHolderTest1.getId());
         assertEquals(1, studentCheckingAccountList.size());
-        Assertions.assertThat(studentCheckingAccountList.get(0).getBalance())
+        Assertions.assertThat(studentCheckingAccountList.get(0).getBalance().getAmount())
                 .isEqualByComparingTo(BigDecimal.valueOf(1000));
     }
 

@@ -2,6 +2,7 @@ package com.deingun.bankingsystem.model.account;
 
 import com.deingun.bankingsystem.enums.Status;
 import com.deingun.bankingsystem.model.user.AccountHolder;
+import com.deingun.bankingsystem.utils.Money;
 
 import javax.persistence.*;
 import javax.validation.constraints.DecimalMax;
@@ -36,7 +37,7 @@ public class CreditCardAccount extends Account{
     public CreditCardAccount() {
     }
 
-    public CreditCardAccount(String entityNumber, String branchNumber, BigDecimal balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal creditLimit, Float interestRate) {
+    public CreditCardAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal creditLimit, Float interestRate) {
         super(entityNumber, branchNumber, balance);
         this.primaryOwner = primaryOwner;
         this.secondaryOwner = secondaryOwner;
@@ -44,23 +45,30 @@ public class CreditCardAccount extends Account{
         this.interestRate = interestRate;
     }
 
-    public CreditCardAccount(String entityNumber, String branchNumber, BigDecimal balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, Float interestRate) {
+    /**
+     * Class constructor using default creditLimit 100
+     **/
+    public CreditCardAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, Float interestRate) {
         super(entityNumber, branchNumber, balance);
         this.primaryOwner = primaryOwner;
         this.secondaryOwner = secondaryOwner;
         this.creditLimit = new BigDecimal("100").setScale(3, RoundingMode.HALF_EVEN);
         this.interestRate = interestRate;
     }
-
-    public CreditCardAccount(String entityNumber, String branchNumber, BigDecimal balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal creditLimit) {
+    /**
+     * Class constructor using default interestRate 0.2
+     **/
+    public CreditCardAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal creditLimit) {
         super(entityNumber, branchNumber, balance);
         this.primaryOwner = primaryOwner;
         this.secondaryOwner = secondaryOwner;
         this.creditLimit = creditLimit;
         this.interestRate = 0.2F;
     }
-
-    public CreditCardAccount(String entityNumber, String branchNumber, BigDecimal balance, AccountHolder primaryOwner, AccountHolder secondaryOwner) {
+    /**
+     * Class constructor using default creditLimit 100, interestRate 0.2
+     **/
+    public CreditCardAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner) {
         super(entityNumber, branchNumber, balance);
         this.primaryOwner = primaryOwner;
         this.secondaryOwner = secondaryOwner;

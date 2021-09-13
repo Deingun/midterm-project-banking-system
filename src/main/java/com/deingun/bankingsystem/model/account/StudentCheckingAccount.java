@@ -2,6 +2,7 @@ package com.deingun.bankingsystem.model.account;
 
 import com.deingun.bankingsystem.enums.Status;
 import com.deingun.bankingsystem.model.user.AccountHolder;
+import com.deingun.bankingsystem.utils.Money;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -34,7 +35,7 @@ public class StudentCheckingAccount extends Account{
     public StudentCheckingAccount() {
     }
 
-    public StudentCheckingAccount(String entityNumber, String branchNumber, BigDecimal balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, LocalDate creationDate, Status status) {
+    public StudentCheckingAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, LocalDate creationDate, Status status) {
         super(entityNumber, branchNumber, balance);
         this.primaryOwner = primaryOwner;
         this.secondaryOwner = secondaryOwner;

@@ -2,6 +2,7 @@ package com.deingun.bankingsystem.model.account;
 
 import com.deingun.bankingsystem.enums.Status;
 import com.deingun.bankingsystem.model.user.AccountHolder;
+import com.deingun.bankingsystem.utils.Money;
 
 import javax.persistence.*;
 import javax.validation.constraints.DecimalMax;
@@ -44,7 +45,7 @@ public class SavingAccount extends Account{
     public SavingAccount() {
     }
 
-    public SavingAccount(String entityNumber, String branchNumber, BigDecimal balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, BigDecimal minimumBalance, LocalDate creationDate, Status status, Float interestRate) {
+    public SavingAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, BigDecimal minimumBalance, LocalDate creationDate, Status status, Float interestRate) {
         super(entityNumber, branchNumber, balance);
         this.primaryOwner = primaryOwner;
         this.secondaryOwner = secondaryOwner;
@@ -55,7 +56,10 @@ public class SavingAccount extends Account{
         this.interestRate = interestRate;
     }
 
-    public SavingAccount(String entityNumber, String branchNumber, BigDecimal balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, BigDecimal minimumBalance, LocalDate creationDate, Status status) {
+    /**
+     * Class constructor using default interestRate 0.0025
+     **/
+    public SavingAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, BigDecimal minimumBalance, LocalDate creationDate, Status status) {
         super(entityNumber, branchNumber, balance);
         this.primaryOwner = primaryOwner;
         this.secondaryOwner = secondaryOwner;
@@ -65,8 +69,10 @@ public class SavingAccount extends Account{
         this.status = status;
         this.interestRate = 0.0025F;
     }
-
-    public SavingAccount(String entityNumber, String branchNumber, BigDecimal balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, LocalDate creationDate, Status status, Float interestRate) {
+    /**
+     * Class constructor using default minimumBalance 1000
+     **/
+    public SavingAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, LocalDate creationDate, Status status, Float interestRate) {
         super(entityNumber, branchNumber, balance);
         this.primaryOwner = primaryOwner;
         this.secondaryOwner = secondaryOwner;
@@ -76,8 +82,10 @@ public class SavingAccount extends Account{
         this.status = status;
         this.interestRate = interestRate;
     }
-
-    public SavingAccount(String entityNumber, String branchNumber, BigDecimal balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, LocalDate creationDate, Status status) {
+    /**
+     * Class constructor using default minimumBalance 1000, default interestRate 0.0025
+     **/
+    public SavingAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, LocalDate creationDate, Status status) {
         super(entityNumber, branchNumber, balance);
         this.primaryOwner = primaryOwner;
         this.secondaryOwner = secondaryOwner;

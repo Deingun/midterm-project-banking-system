@@ -8,6 +8,7 @@ import com.deingun.bankingsystem.repository.user.UserRepository;
 import com.deingun.bankingsystem.security.SecurityConfiguration;
 import com.deingun.bankingsystem.service.interfaces.UserService;
 import com.deingun.bankingsystem.utils.Address;
+import com.deingun.bankingsystem.validations.DataValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

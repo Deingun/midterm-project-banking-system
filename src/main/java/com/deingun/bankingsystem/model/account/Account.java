@@ -1,6 +1,8 @@
 package com.deingun.bankingsystem.model.account;
 
 import com.deingun.bankingsystem.model.user.AccountHolder;
+import com.deingun.bankingsystem.utils.Address;
+import com.deingun.bankingsystem.utils.Money;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -17,11 +19,16 @@ public abstract class Account {
     @Column(name = "branch_number", nullable = false)
     @NotEmpty(message = "Branch must be provided")
     private String branchNumber;
-    @Column(name = "balance")
-    private BigDecimal balance;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "amount", column = @Column(name = "balance")),
+            @AttributeOverride(name = "currency", column = @Column(name = "currency")),
+    })
+    private Money balance;
 
     @Column(name = "penalty_fee")
     private final BigDecimal PENALTYFEE = new BigDecimal("40");
+
 
     @Column(name = "account_number")
     private String accountNumber;
@@ -29,7 +36,7 @@ public abstract class Account {
     public Account() {
     }
 
-    public Account(String entityNumber, String branchNumber, BigDecimal balance) {
+    public Account(String entityNumber, String branchNumber, Money balance) {
         this.entityNumber = entityNumber;
         this.branchNumber = branchNumber;
         this.balance = balance;
@@ -59,18 +66,17 @@ public abstract class Account {
         this.branchNumber = branchNumber;
     }
 
-    public BigDecimal getBalance() {
+    public Money getBalance() {
         return balance;
     }
 
-    public void setBalance(BigDecimal balance) {
+    public void setBalance(Money balance) {
         this.balance = balance;
     }
 
     public BigDecimal getPenaltyFee() {
         return PENALTYFEE;
     }
-
 
     public String getAccountNumber() {
         return accountNumber;
