@@ -44,6 +44,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public CheckingAccount createCheckingAccount(String entityNumber, String branchNumber, String amount, Long primaryOwnerId, Long secondaryOwnerId, String secretKey) {
         Money balance = new Money(new BigDecimal(amount));
+        CheckingAccount checkingAccount = new CheckingAccount();
         if (entityNumber == null) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Entity number must be provided");
         } else if (branchNumber == null) {
@@ -64,11 +65,15 @@ public class AccountServiceImpl implements AccountService {
                     throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Secondary Owner does not exist");
                 } else {
 
-                    return checkingAccountRepository.save(new CheckingAccount(entityNumber, branchNumber, balance, optionalAccountHolder.get(), optionalSecondaryAccountHolder.get(), secretKey, LocalDate.now(), Status.ACTIVE));
+                    checkingAccount = checkingAccountRepository.save(new CheckingAccount(entityNumber, branchNumber, balance, optionalAccountHolder.get(), optionalSecondaryAccountHolder.get(), secretKey, LocalDate.now(), Status.ACTIVE));
+                    checkingAccount.setAccountNumber(checkingAccount.getEntityNumber() + checkingAccount.getBranchNumber() + checkingAccount.getId().toString());
+                    return checkingAccountRepository.save(checkingAccount);
                 }
             } else
 
-                return checkingAccountRepository.save(new CheckingAccount(entityNumber, branchNumber, balance, optionalAccountHolder.get(), null, secretKey, LocalDate.now(), Status.ACTIVE));
+                checkingAccount = checkingAccountRepository.save(new CheckingAccount(entityNumber, branchNumber, balance, optionalAccountHolder.get(), null, secretKey, LocalDate.now(), Status.ACTIVE));
+                checkingAccount.setAccountNumber(checkingAccount.getEntityNumber() + checkingAccount.getBranchNumber() + checkingAccount.getId().toString());
+                return checkingAccountRepository.save(checkingAccount);
         }
     }
 }
