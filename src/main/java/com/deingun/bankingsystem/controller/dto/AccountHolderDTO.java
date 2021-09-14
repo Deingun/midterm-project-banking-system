@@ -14,7 +14,7 @@ public class AccountHolderDTO {
     private String street;
     private String city;
     private String country;
-    private int postalCode;
+    private Integer postalCode;
     private String mailingAddress;
 
     public Long getId() {

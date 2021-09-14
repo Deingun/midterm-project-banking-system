@@ -20,7 +20,7 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, nullable = false)
     private Long id;
-    @Column(name = "username",nullable = false, length = 64)
+    @Column(name = "username",nullable = false, length = 64, unique = true)
     @NotEmpty(message = "Username must be provided")
     @Size(max = 64)
     private String username;

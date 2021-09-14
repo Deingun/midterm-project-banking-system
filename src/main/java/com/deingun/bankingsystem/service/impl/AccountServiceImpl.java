@@ -3,13 +3,11 @@ package com.deingun.bankingsystem.service.impl;
 import com.deingun.bankingsystem.enums.Status;
 import com.deingun.bankingsystem.model.account.CheckingAccount;
 import com.deingun.bankingsystem.model.user.AccountHolder;
-import com.deingun.bankingsystem.model.user.User;
 import com.deingun.bankingsystem.repository.account.CheckingAccountRepository;
 import com.deingun.bankingsystem.repository.user.AccountHolderRepository;
 import com.deingun.bankingsystem.repository.user.UserRepository;
 import com.deingun.bankingsystem.service.interfaces.AccountService;
 import com.deingun.bankingsystem.utils.Money;
-import org.hibernate.validator.constraints.Currency;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -43,8 +41,8 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public CheckingAccount createCheckingAccount(String entityNumber, String branchNumber, String amount, Long primaryOwnerId, Long secondaryOwnerId, String secretKey) {
-        Money balance = new Money(new BigDecimal(amount));
-        CheckingAccount checkingAccount = new CheckingAccount();
+
+        CheckingAccount checkingAccount;
         if (entityNumber == null) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Entity number must be provided");
         } else if (branchNumber == null) {
@@ -56,6 +54,7 @@ public class AccountServiceImpl implements AccountService {
         } else if (secretKey == null) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Secret Key must be provided");
         } else {
+            Money balance = new Money(new BigDecimal(amount));
             Optional<AccountHolder> optionalAccountHolder = accountHolderRepository.findById(primaryOwnerId);
             if (optionalAccountHolder.isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Primary Owner does not exist");

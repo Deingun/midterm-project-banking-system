@@ -8,12 +8,12 @@ public class Address {
     private String street;
     private String city;
     private String country;
-    private int postalCode;
+    private Integer postalCode;
 
     public Address() {
     }
 
-    public Address(String street, String city, String country, int postalCode) {
+    public Address(String street, String city, String country, Integer postalCode) {
         this.street = street;
         this.city = city;
         this.country = country;
@@ -44,11 +44,11 @@ public class Address {
         this.country = country;
     }
 
-    public int getPostalCode() {
+    public Integer getPostalCode() {
         return postalCode;
     }
 
-    public void setPostalCode(int postalCode) {
+    public void setPostalCode(Integer postalCode) {
         this.postalCode = postalCode;
     }
 
