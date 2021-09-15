@@ -6,10 +6,13 @@ import com.deingun.bankingsystem.utils.Money;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-@MappedSuperclass
-public abstract class Account {
+@Entity
+@Table(name = "accounts")
+@Inheritance(strategy=InheritanceType.JOINED)
+public class Account implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

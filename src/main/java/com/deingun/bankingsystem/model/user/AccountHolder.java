@@ -1,6 +1,7 @@
 package com.deingun.bankingsystem.model.user;
 
 import com.deingun.bankingsystem.enums.Role;
+import com.deingun.bankingsystem.model.Transaction;
 import com.deingun.bankingsystem.model.account.CheckingAccount;
 import com.deingun.bankingsystem.model.account.CreditCardAccount;
 import com.deingun.bankingsystem.model.account.SavingAccount;
@@ -67,6 +68,14 @@ public class AccountHolder extends User {
     @OneToMany(mappedBy = "secondaryOwner",fetch = FetchType.LAZY)
     @JsonBackReference
     private List<StudentCheckingAccount> studentCheckingAccountsAsSecondaryOwner;
+
+    @OneToMany(mappedBy = "paymasterId",fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Transaction> transactionsAsPaymaster;
+
+    @OneToMany(mappedBy = "destinationAccountId",fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Transaction> transactionsAsReceiver;
 
     @Embedded
     @AttributeOverrides({

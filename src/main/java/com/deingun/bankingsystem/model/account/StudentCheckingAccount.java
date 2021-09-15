@@ -1,13 +1,16 @@
 package com.deingun.bankingsystem.model.account;
 
 import com.deingun.bankingsystem.enums.Status;
+import com.deingun.bankingsystem.model.Transaction;
 import com.deingun.bankingsystem.model.user.AccountHolder;
 import com.deingun.bankingsystem.utils.Money;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @PrimaryKeyJoinColumn(name = "account_id")
@@ -31,6 +34,14 @@ public class StudentCheckingAccount extends Account{
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status;
+
+    @OneToMany(mappedBy = "originAccountId",fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Transaction> transactionsOriginated;
+
+    @OneToMany(mappedBy = "destinationAccountId",fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Transaction> transactionsreceived;
 
     public StudentCheckingAccount() {
     }
