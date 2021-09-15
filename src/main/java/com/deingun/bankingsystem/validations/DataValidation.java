@@ -1,10 +1,20 @@
 package com.deingun.bankingsystem.validations;
 
+import com.deingun.bankingsystem.model.user.AccountHolder;
+import com.deingun.bankingsystem.repository.user.AccountHolderRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDate;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Component
 public class DataValidation {
+
+    @Autowired
+    AccountHolderRepository accountHolderRepository;
 
     /**
      * method to validate a correct name
@@ -27,7 +37,7 @@ public class DataValidation {
      *
      * @param email String email
      */
-    public boolean validateMail(String email){
+    public boolean validateMail(String email) {
         Pattern pattern = Pattern
                 .compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
                         + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
@@ -52,4 +62,45 @@ public class DataValidation {
         }
     }
 
+    /**
+     * method to validate if the PrimaryOwner is less than 24
+     *
+     * @param accountHolder
+     */
+    public boolean validateAgeOfPrimaryOwner(AccountHolder accountHolder) {
+        LocalDate dateForStudentAccount = LocalDate.now().minusYears(24L);
+        if (accountHolder.getDateOfBirth().compareTo(dateForStudentAccount) < 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * method to check if any data is not provided
+     *
+     * @return String
+     */
+    public String DataNotProvided(String username, String password, String name, String nif, LocalDate dateOfBirth, String street, String city, String country, Integer postalCode) {
+        if (username == null) {
+            return "Username";
+        } else if (password == null) {
+            return "Password";
+        } else if (name == null) {
+            return "Name";
+        } else if (nif == null) {
+            return "Nif";
+        } else if (dateOfBirth == null) {
+            return "Date of birth";
+        } else if (street == null) {
+            return "Street";
+        } else if (city == null) {
+            return "City";
+        } else if (country == null) {
+            return "Country";
+        } else if (postalCode == null) {
+            return "Postal code";
+        }
+        return null;
+    }
 }

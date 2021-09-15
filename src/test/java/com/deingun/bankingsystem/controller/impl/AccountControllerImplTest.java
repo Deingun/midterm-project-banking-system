@@ -4,8 +4,6 @@ import com.deingun.bankingsystem.enums.Status;
 import com.deingun.bankingsystem.model.account.CheckingAccount;
 import com.deingun.bankingsystem.model.user.AccountHolder;
 import com.deingun.bankingsystem.model.user.Admin;
-import com.deingun.bankingsystem.model.user.ThirdParty;
-import com.deingun.bankingsystem.model.user.User;
 import com.deingun.bankingsystem.repository.account.CheckingAccountRepository;
 import com.deingun.bankingsystem.repository.user.AccountHolderRepository;
 import com.deingun.bankingsystem.repository.user.AdminRepository;
@@ -29,7 +27,6 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
@@ -82,15 +79,15 @@ class AccountControllerImplTest {
         adminTest1 = new Admin("adminTest1", passwordEncoder.encode("123456"), LocalDate.now(), "admin");
         adminRepository.save(adminTest1);
 
-        checkingAccountTest1 = new CheckingAccount("0049","1500",balance,accountHolderTest1,accountHolderTest2,"123abc",
+        checkingAccountTest1 = new CheckingAccount("0049", "1500", balance, accountHolderTest1, accountHolderTest2, "123abc",
                 LocalDate.now(), Status.ACTIVE);
-        checkingAccountTest2 = new CheckingAccount("0049","2020",balance,accountHolderTest2,accountHolderTest1,"123abc",
+        checkingAccountTest2 = new CheckingAccount("0049", "2020", balance, accountHolderTest2, accountHolderTest1, "123abc",
                 LocalDate.now(), Status.ACTIVE);
 
-        checkingAccountRepository.saveAll(List.of(checkingAccountTest1,checkingAccountTest2));
-        checkingAccountTest1.setAccountNumber(checkingAccountTest1.getEntityNumber()+checkingAccountTest1.getBranchNumber()+checkingAccountTest1.getId().toString());
-        checkingAccountTest2.setAccountNumber(checkingAccountTest2.getEntityNumber()+checkingAccountTest2.getBranchNumber()+checkingAccountTest2.getId().toString());
-        checkingAccountRepository.saveAll(List.of(checkingAccountTest1,checkingAccountTest2));
+        checkingAccountRepository.saveAll(List.of(checkingAccountTest1, checkingAccountTest2));
+        checkingAccountTest1.setAccountNumber(checkingAccountTest1.getEntityNumber() + checkingAccountTest1.getBranchNumber() + checkingAccountTest1.getId().toString());
+        checkingAccountTest2.setAccountNumber(checkingAccountTest2.getEntityNumber() + checkingAccountTest2.getBranchNumber() + checkingAccountTest2.getId().toString());
+        checkingAccountRepository.saveAll(List.of(checkingAccountTest1, checkingAccountTest2));
     }
 
     @AfterEach
@@ -103,7 +100,7 @@ class AccountControllerImplTest {
 
     @Test
     void getAll_NoParams_AllChechingAccounts() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/checkingaccounts").with(httpBasic("adminTest1","123456")))
+        MvcResult mvcResult = mockMvc.perform(get("/checkingaccounts").with(httpBasic("adminTest1", "123456")))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn();

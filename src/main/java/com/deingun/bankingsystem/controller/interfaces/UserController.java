@@ -20,7 +20,7 @@ public interface UserController {
 
     AccountHolder createAccountHolder(AccountHolderDTO accountHolderDTO);
 
-    void updateAccountHolder (Long id, String username, String password, String name, String nif, LocalDate dateOfBirth, Address address, String mailingAddress);
+    void updateAccountHolder(Long id, String username, String password, String name, String nif, LocalDate dateOfBirth, Address address, String mailingAddress);
 
     void deleteAccountHolder(Long id);
 }

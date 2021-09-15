@@ -1,10 +1,5 @@
 package com.deingun.bankingsystem.controller.dto;
 
-import com.deingun.bankingsystem.model.user.AccountHolder;
-import com.deingun.bankingsystem.utils.Money;
-
-import java.math.BigDecimal;
-
 public class CheckingAccountDTO {
 
     private String entityNumber;

@@ -2,8 +2,10 @@ package com.deingun.bankingsystem.model;
 
 import com.deingun.bankingsystem.model.account.Account;
 import com.deingun.bankingsystem.model.user.User;
+import com.deingun.bankingsystem.utils.Money;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "transactions")
@@ -16,25 +18,36 @@ public class Transaction {
 
     @ManyToOne
     @JoinColumn(name = "origin_account_id")
-    private Account originAccountId;
+    private Account originAccount;
     @ManyToOne
     @JoinColumn(name = "destination_account_id")
-    private Account destinationAccountId;
+    private Account destinationAccount;
     @ManyToOne
     @JoinColumn(name = "paymaster_id")
-    private User paymasterId;
+    private User paymaster;
     @ManyToOne
     @JoinColumn(name = "receiver_id")
-    private User receiverId;
+    private User receiver;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "amount", column = @Column(name = "amount")),
+            @AttributeOverride(name = "currency", column = @Column(name = "currency")),
+    })
+    private Money amount;
+    @Column(name = "time_stamp")
+    private LocalDateTime timeStamp;
 
     public Transaction() {
     }
 
-    public Transaction(Account originAccountId, Account destinationAccountId, User paymasterId, User receiverId) {
-        this.originAccountId = originAccountId;
-        this.destinationAccountId = destinationAccountId;
-        this.paymasterId = paymasterId;
-        this.receiverId = receiverId;
+    public Transaction(Account originAccount, Account destinationAccount, User paymaster, User receiver, Money amount, LocalDateTime timeStamp) {
+        this.originAccount = originAccount;
+        this.destinationAccount = destinationAccount;
+        this.paymaster = paymaster;
+        this.receiver = receiver;
+        this.amount = amount;
+        this.timeStamp = timeStamp;
     }
 
     public Long getId() {
@@ -45,35 +58,51 @@ public class Transaction {
         this.id = id;
     }
 
-    public Account getOriginAccountId() {
-        return originAccountId;
+    public Account getOriginAccount() {
+        return originAccount;
     }
 
-    public void setOriginAccountId(Account originAccountId) {
-        this.originAccountId = originAccountId;
+    public void setOriginAccount(Account originAccount) {
+        this.originAccount = originAccount;
     }
 
-    public Account getDestinationAccountId() {
-        return destinationAccountId;
+    public Account getDestinationAccount() {
+        return destinationAccount;
     }
 
-    public void setDestinationAccountId(Account destinationAccountId) {
-        this.destinationAccountId = destinationAccountId;
+    public void setDestinationAccount(Account destinationAccount) {
+        this.destinationAccount = destinationAccount;
     }
 
-    public User getPaymasterId() {
-        return paymasterId;
+    public User getPaymaster() {
+        return paymaster;
     }
 
-    public void setPaymasterId(User paymasterId) {
-        this.paymasterId = paymasterId;
+    public void setPaymaster(User paymaster) {
+        this.paymaster = paymaster;
     }
 
-    public User getReceiverId() {
-        return receiverId;
+    public User getReceiver() {
+        return receiver;
     }
 
-    public void setReceiverId(User receiverId) {
-        this.receiverId = receiverId;
+    public void setReceiver(User receiverId) {
+        this.receiver = receiverId;
+    }
+
+    public Money getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Money amount) {
+        this.amount = amount;
+    }
+
+    public LocalDateTime getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(LocalDateTime timeStamp) {
+        this.timeStamp = timeStamp;
     }
 }

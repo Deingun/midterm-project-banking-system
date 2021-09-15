@@ -1,6 +1,5 @@
 package com.deingun.bankingsystem.repository.account;
 
-import com.deingun.bankingsystem.model.account.SavingAccount;
 import com.deingun.bankingsystem.model.account.StudentCheckingAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -9,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface StudentCheckingAccountRepository extends JpaRepository<StudentCheckingAccount,Long> {
+public interface StudentCheckingAccountRepository extends JpaRepository<StudentCheckingAccount, Long> {
 
     Optional<StudentCheckingAccount> findById(Long id);
 

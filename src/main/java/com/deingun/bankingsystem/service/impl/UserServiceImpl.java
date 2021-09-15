@@ -21,6 +21,8 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
 
+    private final DataValidation dataValidation = new DataValidation();
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -30,7 +32,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     AccountHolderRepository accountHolderRepository;
 
-    DataValidation dataValidation = new DataValidation();
 
     @Override
     public List<User> findAll() {
@@ -56,14 +57,19 @@ public class UserServiceImpl implements UserService {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There are no users.");
     }
 
+    /**
+     * method to create a new Account Holder, validates if all the required data is provided and if it´s in a correct format
+     *
+     * @param username, password, name, nif,  dateOfBirth, street, city, country, postalCode, mailingAddress
+     */
     @Override
-    public AccountHolder createAccountHolder(String username, String password, String name, String nif, LocalDate dateOfBirth, String street, String city, String country, Integer postalCode, String mailingAddress){
+    public AccountHolder createAccountHolder(String username, String password, String name, String nif, LocalDate dateOfBirth, String street, String city, String country, Integer postalCode, String mailingAddress) {
         Optional<User> optionalUser = userRepository.findByUsername(username);
 
         if (optionalUser.isPresent()) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "User already exist");
         } else {
-            String dataNotProvided = DataNotProvided(username, password, name, nif, dateOfBirth, street, city, country, postalCode);
+            String dataNotProvided = dataValidation.DataNotProvided(username, password, name, nif, dateOfBirth, street, city, country, postalCode);
             if (dataNotProvided != null) {
                 throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, dataNotProvided + " must be provided");
             } else {
@@ -97,31 +103,5 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    /**
-     * method to check if any data is not provided
-     *
-     * @return String
-     */
-    String DataNotProvided(String username, String password, String name, String nif, LocalDate dateOfBirth, String street, String city, String country, Integer postalCode) {
-        if (username == null) {
-            return "Username";
-        } else if (password == null) {
-            return "Password";
-        } else if (name == null) {
-            return "Name";
-        } else if (nif == null) {
-            return "Nif";
-        } else if (dateOfBirth == null) {
-            return "Date of birth";
-        } else if (street == null) {
-            return "Street";
-        } else if (city == null) {
-            return "City";
-        } else if (country == null) {
-            return "Country";
-        } else if (postalCode == null) {
-            return "Postal code";
-        }
-        return null;
-    }
+
 }

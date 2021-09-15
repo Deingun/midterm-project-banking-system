@@ -8,14 +8,13 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
 @PrimaryKeyJoinColumn(name = "account_id")
 @Table(name = "student_checking_account")
-public class StudentCheckingAccount extends Account{
+public class StudentCheckingAccount extends Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,11 +34,11 @@ public class StudentCheckingAccount extends Account{
     @Column(name = "status")
     private Status status;
 
-    @OneToMany(mappedBy = "originAccountId",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "originAccount", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Transaction> transactionsOriginated;
 
-    @OneToMany(mappedBy = "destinationAccountId",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "destinationAccount", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Transaction> transactionsreceived;
 

@@ -1,6 +1,5 @@
 package com.deingun.bankingsystem.repository.user;
 
-import com.deingun.bankingsystem.enums.Role;
 import com.deingun.bankingsystem.model.user.*;
 import com.deingun.bankingsystem.utils.Address;
 import org.junit.jupiter.api.AfterEach;
@@ -13,10 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 @SpringBootTest
 class UserRepositoryTest {

@@ -1,8 +1,6 @@
 package com.deingun.bankingsystem.repository.account;
 
-import com.deingun.bankingsystem.enums.Role;
 import com.deingun.bankingsystem.enums.Status;
-import com.deingun.bankingsystem.model.account.CreditCardAccount;
 import com.deingun.bankingsystem.model.account.SavingAccount;
 import com.deingun.bankingsystem.model.user.AccountHolder;
 import com.deingun.bankingsystem.repository.user.AccountHolderRepository;
@@ -25,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
 class SavingAccountRepositoryTest {
 
@@ -58,15 +57,15 @@ class SavingAccountRepositoryTest {
         accountHolderRepository.saveAll(List.of(accountHolderTest1, accountHolderTest2));
 
 
-        savingAccountTest1 = new SavingAccount("0049","1500",balance,accountHolderTest1,accountHolderTest2,"123abc",minimunBalance,LocalDate.now(), Status.ACTIVE,0.0050F);
-        savingAccountTest2 = new SavingAccount("0049","1500",balance,accountHolderTest2,accountHolderTest1,"123abc",minimunBalance,LocalDate.now(), Status.ACTIVE);
-        savingAccountTest3 = new SavingAccount("0049","1500",balance,accountHolderTest1,accountHolderTest2,"123abc",LocalDate.now(), Status.ACTIVE);
+        savingAccountTest1 = new SavingAccount("0049", "1500", balance, accountHolderTest1, accountHolderTest2, "123abc", minimunBalance, LocalDate.now(), Status.ACTIVE, 0.0050F);
+        savingAccountTest2 = new SavingAccount("0049", "1500", balance, accountHolderTest2, accountHolderTest1, "123abc", minimunBalance, LocalDate.now(), Status.ACTIVE);
+        savingAccountTest3 = new SavingAccount("0049", "1500", balance, accountHolderTest1, accountHolderTest2, "123abc", LocalDate.now(), Status.ACTIVE);
 
-        savingAccountRepository.saveAll(List.of(savingAccountTest1,savingAccountTest2,savingAccountTest3));
-        savingAccountTest1.setAccountNumber(savingAccountTest1.getEntityNumber()+savingAccountTest1.getBranchNumber()+savingAccountTest1.getId().toString());
-        savingAccountTest2.setAccountNumber(savingAccountTest2.getEntityNumber()+savingAccountTest2.getBranchNumber()+savingAccountTest2.getId().toString());
-        savingAccountTest3.setAccountNumber(savingAccountTest3.getEntityNumber()+savingAccountTest3.getBranchNumber()+savingAccountTest3.getId().toString());
-        savingAccountRepository.saveAll(List.of(savingAccountTest1,savingAccountTest2,savingAccountTest3));
+        savingAccountRepository.saveAll(List.of(savingAccountTest1, savingAccountTest2, savingAccountTest3));
+        savingAccountTest1.setAccountNumber(savingAccountTest1.getEntityNumber() + savingAccountTest1.getBranchNumber() + savingAccountTest1.getId().toString());
+        savingAccountTest2.setAccountNumber(savingAccountTest2.getEntityNumber() + savingAccountTest2.getBranchNumber() + savingAccountTest2.getId().toString());
+        savingAccountTest3.setAccountNumber(savingAccountTest3.getEntityNumber() + savingAccountTest3.getBranchNumber() + savingAccountTest3.getId().toString());
+        savingAccountRepository.saveAll(List.of(savingAccountTest1, savingAccountTest2, savingAccountTest3));
     }
 
     @AfterEach
@@ -97,7 +96,7 @@ class SavingAccountRepositoryTest {
 
     @Test
     void findAll_noParams_accountList() {
-        List<SavingAccount>savingAccountList = savingAccountRepository.findAll();
+        List<SavingAccount> savingAccountList = savingAccountRepository.findAll();
         assertEquals(3, savingAccountList.size());
     }
 
@@ -105,7 +104,7 @@ class SavingAccountRepositoryTest {
     void constraintViolationException_invalidCreditLimit_constraintViolation() {
         Money balance = new Money(new BigDecimal("1000"));
         BigDecimal minimunBalance = new BigDecimal("1000").setScale(3, RoundingMode.HALF_EVEN);
-        SavingAccount savingAccountTest = new SavingAccount("0049","1500",balance,accountHolderTest1,accountHolderTest2,"123abc",minimunBalance,LocalDate.now(), Status.ACTIVE,0.7F);
+        SavingAccount savingAccountTest = new SavingAccount("0049", "1500", balance, accountHolderTest1, accountHolderTest2, "123abc", minimunBalance, LocalDate.now(), Status.ACTIVE, 0.7F);
         assertThrows(ConstraintViolationException.class, () -> {
             savingAccountRepository.save(savingAccountTest);
             savingAccountRepository.flush();
@@ -116,7 +115,7 @@ class SavingAccountRepositoryTest {
     void constraintViolationException_invalidInterestRate_constraintViolation() {
         Money balance = new Money(new BigDecimal("1000"));
         BigDecimal minimunBalance = new BigDecimal("50").setScale(3, RoundingMode.HALF_EVEN);
-        SavingAccount savingAccountTest = new SavingAccount("0049","1500",balance,accountHolderTest1,accountHolderTest2,"123abc",minimunBalance,LocalDate.now(), Status.ACTIVE,0.5F);
+        SavingAccount savingAccountTest = new SavingAccount("0049", "1500", balance, accountHolderTest1, accountHolderTest2, "123abc", minimunBalance, LocalDate.now(), Status.ACTIVE, 0.5F);
         assertThrows(ConstraintViolationException.class, () -> {
             savingAccountRepository.save(savingAccountTest);
             savingAccountRepository.flush();

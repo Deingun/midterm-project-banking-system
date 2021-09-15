@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.persistence.*;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -19,7 +18,7 @@ import java.util.List;
 @Entity
 @PrimaryKeyJoinColumn(name = "account_id")
 @Table(name = "saving_account")
-public class SavingAccount extends Account{
+public class SavingAccount extends Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +33,7 @@ public class SavingAccount extends Account{
     @NotEmpty(message = "Secret Key must be provided")
     private String secretKey;
     @Column(name = "minimum_balance")
-    @DecimalMin(value="100")
+    @DecimalMin(value = "100")
     private BigDecimal minimumBalance;
     @Column(name = "creation_date")
     private LocalDate creationDate;
@@ -42,14 +41,14 @@ public class SavingAccount extends Account{
     @Column(name = "status")
     private Status status;
     @Column(name = "interest_rate")
-    @DecimalMax(value="0.5")
+    @DecimalMax(value = "0.5")
     private Float interestRate;
 
-    @OneToMany(mappedBy = "originAccountId",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "originAccount", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Transaction> transactionsOriginated;
 
-    @OneToMany(mappedBy = "destinationAccountId",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "destinationAccount", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Transaction> transactionsreceived;
 
@@ -80,6 +79,7 @@ public class SavingAccount extends Account{
         this.status = status;
         this.interestRate = 0.0025F;
     }
+
     /**
      * Class constructor using default minimumBalance 1000
      **/
@@ -93,6 +93,7 @@ public class SavingAccount extends Account{
         this.status = status;
         this.interestRate = interestRate;
     }
+
     /**
      * Class constructor using default minimumBalance 1000, default interestRate 0.0025
      **/

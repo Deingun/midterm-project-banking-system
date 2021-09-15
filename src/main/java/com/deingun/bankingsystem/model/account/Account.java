@@ -1,7 +1,5 @@
 package com.deingun.bankingsystem.model.account;
 
-import com.deingun.bankingsystem.model.user.AccountHolder;
-import com.deingun.bankingsystem.utils.Address;
 import com.deingun.bankingsystem.utils.Money;
 
 import javax.persistence.*;
@@ -11,7 +9,7 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "accounts")
-@Inheritance(strategy=InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Account implements Serializable {
 
     @Id

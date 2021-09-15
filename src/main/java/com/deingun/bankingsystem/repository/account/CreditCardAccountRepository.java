@@ -1,6 +1,5 @@
 package com.deingun.bankingsystem.repository.account;
 
-import com.deingun.bankingsystem.model.account.CheckingAccount;
 import com.deingun.bankingsystem.model.account.CreditCardAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

@@ -1,8 +1,6 @@
 package com.deingun.bankingsystem.repository.account;
 
-import com.deingun.bankingsystem.enums.Role;
 import com.deingun.bankingsystem.enums.Status;
-import com.deingun.bankingsystem.model.account.CheckingAccount;
 import com.deingun.bankingsystem.model.account.StudentCheckingAccount;
 import com.deingun.bankingsystem.model.user.AccountHolder;
 import com.deingun.bankingsystem.repository.user.AccountHolderRepository;
@@ -18,12 +16,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
 class StudentCheckingAccountRepositoryTest {
 
@@ -55,15 +53,15 @@ class StudentCheckingAccountRepositoryTest {
         accountHolderRepository.saveAll(List.of(accountHolderTest1, accountHolderTest2));
 
 
-        studentCheckingAccountTest1 = new StudentCheckingAccount("0049","1500",balance,accountHolderTest1,accountHolderTest2,"123abc",
+        studentCheckingAccountTest1 = new StudentCheckingAccount("0049", "1500", balance, accountHolderTest1, accountHolderTest2, "123abc",
                 LocalDate.now(), Status.ACTIVE);
-        studentCheckingAccountTest2 = new StudentCheckingAccount("0049","2020",balance,accountHolderTest2,accountHolderTest1,"123abc",
+        studentCheckingAccountTest2 = new StudentCheckingAccount("0049", "2020", balance, accountHolderTest2, accountHolderTest1, "123abc",
                 LocalDate.now(), Status.ACTIVE);
 
-        studentCheckingAccountRepository.saveAll(List.of(studentCheckingAccountTest1,studentCheckingAccountTest2));
-        studentCheckingAccountTest1.setAccountNumber(studentCheckingAccountTest1.getEntityNumber()+studentCheckingAccountTest1.getBranchNumber()+studentCheckingAccountTest1.getId().toString());
-        studentCheckingAccountTest2.setAccountNumber(studentCheckingAccountTest2.getEntityNumber()+studentCheckingAccountTest2.getBranchNumber()+studentCheckingAccountTest2.getId().toString());
-        studentCheckingAccountRepository.saveAll(List.of(studentCheckingAccountTest1,studentCheckingAccountTest2));
+        studentCheckingAccountRepository.saveAll(List.of(studentCheckingAccountTest1, studentCheckingAccountTest2));
+        studentCheckingAccountTest1.setAccountNumber(studentCheckingAccountTest1.getEntityNumber() + studentCheckingAccountTest1.getBranchNumber() + studentCheckingAccountTest1.getId().toString());
+        studentCheckingAccountTest2.setAccountNumber(studentCheckingAccountTest2.getEntityNumber() + studentCheckingAccountTest2.getBranchNumber() + studentCheckingAccountTest2.getId().toString());
+        studentCheckingAccountRepository.saveAll(List.of(studentCheckingAccountTest1, studentCheckingAccountTest2));
     }
 
     @AfterEach
@@ -97,7 +95,7 @@ class StudentCheckingAccountRepositoryTest {
 
     @Test
     void findAll_noParams_AccountList() {
-        List<StudentCheckingAccount>studentCheckingAccountList = studentCheckingAccountRepository.findAll();
+        List<StudentCheckingAccount> studentCheckingAccountList = studentCheckingAccountRepository.findAll();
         assertEquals(2, studentCheckingAccountList.size());
     }
 }

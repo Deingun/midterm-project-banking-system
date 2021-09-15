@@ -28,7 +28,7 @@ public class UserControllerImpl implements UserController {
 
     @GetMapping("/accountholders/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public AccountHolder findById(@PathVariable(name = "id") Long id)  {
+    public AccountHolder findById(@PathVariable(name = "id") Long id) {
         return userService.findById(id);
     }
 
@@ -40,7 +40,7 @@ public class UserControllerImpl implements UserController {
 
     @PostMapping("/accountholders")
     @ResponseStatus(HttpStatus.CREATED)
-    public AccountHolder createAccountHolder(@RequestBody @Valid AccountHolderDTO accountHolderDTO){
+    public AccountHolder createAccountHolder(@RequestBody @Valid AccountHolderDTO accountHolderDTO) {
         return userService.createAccountHolder(accountHolderDTO.getUsername(), accountHolderDTO.getPassword(), accountHolderDTO.getName(), accountHolderDTO.getNif(), accountHolderDTO.getDateOfBirth(),
                 accountHolderDTO.getStreet(), accountHolderDTO.getCity(), accountHolderDTO.getCountry(), accountHolderDTO.getPostalCode(), accountHolderDTO.getMailingAddress());
     }

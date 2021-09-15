@@ -2,9 +2,9 @@ package com.deingun.bankingsystem.controller.impl;
 
 import com.deingun.bankingsystem.controller.dto.CheckingAccountDTO;
 import com.deingun.bankingsystem.controller.interfaces.AccountController;
+import com.deingun.bankingsystem.model.account.Account;
 import com.deingun.bankingsystem.model.account.CheckingAccount;
 import com.deingun.bankingsystem.service.interfaces.AccountService;
-import com.deingun.bankingsystem.utils.Money;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -27,9 +27,9 @@ public class AccountControllerImpl implements AccountController {
 
     @PostMapping("/checkingaccounts")
     @ResponseStatus(HttpStatus.CREATED)
-    public CheckingAccount createCheckingAccount(@RequestBody @Valid CheckingAccountDTO checkingAccountDTO) {
+    public Account createCheckingAccount(@RequestBody @Valid CheckingAccountDTO checkingAccountDTO) {
         return accountService.createCheckingAccount(checkingAccountDTO.getEntityNumber(), checkingAccountDTO.getBranchNumber(),
-                checkingAccountDTO.getAmount(),checkingAccountDTO.getPrimaryOwnerId(),
-                checkingAccountDTO.getSecondaryOwnerId(),checkingAccountDTO.getSecretKey());
+                checkingAccountDTO.getAmount(), checkingAccountDTO.getPrimaryOwnerId(),
+                checkingAccountDTO.getSecondaryOwnerId(), checkingAccountDTO.getSecretKey());
     }
 }

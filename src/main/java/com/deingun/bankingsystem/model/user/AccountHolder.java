@@ -11,11 +11,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 @Entity
 @PrimaryKeyJoinColumn(name = "user_id")
@@ -37,43 +34,43 @@ public class AccountHolder extends User {
 
     private LocalDate dateOfBirth;
 
-    @OneToMany(mappedBy = "primaryOwner",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "primaryOwner", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<CheckingAccount> checkingAccountsAsPrimaryOwner;
 
-    @OneToMany(mappedBy = "secondaryOwner",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "secondaryOwner", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<CheckingAccount> checkingAccountsAsSecondaryOwner;
 
-    @OneToMany(mappedBy = "primaryOwner",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "primaryOwner", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<CreditCardAccount> creditCardAccountsAsPrimaryOwner;
 
-    @OneToMany(mappedBy = "secondaryOwner",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "secondaryOwner", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<CreditCardAccount> creditCardAccountsAsSecondaryOwner;
 
-    @OneToMany(mappedBy = "primaryOwner",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "primaryOwner", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<SavingAccount> savingAccountsAsPrimaryOwner;
 
-    @OneToMany(mappedBy = "secondaryOwner",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "secondaryOwner", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<SavingAccount> savingAccountsAsSecondaryOwner;
 
-    @OneToMany(mappedBy = "primaryOwner",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "primaryOwner", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<StudentCheckingAccount> studentCheckingAccountsAsPrimaryOwner;
 
-    @OneToMany(mappedBy = "secondaryOwner",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "secondaryOwner", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<StudentCheckingAccount> studentCheckingAccountsAsSecondaryOwner;
 
-    @OneToMany(mappedBy = "paymasterId",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "paymaster", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Transaction> transactionsAsPaymaster;
 
-    @OneToMany(mappedBy = "destinationAccountId",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "destinationAccount", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Transaction> transactionsAsReceiver;
 

@@ -1,6 +1,5 @@
 package com.deingun.bankingsystem.repository.account;
 
-import com.deingun.bankingsystem.model.account.CreditCardAccount;
 import com.deingun.bankingsystem.model.account.SavingAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -9,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface SavingAccountRepository extends JpaRepository<SavingAccount,Long> {
+public interface SavingAccountRepository extends JpaRepository<SavingAccount, Long> {
 
     Optional<SavingAccount> findById(Long id);
 

@@ -1,4 +1,5 @@
 package com.deingun.bankingsystem.utils;
+
 import com.deingun.bankingsystem.model.user.Admin;
 import com.deingun.bankingsystem.model.user.User;
 import com.deingun.bankingsystem.repository.user.AdminRepository;
@@ -25,13 +26,16 @@ public class StartupApplication {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    /**
+     * method to create an admin test user when the application starts
+     */
     @EventListener(ContextRefreshedEvent.class)
     public void contextRefreshedEvent() {
         Optional<User> optionalUser = userRepository.findByUsername("adminTest");
-            if(optionalUser.isEmpty()){
-                Admin adminTest1 = new Admin("adminTest", passwordEncoder.encode("123456"), LocalDate.now(), "admin");
-                adminRepository.save(adminTest1);
-            }
+        if (optionalUser.isEmpty()) {
+            Admin adminTest1 = new Admin("adminTest", passwordEncoder.encode("123456"), LocalDate.now(), "admin");
+            adminRepository.save(adminTest1);
         }
     }
+}
 

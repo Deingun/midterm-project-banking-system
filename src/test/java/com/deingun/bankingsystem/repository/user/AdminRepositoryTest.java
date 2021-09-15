@@ -1,6 +1,5 @@
 package com.deingun.bankingsystem.repository.user;
 
-import com.deingun.bankingsystem.enums.Role;
 import com.deingun.bankingsystem.model.user.Admin;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,10 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 @SpringBootTest
 class AdminRepositoryTest {
@@ -73,7 +70,7 @@ class AdminRepositoryTest {
     void findByName_validName_isPresent() {
         Optional<Admin> optionalAdmin = adminRepository.findByName("admin");
         assertTrue(optionalAdmin.isPresent());
-        assertEquals("adminTest1",optionalAdmin.get().getUsername());
+        assertEquals("adminTest1", optionalAdmin.get().getUsername());
     }
 
     @Test

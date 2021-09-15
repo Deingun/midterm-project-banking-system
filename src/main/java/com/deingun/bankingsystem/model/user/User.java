@@ -8,28 +8,26 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "user")
-@Inheritance(strategy=InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.JOINED)
 public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, nullable = false)
     private Long id;
-    @Column(name = "username",nullable = false, length = 64, unique = true)
+    @Column(name = "username", nullable = false, length = 64, unique = true)
     @NotEmpty(message = "Username must be provided")
     @Size(max = 64)
     private String username;
-    @Column(name = "password",nullable = false)
+    @Column(name = "password", nullable = false)
     @NotBlank
     private String password;
-    @Column(name = "password_date",nullable = false)
+    @Column(name = "password_date", nullable = false)
     private LocalDate passwordDate;
-    @Column(name = "role",nullable = false)
+    @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
 

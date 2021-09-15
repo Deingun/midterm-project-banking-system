@@ -5,12 +5,11 @@ import com.deingun.bankingsystem.enums.Role;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
-import java.util.Set;
 
 @Entity
 @PrimaryKeyJoinColumn(name = "user_id")
 @Table(name = "admin")
-public class Admin extends User{
+public class Admin extends User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

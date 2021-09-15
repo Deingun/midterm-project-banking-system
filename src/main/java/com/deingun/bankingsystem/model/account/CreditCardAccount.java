@@ -1,6 +1,5 @@
 package com.deingun.bankingsystem.model.account;
 
-import com.deingun.bankingsystem.enums.Status;
 import com.deingun.bankingsystem.model.Transaction;
 import com.deingun.bankingsystem.model.user.AccountHolder;
 import com.deingun.bankingsystem.utils.Money;
@@ -9,16 +8,14 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.persistence.*;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
 import java.util.List;
 
 @Entity
 @PrimaryKeyJoinColumn(name = "account_id")
 @Table(name = "credit_card_account")
-public class CreditCardAccount extends Account{
+public class CreditCardAccount extends Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,11 +33,11 @@ public class CreditCardAccount extends Account{
     @DecimalMin(value = "0.1")
     private Float interestRate;
 
-    @OneToMany(mappedBy = "originAccountId",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "originAccount", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Transaction> transactionsOriginated;
 
-    @OneToMany(mappedBy = "destinationAccountId",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "destinationAccount", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Transaction> transactionsreceived;
 
@@ -66,6 +63,7 @@ public class CreditCardAccount extends Account{
         this.creditLimit = new BigDecimal("100").setScale(3, RoundingMode.HALF_EVEN);
         this.interestRate = interestRate;
     }
+
     /**
      * Class constructor using default interestRate 0.2
      **/
@@ -76,6 +74,7 @@ public class CreditCardAccount extends Account{
         this.creditLimit = creditLimit;
         this.interestRate = 0.2F;
     }
+
     /**
      * Class constructor using default creditLimit 100, interestRate 0.2
      **/

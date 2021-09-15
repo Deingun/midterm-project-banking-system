@@ -5,12 +5,11 @@ import com.deingun.bankingsystem.enums.Role;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
-import java.util.Set;
 
 @Entity
 @PrimaryKeyJoinColumn(name = "user_id")
 @Table(name = "third_party")
-public class ThirdParty extends User{
+public class ThirdParty extends User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

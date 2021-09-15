@@ -1,8 +1,6 @@
 package com.deingun.bankingsystem.controller.dto;
 
-
 import java.time.LocalDate;
-
 
 public class AccountHolderDTO {
     private Long id;

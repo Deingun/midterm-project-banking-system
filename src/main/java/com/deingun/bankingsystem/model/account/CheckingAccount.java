@@ -16,7 +16,7 @@ import java.util.List;
 @Entity
 @PrimaryKeyJoinColumn(name = "account_id")
 @Table(name = "checking_account")
-public class CheckingAccount extends Account{
+public class CheckingAccount extends Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,18 +32,18 @@ public class CheckingAccount extends Account{
     @Column(name = "minimum_balance")
     private final BigDecimal MINIMUMBALANCE = new BigDecimal("250").setScale(3, RoundingMode.HALF_EVEN);
     @Column(name = "monthly_maintenance_fee")
-    private final BigDecimal MONTHLYMAINTENANCEFEE= new BigDecimal("12").setScale(3, RoundingMode.HALF_EVEN);
+    private final BigDecimal MONTHLYMAINTENANCEFEE = new BigDecimal("12").setScale(3, RoundingMode.HALF_EVEN);
     @Column(name = "creation_date")
     private LocalDate creationDate;
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status;
 
-    @OneToMany(mappedBy = "originAccountId",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "originAccount", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Transaction> transactionsOriginated;
 
-    @OneToMany(mappedBy = "destinationAccountId",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "destinationAccount", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Transaction> transactionsreceived;
 
@@ -100,7 +100,6 @@ public class CheckingAccount extends Account{
     public BigDecimal getMonthlyMaintenanceFee() {
         return MONTHLYMAINTENANCEFEE;
     }
-
 
     public LocalDate getCreationDate() {
         return creationDate;

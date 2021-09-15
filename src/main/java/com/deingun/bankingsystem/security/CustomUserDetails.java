@@ -26,11 +26,12 @@ public class CustomUserDetails implements UserDetails {
         this.authorities = authorities;
     }
 
-    public static CustomUserDetails build(User user){
+    public static CustomUserDetails build(User user) {
         List<GrantedAuthority> authorities =
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
-        return new CustomUserDetails(user.getId(), user.getUsername(), user.getPassword(), user.getPasswordDate(),authorities);
+        return new CustomUserDetails(user.getId(), user.getUsername(), user.getPassword(), user.getPasswordDate(), authorities);
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
