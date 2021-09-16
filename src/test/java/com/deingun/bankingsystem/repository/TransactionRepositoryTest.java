@@ -1,5 +1,6 @@
 package com.deingun.bankingsystem.repository;
 
+import com.deingun.bankingsystem.enums.AccountType;
 import com.deingun.bankingsystem.enums.Status;
 import com.deingun.bankingsystem.model.Transaction;
 import com.deingun.bankingsystem.model.account.CheckingAccount;
@@ -66,9 +67,9 @@ class TransactionRepositoryTest {
 
 
         checkingAccountTest1 = new CheckingAccount("0049", "1500", balance, accountHolderTest1, null, "123abc",
-                LocalDate.now(), Status.ACTIVE);
+                LocalDate.now(), Status.ACTIVE, AccountType.CHECKING);
         checkingAccountTest2 = new CheckingAccount("0049", "2020", balance, accountHolderTest2, null, "123abc",
-                LocalDate.now(), Status.ACTIVE);
+                LocalDate.now(), Status.ACTIVE,AccountType.CHECKING);
 
         checkingAccountRepository.saveAll(List.of(checkingAccountTest1, checkingAccountTest2));
         checkingAccountTest1.setAccountNumber(checkingAccountTest1.getEntityNumber() + checkingAccountTest1.getBranchNumber() + checkingAccountTest1.getId().toString());

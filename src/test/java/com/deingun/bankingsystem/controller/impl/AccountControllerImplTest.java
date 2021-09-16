@@ -1,5 +1,6 @@
 package com.deingun.bankingsystem.controller.impl;
 
+import com.deingun.bankingsystem.enums.AccountType;
 import com.deingun.bankingsystem.enums.Status;
 import com.deingun.bankingsystem.model.account.CheckingAccount;
 import com.deingun.bankingsystem.model.user.AccountHolder;
@@ -80,9 +81,9 @@ class AccountControllerImplTest {
         adminRepository.save(adminTest1);
 
         checkingAccountTest1 = new CheckingAccount("0049", "1500", balance, accountHolderTest1, accountHolderTest2, "123abc",
-                LocalDate.now(), Status.ACTIVE);
+                LocalDate.now(), Status.ACTIVE, AccountType.CHECKING);
         checkingAccountTest2 = new CheckingAccount("0049", "2020", balance, accountHolderTest2, accountHolderTest1, "123abc",
-                LocalDate.now(), Status.ACTIVE);
+                LocalDate.now(), Status.ACTIVE,AccountType.CHECKING);
 
         checkingAccountRepository.saveAll(List.of(checkingAccountTest1, checkingAccountTest2));
         checkingAccountTest1.setAccountNumber(checkingAccountTest1.getEntityNumber() + checkingAccountTest1.getBranchNumber() + checkingAccountTest1.getId().toString());
@@ -100,7 +101,7 @@ class AccountControllerImplTest {
 
     @Test
     void getAll_NoParams_AllChechingAccounts() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/checkingaccounts").with(httpBasic("adminTest1", "123456")))
+        MvcResult mvcResult = mockMvc.perform(get("/accounts").with(httpBasic("accountHolderTest1", "123456")))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn();

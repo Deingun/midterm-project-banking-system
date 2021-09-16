@@ -1,6 +1,9 @@
 package com.deingun.bankingsystem.model.account;
 
+import com.deingun.bankingsystem.enums.AccountType;
+import com.deingun.bankingsystem.model.user.AccountHolder;
 import com.deingun.bankingsystem.utils.Money;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -34,13 +37,28 @@ public class Account implements Serializable {
     @Column(name = "account_number")
     private String accountNumber;
 
+    @ManyToOne
+    @JoinColumn(name = "primary_owner_id")
+    @JsonBackReference
+    private AccountHolder primaryOwner;
+    @ManyToOne
+    @JoinColumn(name = "secondary_owner_id")
+    @JsonBackReference
+    private AccountHolder secondaryOwner;
+    @Column(name = "account_type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private AccountType accountType;
+
     public Account() {
     }
 
-    public Account(String entityNumber, String branchNumber, Money balance) {
+    public Account(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, AccountType accountType) {
         this.entityNumber = entityNumber;
         this.branchNumber = branchNumber;
         this.balance = balance;
+        this.primaryOwner = primaryOwner;
+        this.secondaryOwner = secondaryOwner;
+        this.accountType = accountType;
     }
 
     public Long getId() {
@@ -75,15 +93,39 @@ public class Account implements Serializable {
         this.balance = balance;
     }
 
-    public BigDecimal getPenaltyFee() {
-        return PENALTYFEE;
-    }
-
     public String getAccountNumber() {
         return accountNumber;
     }
 
     public void setAccountNumber(String accountNumber) {
         this.accountNumber = accountNumber;
+    }
+
+    public BigDecimal getPENALTYFEE() {
+        return PENALTYFEE;
+    }
+
+    public AccountHolder getPrimaryOwner() {
+        return primaryOwner;
+    }
+
+    public void setPrimaryOwner(AccountHolder primaryOwner) {
+        this.primaryOwner = primaryOwner;
+    }
+
+    public AccountHolder getSecondaryOwner() {
+        return secondaryOwner;
+    }
+
+    public void setSecondaryOwner(AccountHolder secondaryOwner) {
+        this.secondaryOwner = secondaryOwner;
+    }
+
+    public AccountType getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(AccountType accountType) {
+        this.accountType = accountType;
     }
 }

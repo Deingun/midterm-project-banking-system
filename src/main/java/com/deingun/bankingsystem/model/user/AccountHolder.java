@@ -2,10 +2,7 @@ package com.deingun.bankingsystem.model.user;
 
 import com.deingun.bankingsystem.enums.Role;
 import com.deingun.bankingsystem.model.Transaction;
-import com.deingun.bankingsystem.model.account.CheckingAccount;
-import com.deingun.bankingsystem.model.account.CreditCardAccount;
-import com.deingun.bankingsystem.model.account.SavingAccount;
-import com.deingun.bankingsystem.model.account.StudentCheckingAccount;
+import com.deingun.bankingsystem.model.account.*;
 import com.deingun.bankingsystem.utils.Address;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -36,35 +33,11 @@ public class AccountHolder extends User {
 
     @OneToMany(mappedBy = "primaryOwner", fetch = FetchType.LAZY)
     @JsonBackReference
-    private List<CheckingAccount> checkingAccountsAsPrimaryOwner;
+    private List<Account> AccountsAsPrimaryOwner;
 
     @OneToMany(mappedBy = "secondaryOwner", fetch = FetchType.LAZY)
     @JsonBackReference
-    private List<CheckingAccount> checkingAccountsAsSecondaryOwner;
-
-    @OneToMany(mappedBy = "primaryOwner", fetch = FetchType.LAZY)
-    @JsonBackReference
-    private List<CreditCardAccount> creditCardAccountsAsPrimaryOwner;
-
-    @OneToMany(mappedBy = "secondaryOwner", fetch = FetchType.LAZY)
-    @JsonBackReference
-    private List<CreditCardAccount> creditCardAccountsAsSecondaryOwner;
-
-    @OneToMany(mappedBy = "primaryOwner", fetch = FetchType.LAZY)
-    @JsonBackReference
-    private List<SavingAccount> savingAccountsAsPrimaryOwner;
-
-    @OneToMany(mappedBy = "secondaryOwner", fetch = FetchType.LAZY)
-    @JsonBackReference
-    private List<SavingAccount> savingAccountsAsSecondaryOwner;
-
-    @OneToMany(mappedBy = "primaryOwner", fetch = FetchType.LAZY)
-    @JsonBackReference
-    private List<StudentCheckingAccount> studentCheckingAccountsAsPrimaryOwner;
-
-    @OneToMany(mappedBy = "secondaryOwner", fetch = FetchType.LAZY)
-    @JsonBackReference
-    private List<StudentCheckingAccount> studentCheckingAccountsAsSecondaryOwner;
+    private List<Account> AccountsAsSecondaryOwner;
 
     @OneToMany(mappedBy = "paymaster", fetch = FetchType.LAZY)
     @JsonBackReference
@@ -147,67 +120,35 @@ public class AccountHolder extends User {
         this.id = id;
     }
 
-    public List<CheckingAccount> getCheckingAccountsAsPrimaryOwner() {
-        return checkingAccountsAsPrimaryOwner;
+    public List<Account> getAccountsAsPrimaryOwner() {
+        return AccountsAsPrimaryOwner;
     }
 
-    public void setCheckingAccountsAsPrimaryOwner(List<CheckingAccount> checkingAccountsAsPrimaryOwner) {
-        this.checkingAccountsAsPrimaryOwner = checkingAccountsAsPrimaryOwner;
+    public void setAccountsAsPrimaryOwner(List<Account> accountsAsPrimaryOwner) {
+        AccountsAsPrimaryOwner = accountsAsPrimaryOwner;
     }
 
-    public List<CheckingAccount> getCheckingAccountsAsSecondaryOwner() {
-        return checkingAccountsAsSecondaryOwner;
+    public List<Account> getAccountsAsSecondaryOwner() {
+        return AccountsAsSecondaryOwner;
     }
 
-    public void setCheckingAccountsAsSecondaryOwner(List<CheckingAccount> checkingAccountsAsSecondaryOwner) {
-        this.checkingAccountsAsSecondaryOwner = checkingAccountsAsSecondaryOwner;
+    public void setAccountsAsSecondaryOwner(List<Account> accountsAsSecondaryOwner) {
+        AccountsAsSecondaryOwner = accountsAsSecondaryOwner;
     }
 
-    public List<CreditCardAccount> getCreditCardAccountsAsPrimaryOwner() {
-        return creditCardAccountsAsPrimaryOwner;
+    public List<Transaction> getTransactionsAsPaymaster() {
+        return transactionsAsPaymaster;
     }
 
-    public void setCreditCardAccountsAsPrimaryOwner(List<CreditCardAccount> creditCardAccountsAsPrimaryOwner) {
-        this.creditCardAccountsAsPrimaryOwner = creditCardAccountsAsPrimaryOwner;
+    public void setTransactionsAsPaymaster(List<Transaction> transactionsAsPaymaster) {
+        this.transactionsAsPaymaster = transactionsAsPaymaster;
     }
 
-    public List<CreditCardAccount> getCreditCardAccountsAsSecondaryOwner() {
-        return creditCardAccountsAsSecondaryOwner;
+    public List<Transaction> getTransactionsAsReceiver() {
+        return transactionsAsReceiver;
     }
 
-    public void setCreditCardAccountsAsSecondaryOwner(List<CreditCardAccount> creditCardAccountsAsSecondaryOwner) {
-        this.creditCardAccountsAsSecondaryOwner = creditCardAccountsAsSecondaryOwner;
-    }
-
-    public List<SavingAccount> getSavingAccountsAsPrimaryOwner() {
-        return savingAccountsAsPrimaryOwner;
-    }
-
-    public void setSavingAccountsAsPrimaryOwner(List<SavingAccount> savingAccountsAsPrimaryOwner) {
-        this.savingAccountsAsPrimaryOwner = savingAccountsAsPrimaryOwner;
-    }
-
-    public List<SavingAccount> getSavingAccountsAsSecondaryOwner() {
-        return savingAccountsAsSecondaryOwner;
-    }
-
-    public void setSavingAccountsAsSecondaryOwner(List<SavingAccount> savingAccountsAsSecondaryOwner) {
-        this.savingAccountsAsSecondaryOwner = savingAccountsAsSecondaryOwner;
-    }
-
-    public List<StudentCheckingAccount> getStudentCheckingAccountsAsPrimaryOwner() {
-        return studentCheckingAccountsAsPrimaryOwner;
-    }
-
-    public void setStudentCheckingAccountsAsPrimaryOwner(List<StudentCheckingAccount> studentCheckingAccountsAsPrimaryOwner) {
-        this.studentCheckingAccountsAsPrimaryOwner = studentCheckingAccountsAsPrimaryOwner;
-    }
-
-    public List<StudentCheckingAccount> getStudentCheckingAccountsAsSecondaryOwner() {
-        return studentCheckingAccountsAsSecondaryOwner;
-    }
-
-    public void setStudentCheckingAccountsAsSecondaryOwner(List<StudentCheckingAccount> studentCheckingAccountsAsSecondaryOwner) {
-        this.studentCheckingAccountsAsSecondaryOwner = studentCheckingAccountsAsSecondaryOwner;
+    public void setTransactionsAsReceiver(List<Transaction> transactionsAsReceiver) {
+        this.transactionsAsReceiver = transactionsAsReceiver;
     }
 }

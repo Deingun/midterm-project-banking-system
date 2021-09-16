@@ -1,5 +1,6 @@
 package com.deingun.bankingsystem.model.account;
 
+import com.deingun.bankingsystem.enums.AccountType;
 import com.deingun.bankingsystem.enums.Status;
 import com.deingun.bankingsystem.model.Transaction;
 import com.deingun.bankingsystem.model.user.AccountHolder;
@@ -19,12 +20,6 @@ public class StudentCheckingAccount extends Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
-    @JoinColumn(name = "primary_owner_id")
-    private AccountHolder primaryOwner;
-    @ManyToOne
-    @JoinColumn(name = "secondary_owner_id")
-    private AccountHolder secondaryOwner;
     @Column(name = "secret_key", nullable = false)
     @NotEmpty(message = "Secret Key must be provided")
     private String secretKey;
@@ -45,10 +40,8 @@ public class StudentCheckingAccount extends Account {
     public StudentCheckingAccount() {
     }
 
-    public StudentCheckingAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, LocalDate creationDate, Status status) {
-        super(entityNumber, branchNumber, balance);
-        this.primaryOwner = primaryOwner;
-        this.secondaryOwner = secondaryOwner;
+    public StudentCheckingAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, LocalDate creationDate, Status status, AccountType accountType) {
+        super(entityNumber, branchNumber, balance, primaryOwner,secondaryOwner, accountType);
         this.secretKey = secretKey;
         this.creationDate = creationDate;
         this.status = status;
@@ -62,22 +55,6 @@ public class StudentCheckingAccount extends Account {
     @Override
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public AccountHolder getPrimaryOwner() {
-        return primaryOwner;
-    }
-
-    public void setPrimaryOwner(AccountHolder primaryOwner) {
-        this.primaryOwner = primaryOwner;
-    }
-
-    public AccountHolder getSecondaryOwner() {
-        return secondaryOwner;
-    }
-
-    public void setSecondaryOwner(AccountHolder secondaryOwner) {
-        this.secondaryOwner = secondaryOwner;
     }
 
     public String getSecretKey() {

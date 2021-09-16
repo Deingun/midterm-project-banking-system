@@ -1,5 +1,6 @@
 package com.deingun.bankingsystem.model.account;
 
+import com.deingun.bankingsystem.enums.AccountType;
 import com.deingun.bankingsystem.model.Transaction;
 import com.deingun.bankingsystem.model.user.AccountHolder;
 import com.deingun.bankingsystem.utils.Money;
@@ -20,12 +21,6 @@ public class CreditCardAccount extends Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
-    @JoinColumn(name = "primary_owner_id")
-    private AccountHolder primaryOwner;
-    @ManyToOne
-    @JoinColumn(name = "secondary_owner_id")
-    private AccountHolder secondaryOwner;
     @Column(name = "credit_limit")
     @DecimalMax(value = "100000")
     private BigDecimal creditLimit;
@@ -45,10 +40,8 @@ public class CreditCardAccount extends Account {
     public CreditCardAccount() {
     }
 
-    public CreditCardAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal creditLimit, Float interestRate) {
-        super(entityNumber, branchNumber, balance);
-        this.primaryOwner = primaryOwner;
-        this.secondaryOwner = secondaryOwner;
+    public CreditCardAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal creditLimit, Float interestRate, AccountType accountType) {
+        super(entityNumber, branchNumber, balance, primaryOwner,secondaryOwner, accountType);
         this.creditLimit = creditLimit;
         this.interestRate = interestRate;
     }
@@ -56,10 +49,8 @@ public class CreditCardAccount extends Account {
     /**
      * Class constructor using default creditLimit 100
      **/
-    public CreditCardAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, Float interestRate) {
-        super(entityNumber, branchNumber, balance);
-        this.primaryOwner = primaryOwner;
-        this.secondaryOwner = secondaryOwner;
+    public CreditCardAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, Float interestRate, AccountType accountType) {
+        super(entityNumber, branchNumber, balance, primaryOwner,secondaryOwner, accountType);
         this.creditLimit = new BigDecimal("100").setScale(3, RoundingMode.HALF_EVEN);
         this.interestRate = interestRate;
     }
@@ -67,10 +58,8 @@ public class CreditCardAccount extends Account {
     /**
      * Class constructor using default interestRate 0.2
      **/
-    public CreditCardAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal creditLimit) {
-        super(entityNumber, branchNumber, balance);
-        this.primaryOwner = primaryOwner;
-        this.secondaryOwner = secondaryOwner;
+    public CreditCardAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal creditLimit, AccountType accountType) {
+        super(entityNumber, branchNumber, balance, primaryOwner,secondaryOwner, accountType);
         this.creditLimit = creditLimit;
         this.interestRate = 0.2F;
     }
@@ -78,10 +67,8 @@ public class CreditCardAccount extends Account {
     /**
      * Class constructor using default creditLimit 100, interestRate 0.2
      **/
-    public CreditCardAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner) {
-        super(entityNumber, branchNumber, balance);
-        this.primaryOwner = primaryOwner;
-        this.secondaryOwner = secondaryOwner;
+    public CreditCardAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, AccountType accountType) {
+        super(entityNumber, branchNumber, balance, primaryOwner,secondaryOwner, accountType);
         this.creditLimit = new BigDecimal("100").setScale(3, RoundingMode.HALF_EVEN);
         this.interestRate = 0.2F;
     }
@@ -94,22 +81,6 @@ public class CreditCardAccount extends Account {
     @Override
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public AccountHolder getPrimaryOwner() {
-        return primaryOwner;
-    }
-
-    public void setPrimaryOwner(AccountHolder primaryOwner) {
-        this.primaryOwner = primaryOwner;
-    }
-
-    public AccountHolder getSecondaryOwner() {
-        return secondaryOwner;
-    }
-
-    public void setSecondaryOwner(AccountHolder secondaryOwner) {
-        this.secondaryOwner = secondaryOwner;
     }
 
     public BigDecimal getCreditLimit() {

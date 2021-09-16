@@ -1,5 +1,6 @@
 package com.deingun.bankingsystem.repository.account;
 
+import com.deingun.bankingsystem.enums.AccountType;
 import com.deingun.bankingsystem.model.account.CreditCardAccount;
 import com.deingun.bankingsystem.model.user.AccountHolder;
 import com.deingun.bankingsystem.repository.user.AccountHolderRepository;
@@ -55,9 +56,9 @@ class CreditCardAccountRepositoryTest {
         accountHolderRepository.saveAll(List.of(accountHolderTest1, accountHolderTest2));
 
 
-        creditCardAccountTest1 = new CreditCardAccount("0049", "1500", balance, accountHolderTest1, accountHolderTest2);
-        creditCardAccountTest2 = new CreditCardAccount("0049", "2020", balance, accountHolderTest2, accountHolderTest1, new BigDecimal("500"), 0.15F);
-        creditCardAccountTest3 = new CreditCardAccount("0049", "2020", balance, accountHolderTest1, null, new BigDecimal("600"));
+        creditCardAccountTest1 = new CreditCardAccount("0049", "1500", balance, accountHolderTest1, accountHolderTest2, AccountType.CREDIT_CARD);
+        creditCardAccountTest2 = new CreditCardAccount("0049", "2020", balance, accountHolderTest2, accountHolderTest1, new BigDecimal("500"), 0.15F, AccountType.CREDIT_CARD);
+        creditCardAccountTest3 = new CreditCardAccount("0049", "2020", balance, accountHolderTest1, null, new BigDecimal("600"),AccountType.CREDIT_CARD);
 
         creditCardAccountRepository.saveAll(List.of(creditCardAccountTest1, creditCardAccountTest2, creditCardAccountTest3));
         creditCardAccountTest1.setAccountNumber(creditCardAccountTest1.getEntityNumber() + creditCardAccountTest1.getBranchNumber() + creditCardAccountTest1.getId().toString());
@@ -119,7 +120,7 @@ class CreditCardAccountRepositoryTest {
     @Test
     void constraintViolationException_invalidCreditLimit_constraintViolation() {
         Money balance = new Money(new BigDecimal("1000"));
-        CreditCardAccount creditCardAccountTest = new CreditCardAccount("0049", "2020", balance, accountHolderTest2, accountHolderTest1, new BigDecimal("150000"), 0.15F);
+        CreditCardAccount creditCardAccountTest = new CreditCardAccount("0049", "2020", balance, accountHolderTest2, accountHolderTest1, new BigDecimal("150000"), 0.15F,AccountType.CREDIT_CARD);
         assertThrows(ConstraintViolationException.class, () -> {
             creditCardAccountRepository.save(creditCardAccountTest);
             creditCardAccountRepository.flush();
@@ -129,7 +130,7 @@ class CreditCardAccountRepositoryTest {
     @Test
     void constraintViolationException_invalidInterestRate_constraintViolation() {
         Money balance = new Money(new BigDecimal("1000"));
-        CreditCardAccount creditCardAccountTest = new CreditCardAccount("0049", "2020", balance, accountHolderTest2, accountHolderTest1, 0.05F);
+        CreditCardAccount creditCardAccountTest = new CreditCardAccount("0049", "2020", balance, accountHolderTest2, accountHolderTest1, 0.05F,AccountType.CREDIT_CARD);
         assertThrows(ConstraintViolationException.class, () -> {
             creditCardAccountRepository.save(creditCardAccountTest);
             creditCardAccountRepository.flush();
