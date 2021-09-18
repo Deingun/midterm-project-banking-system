@@ -6,6 +6,8 @@ import com.deingun.bankingsystem.model.account.CheckingAccount;
 import com.deingun.bankingsystem.model.user.AccountHolder;
 import com.deingun.bankingsystem.model.user.Admin;
 import com.deingun.bankingsystem.repository.account.CheckingAccountRepository;
+import com.deingun.bankingsystem.repository.account.CreditCardAccountRepository;
+import com.deingun.bankingsystem.repository.account.SavingAccountRepository;
 import com.deingun.bankingsystem.repository.user.AccountHolderRepository;
 import com.deingun.bankingsystem.repository.user.AdminRepository;
 import com.deingun.bankingsystem.repository.user.UserRepository;
@@ -33,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -47,6 +50,12 @@ class AccountControllerImplTest {
 
     @Autowired
     CheckingAccountRepository checkingAccountRepository;
+
+    @Autowired
+    SavingAccountRepository savingAccountRepository;
+
+    @Autowired
+    CreditCardAccountRepository creditCardAccountRepository;
 
     @Autowired
     AdminRepository adminRepository;
@@ -65,6 +74,7 @@ class AccountControllerImplTest {
     Admin adminTest1;
     CheckingAccount checkingAccountTest1;
     CheckingAccount checkingAccountTest2;
+    CheckingAccount checkingAccountTest3;
 
     @BeforeEach
     void setUp() {
@@ -84,15 +94,20 @@ class AccountControllerImplTest {
                 LocalDate.now(), Status.ACTIVE, AccountType.CHECKING);
         checkingAccountTest2 = new CheckingAccount("0049", "2020", balance, accountHolderTest2, accountHolderTest1, "123abc",
                 LocalDate.now(), Status.ACTIVE,AccountType.CHECKING);
+        checkingAccountTest3 = new CheckingAccount("0049", "3030", balance, accountHolderTest2, null, "123abc",
+                LocalDate.now(), Status.ACTIVE,AccountType.CHECKING);
 
-        checkingAccountRepository.saveAll(List.of(checkingAccountTest1, checkingAccountTest2));
+        checkingAccountRepository.saveAll(List.of(checkingAccountTest1, checkingAccountTest2,checkingAccountTest3));
         checkingAccountTest1.setAccountNumber(checkingAccountTest1.getEntityNumber() + checkingAccountTest1.getBranchNumber() + checkingAccountTest1.getId().toString());
         checkingAccountTest2.setAccountNumber(checkingAccountTest2.getEntityNumber() + checkingAccountTest2.getBranchNumber() + checkingAccountTest2.getId().toString());
-        checkingAccountRepository.saveAll(List.of(checkingAccountTest1, checkingAccountTest2));
+        checkingAccountTest3.setAccountNumber(checkingAccountTest3.getEntityNumber() + checkingAccountTest3.getBranchNumber() + checkingAccountTest3.getId().toString());
+        checkingAccountRepository.saveAll(List.of(checkingAccountTest1, checkingAccountTest2, checkingAccountTest3));
     }
 
     @AfterEach
     void tearDown() {
+        creditCardAccountRepository.deleteAll();
+        savingAccountRepository.deleteAll();
         checkingAccountRepository.deleteAll();
         userRepository.deleteAll();
         accountHolderRepository.deleteAll();
@@ -100,7 +115,7 @@ class AccountControllerImplTest {
     }
 
     @Test
-    void getAll_NoParams_AllChechingAccounts() throws Exception {
+    void findAllAccounts_NoParams_AllChechingAccountsOfTheActiveUser() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/accounts").with(httpBasic("accountHolderTest1", "123456")))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -109,7 +124,160 @@ class AccountControllerImplTest {
         assertTrue(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8).contains("0049"));
         assertTrue(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8).contains("1500"));
         assertTrue(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8).contains("123abc"));
+        assertTrue(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8).contains("2020"));
+        assertFalse(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8).contains("3030"));
 
     }
 
+    @Test
+    void createCheckingAccount_Valid_NewCheckingAccount() throws Exception {
+        Long primaryOwnerId = accountHolderTest1.getId();
+        String body = "{ \"entityNumber\":\"0049\" , \"branchNumber\":\"1234\", \"amount\":\"2000\", \"primaryOwnerId\":" + primaryOwnerId + ", \"secretKey\":\"1234abc\" }";
+        MvcResult mvcResult = mockMvc.perform(post("/checkingaccounts")
+                .content(body)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .with(httpBasic("adminTest1","123456"))
+        )
+
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        assertTrue(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8).contains("0049"));
+        assertTrue(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8).contains("2000"));
+        assertTrue(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8).contains("1234abc"));
+
+    }
+
+
+    @Test
+    void createCheckingAccount_UserWithoutPermisions_ForbiddenStatus() throws Exception {
+        Long primaryOwnerId = accountHolderTest1.getId();
+        String body = "{ \"entityNumber\":\"0049\" , \"branchNumber\":\"1234\", \"amount\":\"2000\", \"primaryOwnerId\":" + primaryOwnerId + ", \"secretKey\":\"1234abc\" }";
+        MvcResult mvcResult = mockMvc.perform(post("/checkingaccounts")
+                .content(body)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .with(httpBasic("accountHolderTest1","123456"))
+        )
+
+                .andExpect(status().isForbidden())
+                .andReturn();
+    }
+
+    @Test
+    void createCheckingAccount_InvalidData_UnprocessableEntityStatus() throws Exception {
+
+        String body = "{ \"entityNumber\":\"0049\" , \"branchNumber\":\"1234\", \"amount\":\"2000\", \"primaryOwnerId\":\"-1\", \"secretKey\":\"1234abc\" }";
+        MvcResult mvcResult = mockMvc.perform(post("/checkingaccounts")
+                .content(body)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .with(httpBasic("adminTest1","123456"))
+        )
+                .andExpect(status().isUnprocessableEntity())
+                .andReturn();
+    }
+
+    @Test
+    void createSavingAccount_Valid_NewCheckingAccount() throws Exception {
+        Long primaryOwnerId = accountHolderTest1.getId();
+        String body = "{ \"entityNumber\":\"0049\" , \"branchNumber\":\"1234\", \"amount\":\"2000\", \"primaryOwnerId\":" + primaryOwnerId + ", \"secretKey\":\"1234abc\" , \"minimumBalance\":\"500\"}";
+        MvcResult mvcResult = mockMvc.perform(post("/savingaccounts")
+                .content(body)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .with(httpBasic("adminTest1","123456"))
+        )
+
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        assertTrue(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8).contains("0049"));
+        assertTrue(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8).contains("2000"));
+        assertTrue(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8).contains("1234abc"));
+        assertTrue(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8).contains("500"));
+    }
+
+
+    @Test
+    void createSavingAccount_UserWithoutPermisions_ForbiddenStatus() throws Exception {
+        Long primaryOwnerId = accountHolderTest1.getId();
+        String body = "{ \"entityNumber\":\"0049\" , \"branchNumber\":\"1234\", \"amount\":\"2000\", \"primaryOwnerId\":" + primaryOwnerId + ", \"secretKey\":\"1234abc\" , \"minimumBalance\":\"500\"}";
+        MvcResult mvcResult = mockMvc.perform(post("/savingaccounts")
+                .content(body)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .with(httpBasic("accountHolderTest1","123456"))
+        )
+
+                .andExpect(status().isForbidden())
+                .andReturn();
+    }
+
+    @Test
+    void createSavingAccount_InvalidData_UnprocessableEntityStatus() throws Exception {
+        Long primaryOwnerId = accountHolderTest1.getId();
+        String body = "{ \"entityNumber\":\"0049\" , \"branchNumber\":\"1234\", \"amount\":\"2000\", \"primaryOwnerId\":\"-1\", \"secretKey\":\"1234abc\" , \"minimumBalance\":\"500\"}";
+        MvcResult mvcResult = mockMvc.perform(post("/checkingaccounts")
+                .content(body)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .with(httpBasic("adminTest1","123456"))
+        )
+                .andExpect(status().isUnprocessableEntity())
+                .andReturn();
+    }
+
+    @Test
+    void createCreditCardAccount_Valid_NewCheckingAccount() throws Exception {
+        Long primaryOwnerId = accountHolderTest1.getId();
+        String body = "{ \"entityNumber\":\"0049\" , \"branchNumber\":\"1234\", \"amount\":\"2000\", \"primaryOwnerId\":" + primaryOwnerId + ", \"creditLimit\":\"3000\"}";
+        MvcResult mvcResult = mockMvc.perform(post("/creditcardaccounts")
+                .content(body)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .with(httpBasic("adminTest1","123456"))
+        )
+
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        assertTrue(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8).contains("0049"));
+        assertTrue(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8).contains("2000"));
+        assertTrue(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8).contains("3000"));
+    }
+
+
+    @Test
+    void createCreditCardAccount_UserWithoutPermisions_ForbiddenStatus() throws Exception {
+        Long primaryOwnerId = accountHolderTest1.getId();
+        String body = "{ \"entityNumber\":\"0049\" , \"branchNumber\":\"1234\", \"amount\":\"2000\", \"primaryOwnerId\":" + primaryOwnerId + ", \"creditLimit\":\"2000\"}";
+        MvcResult mvcResult = mockMvc.perform(post("/creditcardaccounts")
+                .content(body)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .with(httpBasic("accountHolderTest1","123456"))
+        )
+
+                .andExpect(status().isForbidden())
+                .andReturn();
+    }
+
+    @Test
+    void createCreditCardAccount_InvalidData_UnprocessableEntityStatus() throws Exception {
+        Long primaryOwnerId = accountHolderTest1.getId();
+        String body = "{ \"entityNumber\":\"0049\" , \"branchNumber\":\"1234\", \"amount\":\"2000\", \"primaryOwnerId\":\"-1\", \"creditLimit\":\"500\"}";
+        MvcResult mvcResult = mockMvc.perform(post("/creditcardaccounts")
+                .content(body)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .with(httpBasic("adminTest1","123456"))
+        )
+                .andExpect(status().isUnprocessableEntity())
+                .andReturn();
+    }
 }

@@ -51,7 +51,11 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     CreditCardAccountRepository creditCardAccountRepository;
 
-
+    /**
+     * method to create a new find all accounts of the active user in the application
+     *
+     * @param customUserDetails
+     */
     @Override
     public List<Account> findAllAccounts(CustomUserDetails customUserDetails) {
         Optional<User> optionalUser = userRepository.findByUsername(customUserDetails.getUsername());
