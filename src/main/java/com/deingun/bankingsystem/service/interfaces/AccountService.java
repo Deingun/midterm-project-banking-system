@@ -21,4 +21,7 @@ public interface AccountService {
 
     Account createSavingAccount(String entityNumber, String branchNumber, String amount, Long primaryOwnerId, Long secondaryOwnerId,
                                 String secretKey, String minimumBalance, String interestRate);
+
+    Account createCreditCardAccount(String entityNumber, String branchNumber, String amount, Long primaryOwnerId, Long secondaryOwnerId,
+                                String credit_limit, String interestRate);
 }

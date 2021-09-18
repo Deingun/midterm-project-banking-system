@@ -1,6 +1,7 @@
 package com.deingun.bankingsystem.controller.impl;
 
 import com.deingun.bankingsystem.controller.dto.CheckingAccountDTO;
+import com.deingun.bankingsystem.controller.dto.CreditCardAccountDTO;
 import com.deingun.bankingsystem.controller.dto.SavingAccountDTO;
 import com.deingun.bankingsystem.controller.interfaces.AccountController;
 import com.deingun.bankingsystem.model.account.Account;
@@ -41,7 +42,16 @@ public class AccountControllerImpl implements AccountController {
     @ResponseStatus(HttpStatus.CREATED)
     public Account createSavingAccount(@RequestBody @Valid SavingAccountDTO savingAccountDTO) {
         return accountService.createSavingAccount(savingAccountDTO.getEntityNumber(), savingAccountDTO.getBranchNumber(), savingAccountDTO.getAmount(),
-                savingAccountDTO.getPrimaryOwnerId(), savingAccountDTO.getSecondaryOwnerId(), savingAccountDTO.getSecretKey(), savingAccountDTO.getMinimumBalance(),
-                savingAccountDTO.getInterestRate());
+                savingAccountDTO.getPrimaryOwnerId(), savingAccountDTO.getSecondaryOwnerId(), savingAccountDTO.getSecretKey(),
+                savingAccountDTO.getMinimumBalance(), savingAccountDTO.getInterestRate());
+    }
+
+    @PostMapping("/creditcardaccounts")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Account createCreditCardAccount(@RequestBody @Valid CreditCardAccountDTO creditCardAccountDTO) {
+
+        return accountService.createCreditCardAccount(creditCardAccountDTO.getEntityNumber(), creditCardAccountDTO.getBranchNumber(), creditCardAccountDTO.getAmount(),
+                creditCardAccountDTO.getPrimaryOwnerId(), creditCardAccountDTO.getSecondaryOwnerId(), creditCardAccountDTO.getCreditLimit(),
+                creditCardAccountDTO.getInterestRate());
     }
 }

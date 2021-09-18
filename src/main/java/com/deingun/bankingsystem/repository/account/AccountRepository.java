@@ -22,4 +22,6 @@ public interface AccountRepository extends JpaRepository<Account,Long> {
     List<Account> findBySecondaryOwnerId(Long id);
 
     List<Account> findAll();
+
+    Optional<Account> findByAccountNumber(String accountNumber);
 }

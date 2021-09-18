@@ -2,16 +2,11 @@ package com.deingun.bankingsystem.service.impl;
 
 import com.deingun.bankingsystem.enums.AccountType;
 import com.deingun.bankingsystem.enums.Status;
-import com.deingun.bankingsystem.model.account.Account;
-import com.deingun.bankingsystem.model.account.CheckingAccount;
-import com.deingun.bankingsystem.model.account.SavingAccount;
-import com.deingun.bankingsystem.model.account.StudentCheckingAccount;
+import com.deingun.bankingsystem.exceptions.GlobalExceptionHandler;
+import com.deingun.bankingsystem.model.account.*;
 import com.deingun.bankingsystem.model.user.AccountHolder;
 import com.deingun.bankingsystem.model.user.User;
-import com.deingun.bankingsystem.repository.account.AccountRepository;
-import com.deingun.bankingsystem.repository.account.CheckingAccountRepository;
-import com.deingun.bankingsystem.repository.account.SavingAccountRepository;
-import com.deingun.bankingsystem.repository.account.StudentCheckingAccountRepository;
+import com.deingun.bankingsystem.repository.account.*;
 import com.deingun.bankingsystem.repository.user.AccountHolderRepository;
 import com.deingun.bankingsystem.repository.user.UserRepository;
 import com.deingun.bankingsystem.security.CustomUserDetails;
@@ -23,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.persistence.RollbackException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -32,6 +28,7 @@ import java.util.Optional;
 public class AccountServiceImpl implements AccountService {
 
     private final DataValidation dataValidation = new DataValidation();
+    private final GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
 
     @Autowired
     UserRepository userRepository;
@@ -50,6 +47,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     SavingAccountRepository savingAccountRepository;
+
+    @Autowired
+    CreditCardAccountRepository creditCardAccountRepository;
 
 
     @Override
@@ -171,6 +171,65 @@ public class AccountServiceImpl implements AccountService {
                     savingAccount.setInterestRate(Float.valueOf(interestRate));
                 }
                 return savingAccountRepository.save(savingAccount);
+            }
+        }
+    }
+
+    @Override
+    public Account createCreditCardAccount(String entityNumber, String branchNumber, String amount, Long primaryOwnerId, Long secondaryOwnerId, String credit_limit, String interestRate) {
+        CreditCardAccount creditCardAccount;
+
+        if (entityNumber == null) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Entity number must be provided");
+        } else if (branchNumber == null) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Branch number must be provided");
+        } else if (amount == null) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Balance must be provided");
+        } else if (primaryOwnerId == null) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Primary Owner must be provided");
+        } else{
+            Money balance = new Money(new BigDecimal(amount));
+            Optional<AccountHolder> optionalPrimaryAccountHolder = accountHolderRepository.findById(primaryOwnerId);
+
+            if (optionalPrimaryAccountHolder.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Primary Owner does not exist");
+
+            } else if (secondaryOwnerId != null) {
+                Optional<AccountHolder> optionalSecondaryAccountHolder = accountHolderRepository.findById(secondaryOwnerId);
+                if (optionalSecondaryAccountHolder.isEmpty()) {
+                    throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Secondary Owner does not exist");
+                } else {
+
+                    creditCardAccount = creditCardAccountRepository.save(new CreditCardAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), optionalSecondaryAccountHolder.get(),
+                            AccountType.CREDIT_CARD));
+                    creditCardAccount.setAccountNumber(creditCardAccount.getEntityNumber() + creditCardAccount.getBranchNumber() + creditCardAccount.getId().toString());
+                    if (credit_limit!=null){
+                        try{
+                            creditCardAccount.setCreditLimit(new BigDecimal(credit_limit));
+                        }catch (RollbackException e){
+                            throw e;
+                        }
+
+                    }else if(interestRate!=null){
+                        creditCardAccount.setInterestRate(Float.valueOf(interestRate));
+                    }
+
+                    return creditCardAccountRepository.save(creditCardAccount);
+                }
+            } else {
+                creditCardAccount = creditCardAccountRepository.save(new CreditCardAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), null,
+                        AccountType.CREDIT_CARD));
+                creditCardAccount.setAccountNumber(creditCardAccount.getEntityNumber() + creditCardAccount.getBranchNumber() + creditCardAccount.getId().toString());
+                if (credit_limit!=null){
+                    try{
+                        creditCardAccount.setCreditLimit(new BigDecimal(credit_limit));
+                    }catch (RollbackException e){
+                        throw e;
+                    }
+                }else if(interestRate!=null){
+                    creditCardAccount.setInterestRate(Float.valueOf(interestRate));
+                }
+                return creditCardAccountRepository.save(creditCardAccount);
             }
         }
     }

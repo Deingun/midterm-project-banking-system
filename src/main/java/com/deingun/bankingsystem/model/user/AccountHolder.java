@@ -120,33 +120,33 @@ public class AccountHolder extends User {
         this.id = id;
     }
 
-    public List<Account> getAccountsAsPrimaryOwner() {
-        return AccountsAsPrimaryOwner;
-    }
+//    public List<Account> getAccountsAsPrimaryOwner() {
+//        return AccountsAsPrimaryOwner;
+//    }
 
     public void setAccountsAsPrimaryOwner(List<Account> accountsAsPrimaryOwner) {
         AccountsAsPrimaryOwner = accountsAsPrimaryOwner;
     }
 
-    public List<Account> getAccountsAsSecondaryOwner() {
-        return AccountsAsSecondaryOwner;
-    }
+//    public List<Account> getAccountsAsSecondaryOwner() {
+//        return AccountsAsSecondaryOwner;
+//    }
 
     public void setAccountsAsSecondaryOwner(List<Account> accountsAsSecondaryOwner) {
         AccountsAsSecondaryOwner = accountsAsSecondaryOwner;
     }
 
-    public List<Transaction> getTransactionsAsPaymaster() {
-        return transactionsAsPaymaster;
-    }
+//    public List<Transaction> getTransactionsAsPaymaster() {
+//        return transactionsAsPaymaster;
+//    }
 
     public void setTransactionsAsPaymaster(List<Transaction> transactionsAsPaymaster) {
         this.transactionsAsPaymaster = transactionsAsPaymaster;
     }
 
-    public List<Transaction> getTransactionsAsReceiver() {
-        return transactionsAsReceiver;
-    }
+//    public List<Transaction> getTransactionsAsReceiver() {
+//        return transactionsAsReceiver;
+//    }
 
     public void setTransactionsAsReceiver(List<Transaction> transactionsAsReceiver) {
         this.transactionsAsReceiver = transactionsAsReceiver;

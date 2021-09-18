@@ -22,10 +22,10 @@ public class CreditCardAccount extends Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "credit_limit")
-    @DecimalMax(value = "100000")
+    @DecimalMax(value = "100000",message = "The credit limit cannot exceed 100,000.00")
     private BigDecimal creditLimit;
     @Column(name = "interest_rate")
-    @DecimalMin(value = "0.1")
+    @DecimalMin(value = "0.1",message = "The interest rate cannot be less than 0.1")
     private Float interestRate;
 
     @OneToMany(mappedBy = "originAccount", fetch = FetchType.LAZY)

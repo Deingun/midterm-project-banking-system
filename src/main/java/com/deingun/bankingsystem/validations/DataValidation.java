@@ -1,11 +1,16 @@
 package com.deingun.bankingsystem.validations;
 
+import com.deingun.bankingsystem.model.account.Account;
 import com.deingun.bankingsystem.model.user.AccountHolder;
+import com.deingun.bankingsystem.repository.account.AccountRepository;
 import com.deingun.bankingsystem.repository.user.AccountHolderRepository;
+import com.deingun.bankingsystem.utils.Money;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,12 +21,16 @@ public class DataValidation {
     @Autowired
     AccountHolderRepository accountHolderRepository;
 
+    @Autowired
+    static
+    AccountRepository accountRepository;
+
     /**
      * method to validate a correct name
      *
      * @param name Should "firstName lastName"
      */
-    public boolean validateName(String name) {
+    public static boolean validateName(String name) {
         name = name.trim();
         StringTokenizer words = new StringTokenizer(name);
         if (words.countTokens() < 2) {
@@ -37,7 +46,7 @@ public class DataValidation {
      *
      * @param email String email
      */
-    public boolean validateMail(String email) {
+    public static boolean validateMail(String email) {
         Pattern pattern = Pattern
                 .compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
                         + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
@@ -53,7 +62,7 @@ public class DataValidation {
      *
      * @param password String password
      */
-    public boolean validatePassword(String password) {
+    public static boolean validatePassword(String password) {
 
         if (password.length() < 6) {
             return true;
@@ -67,7 +76,7 @@ public class DataValidation {
      *
      * @param accountHolder
      */
-    public boolean validateAgeOfPrimaryOwner(AccountHolder accountHolder) {
+    public static boolean validateAgeOfPrimaryOwner(AccountHolder accountHolder) {
         LocalDate dateForStudentAccount = LocalDate.now().minusYears(24L);
         if (accountHolder.getDateOfBirth().compareTo(dateForStudentAccount) < 0) {
             return false;
@@ -81,7 +90,7 @@ public class DataValidation {
      *
      * @return String
      */
-    public String DataNotProvided(String username, String password, String name, String nif, LocalDate dateOfBirth, String street, String city, String country, Integer postalCode) {
+    public static String DataNotProvided(String username, String password, String name, String nif, LocalDate dateOfBirth, String street, String city, String country, Integer postalCode) {
         if (username == null) {
             return "Username";
         } else if (password == null) {
@@ -103,4 +112,5 @@ public class DataValidation {
         }
         return null;
     }
+
 }

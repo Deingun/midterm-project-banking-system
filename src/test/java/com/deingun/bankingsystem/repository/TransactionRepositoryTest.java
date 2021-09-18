@@ -121,6 +121,6 @@ class TransactionRepositoryTest {
         assertEquals(2, transactionList.size());
         assertEquals(new BigDecimal("50.00"), transactionList.get(1).getAmount().getAmount());
         assertEquals("USD", transactionList.get(1).getAmount().getCurrency().toString());
-        assertEquals("accountHolderTest2", transactionList.get(1).getReceiver().getUsername());
+        assertEquals("accountHolderTest2", transactionList.get(1).getReceiverName());
     }
 }

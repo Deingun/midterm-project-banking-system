@@ -56,9 +56,14 @@ id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
 entity_number VARCHAR(5),
 branch_number VARCHAR(5),
 account_number VARCHAR(25),
+primary_owner_id BIGINT,
+secondary_owner_id BIGINT,
 balance DECIMAL,
 currency VARCHAR(5),
-penalty_fee DECIMAL
+penalty_fee DECIMAL,
+account_type VARCHAR(255),
+FOREIGN KEY (primary_owner_id) REFERENCES account_holder (user_id),
+FOREIGN KEY (secondary_owner_id) REFERENCES account_holder (user_id)
 );
 
 DROP TABLE IF EXISTS checking_account;
@@ -66,16 +71,12 @@ DROP TABLE IF EXISTS checking_account;
 CREATE TABLE checking_account(
 id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
 account_id BIGINT,
-primary_owner_id BIGINT,
-secondary_owner_id BIGINT,
 secret_key VARCHAR(255),
 minimum_balance DECIMAL,
 monthly_maintenance_fee DECIMAL,
 creation_date DATE,
 status VARCHAR(255),
-FOREIGN KEY (account_id) REFERENCES accounts (id),
-FOREIGN KEY (primary_owner_id) REFERENCES account_holder (user_id),
-FOREIGN KEY (secondary_owner_id) REFERENCES account_holder (user_id)
+FOREIGN KEY (account_id) REFERENCES accounts (id)
 );
 
 INSERT INTO checking_account(id, entity_number,branch_number,balance,primary_owner_id,secondary_owner_id,penalty_fee,secret_key,minimum_balance,monthly_maintenance_fee,creation_date) VALUES
@@ -88,13 +89,9 @@ DROP TABLE IF EXISTS student_checking_account;
 CREATE TABLE student_checking_account(
 id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
 account_id BIGINT,
-primary_owner_id BIGINT,
-secondary_owner_id BIGINT,
 secret_key VARCHAR(255),
 creation_date DATE,
-status VARCHAR(255),
-FOREIGN KEY (primary_owner_id) REFERENCES account_holder (user_id),
-FOREIGN KEY (secondary_owner_id) REFERENCES account_holder (user_id)
+status VARCHAR(255)
 );
 
 DROP TABLE IF EXISTS saving_account;
@@ -102,15 +99,11 @@ DROP TABLE IF EXISTS saving_account;
 CREATE TABLE saving_account(
 id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
 account_id BIGINT,
-primary_owner_id BIGINT,
-secondary_owner_id BIGINT,
 secret_key VARCHAR(255),
 minimum_balance DECIMAL,
 creation_date DATE,
 status VARCHAR(255),
-interest_rate FLOAT,
-FOREIGN KEY (primary_owner_id) REFERENCES account_holder (user_id),
-FOREIGN KEY (secondary_owner_id) REFERENCES account_holder (user_id)
+interest_rate FLOAT
 );
 
 DROP TABLE IF EXISTS credit_card_account;
@@ -118,12 +111,8 @@ DROP TABLE IF EXISTS credit_card_account;
 CREATE TABLE credit_card_account(
 id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
 account_id BIGINT,
-primary_owner_id BIGINT,
-secondary_owner_id BIGINT,
 credit_limit DECIMAL,
-interest_rate FLOAT,
-FOREIGN KEY (primary_owner_id) REFERENCES account_holder (user_id),
-FOREIGN KEY (secondary_owner_id) REFERENCES account_holder (user_id)
+interest_rate FLOAT
 );
 
 DROP TABLE IF EXISTS transactions;
@@ -148,6 +137,7 @@ select * from account_holder;
 select * from admin;
 select * from role;
 select * from role;
+select * from accounts;
 select * from checking_account;
 select * from student_checking_account;
 select * from transactions;
@@ -157,6 +147,8 @@ delete from student_checking_account where id = 1;
 delete from checking_account where id = 1;
 
 select u.username from user u left join admin a on u.id = a.user_id where u.username is NOT NULL;
+
+select * from accounts where primary_owner_id = 2 OR primary_owner_id = 2;
 
 
 

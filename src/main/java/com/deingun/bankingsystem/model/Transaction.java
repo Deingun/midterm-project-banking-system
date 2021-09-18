@@ -58,33 +58,33 @@ public class Transaction {
         this.id = id;
     }
 
-    public Account getOriginAccount() {
-        return originAccount;
-    }
+//    public Account getOriginAccount() {
+//        return originAccount;
+//    }
 
     public void setOriginAccount(Account originAccount) {
         this.originAccount = originAccount;
     }
 
-    public Account getDestinationAccount() {
-        return destinationAccount;
-    }
+//    public Account getDestinationAccount() {
+//        return destinationAccount;
+//    }
 
     public void setDestinationAccount(Account destinationAccount) {
         this.destinationAccount = destinationAccount;
     }
 
-    public User getPaymaster() {
-        return paymaster;
-    }
+//    public User getPaymaster() {
+//        return paymaster;
+//    }
 
     public void setPaymaster(User paymaster) {
         this.paymaster = paymaster;
     }
 
-    public User getReceiver() {
-        return receiver;
-    }
+//    public User getReceiver() {
+//        return receiver;
+//    }
 
     public void setReceiver(User receiverId) {
         this.receiver = receiverId;
@@ -104,5 +104,21 @@ public class Transaction {
 
     public void setTimeStamp(LocalDateTime timeStamp) {
         this.timeStamp = timeStamp;
+    }
+
+        public String getOriginAccountNumber() {
+        return originAccount.getAccountNumber();
+    }
+
+    public String getDestinationAccountNumber() {
+        return destinationAccount.getAccountNumber();
+    }
+
+        public String getPaymasterName() {
+        return paymaster.getUsername();
+    }
+
+    public String getReceiverName() {
+        return receiver.getUsername();
     }
 }
