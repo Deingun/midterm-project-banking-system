@@ -123,6 +123,7 @@ class AccountRepositoryTest {
         studentCheckingAccountRepository.deleteAll();
         userRepository.deleteAll();
         accountHolderRepository.deleteAll();
+        accountRepository.deleteAll();
     }
 
     @Test

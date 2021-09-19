@@ -3,6 +3,7 @@ package com.deingun.bankingsystem.controller.impl;
 import com.deingun.bankingsystem.controller.dto.CheckingAccountDTO;
 import com.deingun.bankingsystem.controller.dto.CreditCardAccountDTO;
 import com.deingun.bankingsystem.controller.dto.SavingAccountDTO;
+import com.deingun.bankingsystem.controller.dto.TransactionDTO;
 import com.deingun.bankingsystem.controller.interfaces.AccountController;
 import com.deingun.bankingsystem.model.account.Account;
 import com.deingun.bankingsystem.model.account.CheckingAccount;
@@ -28,6 +29,18 @@ public class AccountControllerImpl implements AccountController {
     @ResponseStatus(HttpStatus.OK)
     public List<Account> findAllAccounts(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return accountService.findAllAccounts(customUserDetails);
+    }
+
+    @GetMapping("/accounts/{accountNumber}")
+    @ResponseStatus(HttpStatus.OK)
+    public String getAccountBalance(@PathVariable(name = "accountNumber") String accountNumber,@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return accountService.getAccountBalance(accountNumber,customUserDetails);
+    }
+
+    @PatchMapping("/accounts/{accountNumber}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateBalance(@PathVariable(name = "accountNumber") String accountNumber, @RequestBody TransactionDTO transactionDTO) {
+        accountService.updateBalance(accountNumber, transactionDTO.getAmount());
     }
 
     @PostMapping("/checkingaccounts")

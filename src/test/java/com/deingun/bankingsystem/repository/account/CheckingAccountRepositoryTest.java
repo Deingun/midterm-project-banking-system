@@ -2,6 +2,7 @@ package com.deingun.bankingsystem.repository.account;
 
 import com.deingun.bankingsystem.enums.AccountType;
 import com.deingun.bankingsystem.enums.Status;
+import com.deingun.bankingsystem.model.account.Account;
 import com.deingun.bankingsystem.model.account.CheckingAccount;
 import com.deingun.bankingsystem.model.user.AccountHolder;
 import com.deingun.bankingsystem.repository.user.AccountHolderRepository;
@@ -25,6 +26,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class CheckingAccountRepositoryTest {
+
+    @Autowired
+    AccountRepository accountRepository;
 
     @Autowired
     AccountHolderRepository accountHolderRepository;
@@ -70,6 +74,7 @@ class CheckingAccountRepositoryTest {
     @AfterEach
     void tearDown() {
         checkingAccountRepository.deleteAll();
+        accountRepository.deleteAll();
         userRepository.deleteAll();
         accountHolderRepository.deleteAll();
 
@@ -86,6 +91,7 @@ class CheckingAccountRepositoryTest {
         Optional<CheckingAccount> optionalCheckingAccount = checkingAccountRepository.findById(-1L);
         assertTrue(optionalCheckingAccount.isEmpty());
     }
+
 
     @Test
     void findByPrimaryOwnerId_validId_isPresent() {

@@ -32,6 +32,20 @@ class DataValidationTest {
     }
 
     @Test
+    void validateAmount_ValidAmount_False() {
+        String amount = "100";
+        Boolean invalidAmount = DataValidation.validateAmount(amount);
+        assertFalse(invalidAmount);
+    }
+
+    @Test
+    void validateAmount_InvalidAmount_True() {
+        String amount = "-100";
+        Boolean invalidAmount = DataValidation.validateAmount(amount);
+        assertTrue(invalidAmount);
+    }
+
+    @Test
     void validateMail_ValidMail_False() {
         String mail = "pepitolopez@gmail.com";
         Boolean invalidMail = DataValidation.validateMail(mail);

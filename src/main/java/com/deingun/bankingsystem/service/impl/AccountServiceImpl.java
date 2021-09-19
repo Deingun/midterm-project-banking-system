@@ -71,6 +71,32 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
+    @Override
+    public String getAccountBalance(String accountNumber, CustomUserDetails customUserDetails) {
+        Optional<Account> optionalAccount = accountRepository.findByAccountNumber(accountNumber);
+        Optional<User> optionalUser = userRepository.findByUsername(customUserDetails.getUsername());
+        if (optionalAccount.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Account number provided does not exist");
+        } else {
+            if (optionalAccount.get().getSecondaryOwner() != null) {
+                if (optionalAccount.get().getPrimaryOwner().getUsername() != customUserDetails.getUsername()
+                        && optionalAccount.get().getSecondaryOwner().getUsername() != optionalUser.get().getUsername()) {
+                    throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Account number provided does not correspond to the active user in the application");
+                } else {
+                    return optionalAccount.get().getBalance().toString();
+                }
+            } else {
+                if (optionalAccount.get().getPrimaryOwner().getUsername() != optionalUser.get().getUsername()) {
+                    throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Account number provided does not correspond to the active user in the application");
+                } else {
+                    return optionalAccount.get().getBalance().toString();
+                }
+            }
+
+        }
+
+    }
+
     /**
      * method to create a new Checking account, if the primaryOwner is less than 24, a StudentChecking account it will be created otherwise a regular Checking Account it will be created.
      *
@@ -88,6 +114,8 @@ public class AccountServiceImpl implements AccountService {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Branch number must be provided");
         } else if (amount == null) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Balance must be provided");
+        } else if (DataValidation.validateAmount(amount)) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The amount must be more than zero");
         } else if (primaryOwnerId == null) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Primary Owner must be provided");
         } else if (secretKey == null) {
@@ -102,7 +130,7 @@ public class AccountServiceImpl implements AccountService {
                 if (optionalSecondaryAccountHolder.isEmpty()) {
                     throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Secondary Owner does not exist");
                 } else {
-                    if (dataValidation.validateAgeOfPrimaryOwner(optionalPrimaryAccountHolder.get())) {
+                    if (DataValidation.validateAgeOfPrimaryOwner(optionalPrimaryAccountHolder.get())) {
                         studentCheckingAccount = studentCheckingAccountRepository.save(new StudentCheckingAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), optionalSecondaryAccountHolder.get(), secretKey, LocalDate.now(), Status.ACTIVE, AccountType.STUDENT_CHECKING));
                         studentCheckingAccount.setAccountNumber(studentCheckingAccount.getEntityNumber() + studentCheckingAccount.getBranchNumber() + studentCheckingAccount.getId().toString());
                         return studentCheckingAccountRepository.save(studentCheckingAccount);
@@ -114,7 +142,7 @@ public class AccountServiceImpl implements AccountService {
                     }
 
                 }
-            } else if (dataValidation.validateAgeOfPrimaryOwner(optionalPrimaryAccountHolder.get())) {
+            } else if (DataValidation.validateAgeOfPrimaryOwner(optionalPrimaryAccountHolder.get())) {
                 studentCheckingAccount = studentCheckingAccountRepository.save(new StudentCheckingAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), null, secretKey, LocalDate.now(), Status.ACTIVE, AccountType.STUDENT_CHECKING));
                 studentCheckingAccount.setAccountNumber(studentCheckingAccount.getEntityNumber() + studentCheckingAccount.getBranchNumber() + studentCheckingAccount.getId().toString());
                 return studentCheckingAccountRepository.save(studentCheckingAccount);
@@ -138,6 +166,8 @@ public class AccountServiceImpl implements AccountService {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Branch number must be provided");
         } else if (amount == null) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Balance must be provided");
+        } else if (DataValidation.validateAmount(amount)) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The amount must be more than zero");
         } else if (primaryOwnerId == null) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Primary Owner must be provided");
         } else if (secretKey == null) {
@@ -158,9 +188,9 @@ public class AccountServiceImpl implements AccountService {
                     savingAccount = savingAccountRepository.save(new SavingAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), optionalSecondaryAccountHolder.get(),
                             secretKey, LocalDate.now(), Status.ACTIVE, AccountType.SAVING));
                     savingAccount.setAccountNumber(savingAccount.getEntityNumber() + savingAccount.getBranchNumber() + savingAccount.getId().toString());
-                    if (minimumBalance!=null){
+                    if (minimumBalance != null) {
                         savingAccount.setMinimumBalance(new BigDecimal(minimumBalance));
-                    }else if(interestRate!=null){
+                    } else if (interestRate != null) {
                         savingAccount.setInterestRate(Float.valueOf(interestRate));
                     }
                     return savingAccountRepository.save(savingAccount);
@@ -169,9 +199,9 @@ public class AccountServiceImpl implements AccountService {
                 savingAccount = savingAccountRepository.save(new SavingAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), null,
                         secretKey, LocalDate.now(), Status.ACTIVE, AccountType.SAVING));
                 savingAccount.setAccountNumber(savingAccount.getEntityNumber() + savingAccount.getBranchNumber() + savingAccount.getId().toString());
-                if (minimumBalance!=null){
+                if (minimumBalance != null) {
                     savingAccount.setMinimumBalance(new BigDecimal(minimumBalance));
-                }else if(interestRate!=null){
+                } else if (interestRate != null) {
                     savingAccount.setInterestRate(Float.valueOf(interestRate));
                 }
                 return savingAccountRepository.save(savingAccount);
@@ -189,9 +219,11 @@ public class AccountServiceImpl implements AccountService {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Branch number must be provided");
         } else if (amount == null) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Balance must be provided");
+        } else if (DataValidation.validateAmount(amount)) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The amount must be more than zero");
         } else if (primaryOwnerId == null) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Primary Owner must be provided");
-        } else{
+        } else {
             Money balance = new Money(new BigDecimal(amount));
             Optional<AccountHolder> optionalPrimaryAccountHolder = accountHolderRepository.findById(primaryOwnerId);
 
@@ -207,14 +239,14 @@ public class AccountServiceImpl implements AccountService {
                     creditCardAccount = creditCardAccountRepository.save(new CreditCardAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), optionalSecondaryAccountHolder.get(),
                             AccountType.CREDIT_CARD));
                     creditCardAccount.setAccountNumber(creditCardAccount.getEntityNumber() + creditCardAccount.getBranchNumber() + creditCardAccount.getId().toString());
-                    if (credit_limit!=null){
-                        try{
+                    if (credit_limit != null) {
+                        try {
                             creditCardAccount.setCreditLimit(new BigDecimal(credit_limit));
-                        }catch (RollbackException e){
+                        } catch (RollbackException e) {
                             throw e;
                         }
 
-                    }else if(interestRate!=null){
+                    } else if (interestRate != null) {
                         creditCardAccount.setInterestRate(Float.valueOf(interestRate));
                     }
 
@@ -224,16 +256,33 @@ public class AccountServiceImpl implements AccountService {
                 creditCardAccount = creditCardAccountRepository.save(new CreditCardAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), null,
                         AccountType.CREDIT_CARD));
                 creditCardAccount.setAccountNumber(creditCardAccount.getEntityNumber() + creditCardAccount.getBranchNumber() + creditCardAccount.getId().toString());
-                if (credit_limit!=null){
-                    try{
+                if (credit_limit != null) {
+                    try {
                         creditCardAccount.setCreditLimit(new BigDecimal(credit_limit));
-                    }catch (RollbackException e){
+                    } catch (RollbackException e) {
                         throw e;
                     }
-                }else if(interestRate!=null){
+                } else if (interestRate != null) {
                     creditCardAccount.setInterestRate(Float.valueOf(interestRate));
                 }
                 return creditCardAccountRepository.save(creditCardAccount);
+            }
+        }
+    }
+
+    @Override
+    public void updateBalance(String accountNumber, String amount) {
+        Optional<Account> optionalAccount = accountRepository.findByAccountNumber(accountNumber);
+        if (optionalAccount.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Account number provided does not exist");
+        } else {
+
+            if (DataValidation.validateAmount(amount)) {
+                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The amount must be more than zero");
+            } else {
+                Account account = optionalAccount.get();
+                account.setBalance(new Money(new BigDecimal(amount)));
+                accountRepository.save(account);
             }
         }
     }

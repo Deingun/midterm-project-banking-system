@@ -38,7 +38,20 @@ public class DataValidation {
         } else {
             return false;
         }
+    }
 
+    /**
+     * method to validate a correct amount
+     *
+     * @param amount Should be more than 0
+     */
+    public static boolean validateAmount(String amount) {
+        BigDecimal validAmount = new BigDecimal(amount);
+        if (validAmount.signum()>0) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     /**
