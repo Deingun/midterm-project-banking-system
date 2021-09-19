@@ -1,8 +1,10 @@
 package com.deingun.bankingsystem.controller.impl;
 
 import com.deingun.bankingsystem.controller.dto.AccountHolderDTO;
+import com.deingun.bankingsystem.controller.dto.ThirdPartyDTO;
 import com.deingun.bankingsystem.controller.interfaces.UserController;
 import com.deingun.bankingsystem.model.user.AccountHolder;
+import com.deingun.bankingsystem.model.user.ThirdParty;
 import com.deingun.bankingsystem.model.user.User;
 import com.deingun.bankingsystem.service.interfaces.UserService;
 import com.deingun.bankingsystem.utils.Address;
@@ -43,6 +45,12 @@ public class UserControllerImpl implements UserController {
     public AccountHolder createAccountHolder(@RequestBody @Valid AccountHolderDTO accountHolderDTO) {
         return userService.createAccountHolder(accountHolderDTO.getUsername(), accountHolderDTO.getPassword(), accountHolderDTO.getName(), accountHolderDTO.getNif(), accountHolderDTO.getDateOfBirth(),
                 accountHolderDTO.getStreet(), accountHolderDTO.getCity(), accountHolderDTO.getCountry(), accountHolderDTO.getPostalCode(), accountHolderDTO.getMailingAddress());
+    }
+
+    @PostMapping("/thirdparties")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ThirdParty createThirdParty(@RequestBody @Valid ThirdPartyDTO thirdPartyDTO) {
+        return userService.createThirdParty(thirdPartyDTO.getUsername(), thirdPartyDTO.getPassword(), thirdPartyDTO.getName(), thirdPartyDTO.getHashedKey());
     }
 
     @Override

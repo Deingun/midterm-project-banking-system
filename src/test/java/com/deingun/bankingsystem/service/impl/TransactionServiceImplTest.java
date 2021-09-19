@@ -299,4 +299,9 @@ class TransactionServiceImplTest {
         Optional<Account> optionalAccount = studentCheckingAccountRepository.findByAccountNumber(studentCheckingAccountTest1.getAccountNumber());
         assertEquals(new BigDecimal("1000").setScale(2, RoundingMode.HALF_EVEN),optionalAccount.get().getBalance().getAmount());
     }
+
+    @Test
+    void getSecretKey() {
+        assertEquals("123abc", transactionServiceImpl.getSecretKey(checkingAccountTest1.getAccountNumber()));
+    }
 }

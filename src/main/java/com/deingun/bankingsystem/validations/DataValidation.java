@@ -126,4 +126,16 @@ public class DataValidation {
         return null;
     }
 
+    public static String DataNotProvided(String username, String password, String name, String hashedKey) {
+        if (username == null) {
+            return "Username";
+        } else if (password == null) {
+            return "Password";
+        } else if (name == null) {
+            return "Name";
+        } else if (hashedKey == null) {
+            return "Hashed Key";
+        }
+        return null;
+    }
 }

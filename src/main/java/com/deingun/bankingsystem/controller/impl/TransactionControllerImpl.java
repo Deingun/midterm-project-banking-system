@@ -2,6 +2,7 @@ package com.deingun.bankingsystem.controller.impl;
 
 import com.deingun.bankingsystem.controller.dto.TransactionDTO;
 import com.deingun.bankingsystem.controller.interfaces.TransactionController;
+import com.deingun.bankingsystem.enums.TransactionType;
 import com.deingun.bankingsystem.model.Transaction;
 import com.deingun.bankingsystem.security.CustomUserDetails;
 import com.deingun.bankingsystem.service.interfaces.TransactionService;
@@ -23,5 +24,13 @@ public class TransactionControllerImpl implements TransactionController {
     public Transaction newTransaction(@RequestBody @Valid TransactionDTO transactionDTO,@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return transactionService.newTransaction(transactionDTO.getOriginAccount(),
                 transactionDTO.getDestinationAccount(), transactionDTO.getAmount(),customUserDetails);
+    }
+
+    @PostMapping("/thirdpartytransactions")
+    @ResponseStatus(HttpStatus.CREATED)
+    public String newThirdPartyTransaction(@RequestHeader("Hashed-Key") String HashedKey, @RequestBody @Valid TransactionDTO transactionDTO,@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        return transactionService.newThirdPartyTransaction(HashedKey,transactionDTO.getAccountNumber(),transactionDTO.getAmount(),transactionDTO.getSecretKey(),
+                TransactionType.valueOf(transactionDTO.getTransactionType()),customUserDetails);
     }
 }

@@ -1,8 +1,10 @@
 package com.deingun.bankingsystem.service.impl;
 
 import com.deingun.bankingsystem.model.user.AccountHolder;
+import com.deingun.bankingsystem.model.user.ThirdParty;
 import com.deingun.bankingsystem.model.user.User;
 import com.deingun.bankingsystem.repository.user.AccountHolderRepository;
+import com.deingun.bankingsystem.repository.user.ThirdPartyRepository;
 import com.deingun.bankingsystem.repository.user.UserRepository;
 import com.deingun.bankingsystem.service.interfaces.UserService;
 import com.deingun.bankingsystem.utils.Address;
@@ -31,6 +33,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     AccountHolderRepository accountHolderRepository;
+
+    @Autowired
+    ThirdPartyRepository thirdPartyRepository;
 
 
     @Override
@@ -69,16 +74,16 @@ public class UserServiceImpl implements UserService {
         if (optionalUser.isPresent()) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "User already exist");
         } else {
-            String dataNotProvided = dataValidation.DataNotProvided(username, password, name, nif, dateOfBirth, street, city, country, postalCode);
+            String dataNotProvided = DataValidation.DataNotProvided(username, password, name, nif, dateOfBirth, street, city, country, postalCode);
             if (dataNotProvided != null) {
                 throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, dataNotProvided + " must be provided");
             } else {
 
-                if (dataValidation.validateName(name)) {
+                if (DataValidation.validateName(name)) {
                     throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The name entered is invalid. It must contain at least name and surname");
-                } else if (dataValidation.validatePassword(password)) {
+                } else if (DataValidation.validatePassword(password)) {
                     throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The password must be at least 6 characters");
-                } else if (mailingAddress != null && dataValidation.validateMail(mailingAddress)) {
+                } else if (mailingAddress != null && DataValidation.validateMail(mailingAddress)) {
                     throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The email entered is invalid.");
                 } else {
 
@@ -88,6 +93,31 @@ public class UserServiceImpl implements UserService {
                     Address address = new Address(street, city, country, postalCode);
                     AccountHolder accountHolder = new AccountHolder(username, passwordEncoder.encode(password), LocalDate.now(), name, nif, dateOfBirth, address, mailingAddress);
                     return accountHolderRepository.save(accountHolder);
+                }
+            }
+        }
+    }
+
+    @Override
+    public ThirdParty createThirdParty(String username, String password, String name, String hashedKey) {
+
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+        if (optionalUser.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "User already exist");
+        } else {
+            String dataNotProvided = DataValidation.DataNotProvided(username, password, name, hashedKey);
+            if (dataNotProvided != null) {
+                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, dataNotProvided + " must be provided");
+            } else {
+
+                if (DataValidation.validatePassword(password)) {
+                    throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The password must be at least 6 characters");
+                }else if (DataValidation.validatePassword(hashedKey)) {
+                    throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The hashed Key must be at least 6 characters");
+                }else{
+                    ThirdParty thirdParty = new ThirdParty(username,passwordEncoder.encode(password),LocalDate.now(),name,hashedKey);
+                    return thirdPartyRepository.save(thirdParty);
+
                 }
             }
         }

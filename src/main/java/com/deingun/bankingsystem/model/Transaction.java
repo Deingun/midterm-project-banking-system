@@ -1,6 +1,8 @@
 package com.deingun.bankingsystem.model;
 
+import com.deingun.bankingsystem.enums.TransactionType;
 import com.deingun.bankingsystem.model.account.Account;
+import com.deingun.bankingsystem.model.user.ThirdParty;
 import com.deingun.bankingsystem.model.user.User;
 import com.deingun.bankingsystem.utils.Money;
 
@@ -46,6 +48,15 @@ public class Transaction {
         this.destinationAccount = destinationAccount;
         this.paymaster = paymaster;
         this.receiver = receiver;
+        this.amount = amount;
+        this.timeStamp = timeStamp;
+    }
+
+    public Transaction(ThirdParty thirdParty, Account account, Money amount, LocalDateTime timeStamp) {
+        this.originAccount = null;
+        this.destinationAccount = account;
+        this.paymaster = thirdParty;
+        this.receiver = account.getPrimaryOwner();
         this.amount = amount;
         this.timeStamp = timeStamp;
     }

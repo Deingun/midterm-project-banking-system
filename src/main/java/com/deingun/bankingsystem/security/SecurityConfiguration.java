@@ -38,6 +38,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .mvcMatchers(HttpMethod.GET, "/accountholders/**").hasRole(Role.ADMIN.toString())
                 .mvcMatchers(HttpMethod.GET, "/accountholders").hasRole(Role.ADMIN.toString())
                 .mvcMatchers(HttpMethod.POST, "/accountholders").hasRole(Role.ADMIN.toString())
+                .mvcMatchers(HttpMethod.POST, "/thirdparties").hasRole(Role.ADMIN.toString())
+                .mvcMatchers(HttpMethod.POST, "/thirdpartytransactions").hasRole(Role.THIRDPARTY.toString())
                 .mvcMatchers(HttpMethod.POST, "/checkingaccounts").hasRole(Role.ADMIN.toString())
                 .mvcMatchers(HttpMethod.POST, "/savingaccounts").hasRole(Role.ADMIN.toString())
                 .mvcMatchers(HttpMethod.POST, "/creditcardaccounts").hasRole(Role.ADMIN.toString())

@@ -10,7 +10,12 @@ public class TransactionDTO {
 
     private String originAccount;
     private String destinationAccount;
+    private String accountNumber;
     private String amount;
+    private String hashedKey;
+    private String secretKey;
+    private String transactionType;
+
 
     public String getOriginAccount() {
         return originAccount;
@@ -35,5 +40,37 @@ public class TransactionDTO {
 
     public void setAmount(String amount) {
         this.amount = amount;
+    }
+
+    public String getHashedKey() {
+        return hashedKey;
+    }
+
+    public void setHashedKey(String hashedKey) {
+        this.hashedKey = hashedKey;
+    }
+
+    public String getTransactionType() {
+        return transactionType;
+    }
+
+    public void setTransactionType(String transactionType) {
+        this.transactionType = transactionType;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
+
+    public String getSecretKey() {
+        return secretKey;
+    }
+
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
     }
 }
