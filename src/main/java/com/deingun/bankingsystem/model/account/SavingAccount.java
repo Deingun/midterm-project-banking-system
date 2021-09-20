@@ -28,7 +28,7 @@ public class SavingAccount extends Account {
     @NotEmpty(message = "Secret Key must be provided")
     private String secretKey;
     @Column(name = "minimum_balance")
-    @DecimalMin(value = "100")
+    @DecimalMin(value = "100", message = "The minimum balance of a savings account cannot be less than 100")
     private BigDecimal minimumBalance;
     @Column(name = "creation_date")
     private LocalDate creationDate;
