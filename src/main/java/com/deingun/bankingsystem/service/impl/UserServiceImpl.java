@@ -74,10 +74,7 @@ public class UserServiceImpl implements UserService {
         if (optionalUser.isPresent()) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "User already exist");
         } else {
-            String dataNotProvided = DataValidation.DataNotProvided(username, password, name, nif, dateOfBirth, street, city, country, postalCode);
-            if (dataNotProvided != null) {
-                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, dataNotProvided + " must be provided");
-            } else {
+
 
                 if (DataValidation.validateName(name)) {
                     throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The name entered is invalid. It must contain at least name and surname");
@@ -94,7 +91,7 @@ public class UserServiceImpl implements UserService {
                     AccountHolder accountHolder = new AccountHolder(username, passwordEncoder.encode(password), LocalDate.now(), name, nif, dateOfBirth, address, mailingAddress);
                     return accountHolderRepository.save(accountHolder);
                 }
-            }
+
         }
     }
 
@@ -105,10 +102,6 @@ public class UserServiceImpl implements UserService {
         if (optionalUser.isPresent()) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "User already exist");
         } else {
-            String dataNotProvided = DataValidation.DataNotProvided(username, password, name, hashedKey);
-            if (dataNotProvided != null) {
-                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, dataNotProvided + " must be provided");
-            } else {
 
                 if (DataValidation.validatePassword(password)) {
                     throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The password must be at least 6 characters");
@@ -119,7 +112,7 @@ public class UserServiceImpl implements UserService {
                     return thirdPartyRepository.save(thirdParty);
 
                 }
-            }
+
         }
     }
 

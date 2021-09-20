@@ -16,11 +16,8 @@ public class ThirdParty extends User {
     @Column(name = "id", unique = true, nullable = false)
     private Long id;
     @Column(name = "name", nullable = false, length = 64)
-    @NotEmpty(message = "Name must be provided")
     private String name;
-
     @Column(name = "hashed_key", nullable = false)
-    @NotEmpty(message = "Hashed key must be provided")
     private String hashedKey;
 
     public ThirdParty() {

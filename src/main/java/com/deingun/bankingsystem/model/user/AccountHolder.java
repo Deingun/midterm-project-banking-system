@@ -22,10 +22,8 @@ public class AccountHolder extends User {
     private Long id;
 
     @Column(name = "name", nullable = false, length = 64)
-    @NotEmpty(message = "Name must be provided")
     private String name;
     @Column(name = "nif", nullable = false, length = 10)
-    @NotEmpty(message = "NIF must be provided")
     private String nif;
     @Column(name = "date_of_birth", nullable = false)
 

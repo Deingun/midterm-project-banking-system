@@ -19,11 +19,9 @@ public class User implements Serializable {
     @Column(name = "id", unique = true, nullable = false)
     private Long id;
     @Column(name = "username", nullable = false, length = 64, unique = true)
-    @NotEmpty(message = "Username must be provided")
     @Size(max = 64)
     private String username;
     @Column(name = "password", nullable = false)
-    @NotBlank
     private String password;
     @Column(name = "password_date", nullable = false)
     private LocalDate passwordDate;

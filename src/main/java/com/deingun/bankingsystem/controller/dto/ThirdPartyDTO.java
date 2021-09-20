@@ -1,10 +1,16 @@
 package com.deingun.bankingsystem.controller.dto;
 
+import javax.validation.constraints.NotEmpty;
+
 public class ThirdPartyDTO {
     private Long id;
+    @NotEmpty(message = "Username must be provided")
     private String username;
+    @NotEmpty(message = "Password must be provided")
     private String password;
+    @NotEmpty(message = "Name must be provided")
     private String name;
+    @NotEmpty(message = "Hashed Key must be provided")
     private String hashedKey;
 
     public Long getId() {

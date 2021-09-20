@@ -21,7 +21,6 @@ public class Account implements Serializable {
     @Column(name = "entity_number", nullable = false)
     private String entityNumber;
     @Column(name = "branch_number", nullable = false)
-    @NotEmpty(message = "Branch must be provided")
     private String branchNumber;
     @Embedded
     @AttributeOverrides({

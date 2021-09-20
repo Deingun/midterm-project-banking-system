@@ -25,10 +25,8 @@ public class SavingAccount extends Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "secret_key", nullable = false)
-    @NotEmpty(message = "Secret Key must be provided")
     private String secretKey;
     @Column(name = "minimum_balance")
-    @DecimalMin(value = "100", message = "The minimum balance of a savings account cannot be less than 100")
     private BigDecimal minimumBalance;
     @Column(name = "creation_date")
     private LocalDate creationDate;
@@ -36,7 +34,6 @@ public class SavingAccount extends Account {
     @Column(name = "status")
     private Status status;
     @Column(name = "interest_rate")
-    @DecimalMax(value = "0.5")
     private Float interestRate;
 
     @OneToMany(mappedBy = "originAccount", fetch = FetchType.LAZY)

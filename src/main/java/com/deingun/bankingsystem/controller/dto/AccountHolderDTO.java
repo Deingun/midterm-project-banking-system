@@ -1,17 +1,28 @@
 package com.deingun.bankingsystem.controller.dto;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public class AccountHolderDTO {
     private Long id;
+    @NotEmpty(message = "Username must be provided")
     private String username;
+    @NotEmpty(message = "Password must be provided")
     private String password;
+    @NotEmpty(message = "Name must be provided")
     private String name;
+    @NotEmpty(message = "Nif must be provided")
     private String nif;
+    @NotNull(message = "Date of birth must be provided")
     private LocalDate dateOfBirth;
+    @NotEmpty(message = "Street must be provided")
     private String street;
+    @NotEmpty(message = "City must be provided")
     private String city;
+    @NotEmpty(message = "Country must be provided")
     private String country;
+    @NotNull(message = "Postal Code must be provided")
     private Integer postalCode;
     private String mailingAddress;
 

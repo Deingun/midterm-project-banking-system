@@ -16,7 +16,6 @@ public class Admin extends User {
     @Column(name = "id", unique = true, nullable = false)
     private Long id;
     @Column(name = "name", nullable = false, length = 64)
-    @NotEmpty(message = "Name must be provided")
     private String name;
 
     public Admin() {

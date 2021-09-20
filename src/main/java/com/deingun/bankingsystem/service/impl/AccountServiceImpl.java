@@ -108,19 +108,7 @@ public class AccountServiceImpl implements AccountService {
 
         CheckingAccount checkingAccount;
         StudentCheckingAccount studentCheckingAccount;
-        if (entityNumber == null) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Entity number must be provided");
-        } else if (branchNumber == null) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Branch number must be provided");
-        } else if (amount == null) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Balance must be provided");
-        } else if (DataValidation.validateAmount(amount)) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The amount must be more than zero");
-        } else if (primaryOwnerId == null) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Primary Owner must be provided");
-        } else if (secretKey == null) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Secret Key must be provided");
-        } else {
+
             Money balance = new Money(new BigDecimal(amount));
             Optional<AccountHolder> optionalPrimaryAccountHolder = accountHolderRepository.findById(primaryOwnerId);
             if (optionalPrimaryAccountHolder.isEmpty()) {
@@ -153,26 +141,13 @@ public class AccountServiceImpl implements AccountService {
                 return checkingAccountRepository.save(checkingAccount);
 
             }
-        }
+
     }
 
     @Override
     public Account createSavingAccount(String entityNumber, String branchNumber, String amount, Long primaryOwnerId, Long secondaryOwnerId, String secretKey, String minimumBalance, String interestRate) {
         SavingAccount savingAccount;
 
-        if (entityNumber == null) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Entity number must be provided");
-        } else if (branchNumber == null) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Branch number must be provided");
-        } else if (amount == null) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Balance must be provided");
-        } else if (DataValidation.validateAmount(amount)) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The amount must be more than zero");
-        } else if (primaryOwnerId == null) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Primary Owner must be provided");
-        } else if (secretKey == null) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Secret Key must be provided");
-        } else {
 
             Money balance = new Money(new BigDecimal(amount));
             Optional<AccountHolder> optionalPrimaryAccountHolder = accountHolderRepository.findById(primaryOwnerId);
@@ -206,24 +181,14 @@ public class AccountServiceImpl implements AccountService {
                 }
                 return savingAccountRepository.save(savingAccount);
             }
-        }
+
     }
 
     @Override
     public Account createCreditCardAccount(String entityNumber, String branchNumber, String amount, Long primaryOwnerId, Long secondaryOwnerId, String credit_limit, String interestRate) {
         CreditCardAccount creditCardAccount;
 
-        if (entityNumber == null) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Entity number must be provided");
-        } else if (branchNumber == null) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Branch number must be provided");
-        } else if (amount == null) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Balance must be provided");
-        } else if (DataValidation.validateAmount(amount)) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The amount must be more than zero");
-        } else if (primaryOwnerId == null) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Primary Owner must be provided");
-        } else {
+
             Money balance = new Money(new BigDecimal(amount));
             Optional<AccountHolder> optionalPrimaryAccountHolder = accountHolderRepository.findById(primaryOwnerId);
 
@@ -267,7 +232,7 @@ public class AccountServiceImpl implements AccountService {
                 }
                 return creditCardAccountRepository.save(creditCardAccount);
             }
-        }
+
     }
 
     @Override

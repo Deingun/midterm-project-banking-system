@@ -22,7 +22,6 @@ public class CheckingAccount extends Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "secret_key", nullable = false)
-    @NotEmpty(message = "Secret Key must be provided")
     private String secretKey;
     @Column(name = "minimum_balance")
     private final BigDecimal MINIMUMBALANCE = new BigDecimal("250").setScale(3, RoundingMode.HALF_EVEN);
