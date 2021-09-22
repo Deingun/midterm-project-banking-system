@@ -53,19 +53,4 @@ public class UserControllerImpl implements UserController {
         return userService.createThirdParty(thirdPartyDTO.getUsername(), thirdPartyDTO.getPassword(), thirdPartyDTO.getName(), thirdPartyDTO.getHashedKey());
     }
 
-    @Override
-    public void updateAccountHolder(Long id, String username, String password, String name, String nif, LocalDate dateOfBirth, Address address, String mailingAddress) {
-
-    }
-
-    @Override
-    public void deleteAccountHolder(Long id) {
-
-    }
-
-    @PostMapping("/users/accountholders")
-    @ResponseStatus(HttpStatus.CREATED)
-    public User createAccountHolder(String username, String password, LocalDate passwordDate, String name, String nif, LocalDate dateOfBirth, Address address, String mailingAddress) {
-        return null;
-    }
 }

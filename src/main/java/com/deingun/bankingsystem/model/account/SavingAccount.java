@@ -35,6 +35,8 @@ public class SavingAccount extends Account {
     private Status status;
     @Column(name = "interest_rate")
     private Float interestRate;
+    @Column(name = "last_interest_rate_date")
+    private LocalDate lastInterestRateDate;
 
     @OneToMany(mappedBy = "originAccount", fetch = FetchType.LAZY)
     @JsonBackReference
@@ -47,49 +49,53 @@ public class SavingAccount extends Account {
     public SavingAccount() {
     }
 
-    public SavingAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, BigDecimal minimumBalance, LocalDate creationDate, Status status, Float interestRate, AccountType accountType) {
+    public SavingAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, BigDecimal minimumBalance, LocalDate creationDate, Status status, Float interestRate, AccountType accountType, LocalDate lastInterestRateDate) {
         super(entityNumber, branchNumber, balance, primaryOwner,secondaryOwner, accountType);
         this.secretKey = secretKey;
         this.minimumBalance = minimumBalance;
         this.creationDate = creationDate;
         this.status = status;
         this.interestRate = interestRate;
+        this.lastInterestRateDate = lastInterestRateDate;
     }
 
     /**
      * Class constructor using default interestRate 0.0025
      **/
-    public SavingAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, BigDecimal minimumBalance, LocalDate creationDate, Status status, AccountType accountType) {
+    public SavingAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, BigDecimal minimumBalance, LocalDate creationDate, Status status, AccountType accountType, LocalDate lastInterestRateDate) {
         super(entityNumber, branchNumber, balance, primaryOwner,secondaryOwner, accountType);
         this.secretKey = secretKey;
         this.minimumBalance = minimumBalance;
         this.creationDate = creationDate;
         this.status = status;
         this.interestRate = 0.0025F;
+        this.lastInterestRateDate = lastInterestRateDate;
     }
 
     /**
      * Class constructor using default minimumBalance 1000
      **/
-    public SavingAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, LocalDate creationDate, Status status, Float interestRate, AccountType accountType) {
+    public SavingAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, LocalDate creationDate, Status status, Float interestRate, AccountType accountType, LocalDate lastInterestRateDate) {
         super(entityNumber, branchNumber, balance, primaryOwner,secondaryOwner, accountType);
         this.secretKey = secretKey;
         this.minimumBalance = new BigDecimal("1000").setScale(3, RoundingMode.HALF_EVEN);
         this.creationDate = creationDate;
         this.status = status;
         this.interestRate = interestRate;
+        this.lastInterestRateDate = lastInterestRateDate;
     }
 
     /**
      * Class constructor using default minimumBalance 1000, default interestRate 0.0025
      **/
-    public SavingAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, LocalDate creationDate, Status status, AccountType accountType) {
+    public SavingAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, LocalDate creationDate, Status status, AccountType accountType, LocalDate lastInterestRateDate) {
         super(entityNumber, branchNumber, balance, primaryOwner,secondaryOwner, accountType);
         this.secretKey = secretKey;
         this.minimumBalance = new BigDecimal("1000").setScale(3, RoundingMode.HALF_EVEN);
         this.creationDate = creationDate;
         this.status = status;
         this.interestRate = 0.0025F;
+        this.lastInterestRateDate = lastInterestRateDate;
     }
 
     @Override
@@ -140,5 +146,13 @@ public class SavingAccount extends Account {
 
     public void setInterestRate(Float interestRate) {
         this.interestRate = interestRate;
+    }
+
+    public LocalDate getLastInterestRateDate() {
+        return lastInterestRateDate;
+    }
+
+    public void setLastInterestRateDate(LocalDate lastInterestRateDate) {
+        this.lastInterestRateDate = lastInterestRateDate;
     }
 }

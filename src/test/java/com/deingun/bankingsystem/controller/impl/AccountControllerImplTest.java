@@ -3,8 +3,10 @@ package com.deingun.bankingsystem.controller.impl;
 import com.deingun.bankingsystem.enums.AccountType;
 import com.deingun.bankingsystem.enums.Status;
 import com.deingun.bankingsystem.model.account.CheckingAccount;
+import com.deingun.bankingsystem.model.account.SavingAccount;
 import com.deingun.bankingsystem.model.user.AccountHolder;
 import com.deingun.bankingsystem.model.user.Admin;
+import com.deingun.bankingsystem.repository.account.AccountRepository;
 import com.deingun.bankingsystem.repository.account.CheckingAccountRepository;
 import com.deingun.bankingsystem.repository.account.CreditCardAccountRepository;
 import com.deingun.bankingsystem.repository.account.SavingAccountRepository;
@@ -26,7 +28,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.validation.ConstraintViolationException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
@@ -34,8 +38,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -59,6 +62,9 @@ class AccountControllerImplTest {
 
     @Autowired
     AdminRepository adminRepository;
+
+    @Autowired
+    AccountRepository accountRepository;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -115,7 +121,7 @@ class AccountControllerImplTest {
     }
 
     @Test
-    void findAllAccounts_NoParams_AllChechingAccountsOfTheActiveUser() throws Exception {
+    void findAllAccounts_NoParams_AllCheckingAccountsOfTheActiveUser() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/accounts").with(httpBasic("accountHolderTest1", "123456")))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -126,6 +132,44 @@ class AccountControllerImplTest {
         assertTrue(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8).contains("123abc"));
         assertTrue(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8).contains("2020"));
         assertFalse(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8).contains("3030"));
+
+    }
+
+    @Test
+    void getAccountBalance_ValidParams_AccountBalance() throws Exception {
+
+        String accountNumber = checkingAccountTest1.getAccountNumber();
+        MvcResult mvcResult = mockMvc.perform(get("/accounts/" + accountNumber).with(httpBasic("accountHolderTest1", "123456")))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        assertTrue(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8).contains("1000"));
+
+    }
+
+    @Test
+    void getAccountBalance_InvalidParams_AccountBalance() throws Exception {
+
+        MvcResult mvcResult = mockMvc.perform(get("/accounts/00491500123").with(httpBasic("accountHolderTest1", "123456")))
+                .andExpect(status().isUnprocessableEntity())
+                .andReturn();
+
+    }
+
+    @Test
+    void updateBalance_ValidParams_UpdateBalance() throws Exception {
+        String accountNumber = checkingAccountTest1.getAccountNumber();
+        String body = "{ \"amount\":\"2000\"}";
+
+        MvcResult mvcResult = mockMvc.perform(patch("/accounts/" + accountNumber)
+                .content(body)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .with(httpBasic("adminTest1","123456"))
+        )
+                .andExpect(status().isNoContent())
+                .andReturn();
 
     }
 
@@ -230,6 +274,22 @@ class AccountControllerImplTest {
                 .andExpect(status().isUnprocessableEntity())
                 .andReturn();
     }
+
+    @Test
+    void constraintViolationException_invalidInterestRate_constraintViolation() throws Exception {
+
+        Long primaryOwnerId = accountHolderTest1.getId();
+        String body = "{ \"entityNumber\":\"0049\" , \"branchNumber\":\"1234\", \"amount\":\"2000\", \"primaryOwnerId\":\"-1\", \"secretKey\":\"1234abc\" , \"minimumBalance\":\"50\"}";
+        MvcResult mvcResult = mockMvc.perform(post("/checkingaccounts")
+                .content(body)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .with(httpBasic("adminTest1","123456"))
+        )
+                .andExpect(status().isUnprocessableEntity())
+                .andReturn();
+    }
+
 
     @Test
     void createCreditCardAccount_Valid_NewCheckingAccount() throws Exception {

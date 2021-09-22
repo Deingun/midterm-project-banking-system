@@ -20,7 +20,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.RollbackException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,6 +64,7 @@ public class AccountServiceImpl implements AccountService {
         if (optionalUser.isPresent()) {
             List<Account> accountList = accountRepository.findByPrimaryOwnerIdOrSecondaryOwnerId(optionalUser.get().getId(), optionalUser.get().getId());
             if (accountList.size() != 0) {
+                applyInterestRate(accountList);
                 return accountList;
             }
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There are Accounts.");
@@ -83,12 +86,14 @@ public class AccountServiceImpl implements AccountService {
                         && optionalAccount.get().getSecondaryOwner().getUsername() != optionalUser.get().getUsername()) {
                     throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Account number provided does not correspond to the active user in the application");
                 } else {
+                    applyInterestRate(List.of(optionalAccount.get()));
                     return optionalAccount.get().getBalance().toString();
                 }
             } else {
                 if (optionalAccount.get().getPrimaryOwner().getUsername() != optionalUser.get().getUsername()) {
                     throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Account number provided does not correspond to the active user in the application");
                 } else {
+                    applyInterestRate(List.of(optionalAccount.get()));
                     return optionalAccount.get().getBalance().toString();
                 }
             }
@@ -144,6 +149,11 @@ public class AccountServiceImpl implements AccountService {
 
     }
 
+    /**
+     * method to create a new Saving account
+     *
+     * @param entityNumber, branchNumber, amount, primaryOwnerId, secondaryOwnerId, secretKey, minimumBalance, interestRate
+     */
     @Override
     public Account createSavingAccount(String entityNumber, String branchNumber, String amount, Long primaryOwnerId, Long secondaryOwnerId, String secretKey, String minimumBalance, String interestRate) {
         SavingAccount savingAccount;
@@ -161,7 +171,7 @@ public class AccountServiceImpl implements AccountService {
                     throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Secondary Owner does not exist");
                 } else {
                     savingAccount = savingAccountRepository.save(new SavingAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), optionalSecondaryAccountHolder.get(),
-                            secretKey, LocalDate.now(), Status.ACTIVE, AccountType.SAVING));
+                            secretKey, LocalDate.now(), Status.ACTIVE, AccountType.SAVING,LocalDate.now()));
                     savingAccount.setAccountNumber(savingAccount.getEntityNumber() + savingAccount.getBranchNumber() + savingAccount.getId().toString());
                     if (minimumBalance != null) {
                         savingAccount.setMinimumBalance(new BigDecimal(minimumBalance));
@@ -172,7 +182,7 @@ public class AccountServiceImpl implements AccountService {
                 }
             } else {
                 savingAccount = savingAccountRepository.save(new SavingAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), null,
-                        secretKey, LocalDate.now(), Status.ACTIVE, AccountType.SAVING));
+                        secretKey, LocalDate.now(), Status.ACTIVE, AccountType.SAVING,LocalDate.now()));
                 savingAccount.setAccountNumber(savingAccount.getEntityNumber() + savingAccount.getBranchNumber() + savingAccount.getId().toString());
                 if (minimumBalance != null) {
                     savingAccount.setMinimumBalance(new BigDecimal(minimumBalance));
@@ -183,7 +193,11 @@ public class AccountServiceImpl implements AccountService {
             }
 
     }
-
+    /**
+     * method to create a new Credit Card account
+     *
+     * @param entityNumber, branchNumber, amount, primaryOwnerId, secondaryOwnerId, credit_limit, interestRate
+     */
     @Override
     public Account createCreditCardAccount(String entityNumber, String branchNumber, String amount, Long primaryOwnerId, Long secondaryOwnerId, String credit_limit, String interestRate) {
         CreditCardAccount creditCardAccount;
@@ -202,7 +216,7 @@ public class AccountServiceImpl implements AccountService {
                 } else {
 
                     creditCardAccount = creditCardAccountRepository.save(new CreditCardAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), optionalSecondaryAccountHolder.get(),
-                            AccountType.CREDIT_CARD));
+                            AccountType.CREDIT_CARD,LocalDate.now()));
                     creditCardAccount.setAccountNumber(creditCardAccount.getEntityNumber() + creditCardAccount.getBranchNumber() + creditCardAccount.getId().toString());
                     if (credit_limit != null) {
                         try {
@@ -219,7 +233,7 @@ public class AccountServiceImpl implements AccountService {
                 }
             } else {
                 creditCardAccount = creditCardAccountRepository.save(new CreditCardAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), null,
-                        AccountType.CREDIT_CARD));
+                        AccountType.CREDIT_CARD,LocalDate.now()));
                 creditCardAccount.setAccountNumber(creditCardAccount.getEntityNumber() + creditCardAccount.getBranchNumber() + creditCardAccount.getId().toString());
                 if (credit_limit != null) {
                     try {
@@ -235,6 +249,11 @@ public class AccountServiceImpl implements AccountService {
 
     }
 
+    /**
+     * method to Update Balance of any account by Admin User
+     *
+     * @param accountNumber, amount
+     */
     @Override
     public void updateBalance(String accountNumber, String amount) {
         Optional<Account> optionalAccount = accountRepository.findByAccountNumber(accountNumber);
@@ -251,4 +270,44 @@ public class AccountServiceImpl implements AccountService {
             }
         }
     }
+
+    /**
+     * method to apply interest Rate if applicable
+     *
+     * @param accountList
+     */
+    @Override
+    public void applyInterestRate(List<Account> accountList) {
+
+        for (Account account: accountList) {
+            if(account.getAccountType().equals(AccountType.SAVING)){
+                SavingAccount savingAccount = (SavingAccount) account;
+                Period period = Period.between(savingAccount.getLastInterestRateDate(),LocalDate.now());
+                if(period.getYears()>0){
+                    BigDecimal interestAmount = (savingAccount.getBalance().getAmount())
+                            .multiply(BigDecimal.valueOf(savingAccount.getInterestRate()))
+                            .multiply(new BigDecimal(period.getYears()));
+                    BigDecimal newBalance = savingAccount.getBalance().increaseAmount(interestAmount);
+                    savingAccount.setBalance(new Money(newBalance));
+                    savingAccount.setLastInterestRateDate(LocalDate.now());
+                    savingAccountRepository.save(savingAccount);
+                }
+            }
+            if(account.getAccountType().equals(AccountType.CREDIT_CARD)){
+                CreditCardAccount creditCardAccount = (CreditCardAccount) account;
+                Period period = Period.between(creditCardAccount.getLastInterestRateDate(),LocalDate.now());
+                if(period.getMonths()>0){
+
+                    BigDecimal interestAmount = (creditCardAccount.getBalance().getAmount())
+                            .multiply(BigDecimal.valueOf(creditCardAccount.getInterestRate())).divide(new BigDecimal(12),2,RoundingMode.HALF_EVEN)
+                            .multiply(new BigDecimal(period.getMonths()).add(new BigDecimal(period.getYears()*12)));
+                    BigDecimal newBalance = creditCardAccount.getBalance().increaseAmount(interestAmount);
+                    creditCardAccount.setBalance(new Money(newBalance));
+                    creditCardAccount.setLastInterestRateDate(LocalDate.now());
+                    creditCardAccountRepository.save(creditCardAccount);
+                }
+            }
+        }
+    }
+
 }

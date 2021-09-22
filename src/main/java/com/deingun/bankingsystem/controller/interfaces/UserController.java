@@ -24,7 +24,4 @@ public interface UserController {
 
     ThirdParty createThirdParty(ThirdPartyDTO thirdPartyDTO);
 
-    void updateAccountHolder(Long id, String username, String password, String name, String nif, LocalDate dateOfBirth, Address address, String mailingAddress);
-
-    void deleteAccountHolder(Long id);
 }

@@ -6,6 +6,7 @@ USE banking_system_new_test;
 
 DROP TABLE IF EXISTS user;
 
+
 CREATE TABLE user(
 id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
 username VARCHAR(255) NOT NULL UNIQUE,
@@ -14,7 +15,9 @@ password_date DATE NOT NULL,
 role VARCHAR(255) NOT NULL
 );
 
+
 DROP TABLE IF EXISTS account_holder;
+
 
 CREATE TABLE account_holder(
 id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
@@ -32,6 +35,7 @@ FOREIGN KEY (user_id) REFERENCES user(id)
 
 DROP TABLE IF EXISTS admin;
 
+
 CREATE TABLE admin(
 id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
 user_id BIGINT NOT NULL,
@@ -40,6 +44,7 @@ FOREIGN KEY (user_id) REFERENCES user(id)
 );
 
 DROP TABLE IF EXISTS third_party;
+
 
 CREATE TABLE third_party(
 id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
@@ -103,16 +108,19 @@ secret_key VARCHAR(255),
 minimum_balance DECIMAL,
 creation_date DATE,
 status VARCHAR(255),
-interest_rate FLOAT
+interest_rate FLOAT,
+last_interest_rate_date DATE
 );
 
 DROP TABLE IF EXISTS credit_card_account;
+
 
 CREATE TABLE credit_card_account(
 id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
 account_id BIGINT,
 credit_limit DECIMAL,
-interest_rate FLOAT
+interest_rate FLOAT,
+last_interest_rate_date DATE
 );
 
 DROP TABLE IF EXISTS transactions;
@@ -140,15 +148,23 @@ select * from role;
 select * from accounts;
 select * from checking_account;
 select * from student_checking_account;
+select * from saving_account;
 select * from transactions;
-delete from user where id = 12;
+select * from third_party;
+delete from user where id IS NOT NULL;
 delete from account_holder where id = 6;
 delete from student_checking_account where id = 1;
 delete from checking_account where id = 1;
+delete from user where id = 5;
+delete from third_party where id = 1;
+
+update saving_account set last_interest_rate_date = '2020-08-20' WHERE id = 1;
 
 select u.username from user u left join admin a on u.id = a.user_id where u.username is NOT NULL;
 
 select * from accounts where primary_owner_id = 2 OR primary_owner_id = 2;
+
+select c.id from checking_account c where c.account_id = 26;
 
 
 

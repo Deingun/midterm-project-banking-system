@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Entity
 @Table(name = "accounts")
@@ -30,7 +31,7 @@ public class Account implements Serializable {
     private Money balance;
 
     @Column(name = "penalty_fee")
-    private final BigDecimal PENALTYFEE = new BigDecimal("40");
+    private final BigDecimal PENALTYFEE = new BigDecimal("40").setScale(2, RoundingMode.HALF_EVEN);
 
 
     @Column(name = "account_number")

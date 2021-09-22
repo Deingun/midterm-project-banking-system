@@ -19,7 +19,4 @@ public interface UserService {
 
     ThirdParty createThirdParty(String username, String password, String name, String hashedKey);
 
-    void updateAccountHolder(Long id, String username, String password, String name, String nif, LocalDate dateOfBirth, Address address, String mailingAddress);
-
-    void deleteAccountHolder(Long id);
 }

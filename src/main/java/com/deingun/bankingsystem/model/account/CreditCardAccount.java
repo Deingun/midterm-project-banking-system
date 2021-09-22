@@ -11,6 +11,7 @@ import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -25,6 +26,8 @@ public class CreditCardAccount extends Account {
     private BigDecimal creditLimit;
     @Column(name = "interest_rate")
     private Float interestRate;
+    @Column(name = "last_interest_rate_date")
+    private LocalDate lastInterestRateDate;
 
     @OneToMany(mappedBy = "originAccount", fetch = FetchType.LAZY)
     @JsonBackReference
@@ -38,37 +41,41 @@ public class CreditCardAccount extends Account {
     public CreditCardAccount() {
     }
 
-    public CreditCardAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal creditLimit, Float interestRate, AccountType accountType) {
+    public CreditCardAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal creditLimit, Float interestRate, AccountType accountType, LocalDate lastInterestRateDate) {
         super(entityNumber, branchNumber, balance, primaryOwner,secondaryOwner, accountType);
         this.creditLimit = creditLimit;
         this.interestRate = interestRate;
+        this.lastInterestRateDate = lastInterestRateDate;
     }
 
     /**
      * Class constructor using default creditLimit 100
      **/
-    public CreditCardAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, Float interestRate, AccountType accountType) {
+    public CreditCardAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, Float interestRate, AccountType accountType, LocalDate lastInterestRateDate) {
         super(entityNumber, branchNumber, balance, primaryOwner,secondaryOwner, accountType);
         this.creditLimit = new BigDecimal("100").setScale(3, RoundingMode.HALF_EVEN);
         this.interestRate = interestRate;
+        this.lastInterestRateDate = lastInterestRateDate;
     }
 
     /**
      * Class constructor using default interestRate 0.2
      **/
-    public CreditCardAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal creditLimit, AccountType accountType) {
+    public CreditCardAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal creditLimit, AccountType accountType, LocalDate lastInterestRateDate) {
         super(entityNumber, branchNumber, balance, primaryOwner,secondaryOwner, accountType);
         this.creditLimit = creditLimit;
         this.interestRate = 0.2F;
+        this.lastInterestRateDate = lastInterestRateDate;
     }
 
     /**
      * Class constructor using default creditLimit 100, interestRate 0.2
      **/
-    public CreditCardAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, AccountType accountType) {
+    public CreditCardAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, AccountType accountType,LocalDate lastInterestRateDate) {
         super(entityNumber, branchNumber, balance, primaryOwner,secondaryOwner, accountType);
         this.creditLimit = new BigDecimal("100").setScale(3, RoundingMode.HALF_EVEN);
         this.interestRate = 0.2F;
+        this.lastInterestRateDate = lastInterestRateDate;
     }
 
     @Override
@@ -97,5 +104,11 @@ public class CreditCardAccount extends Account {
         this.interestRate = interestRate;
     }
 
+    public LocalDate getLastInterestRateDate() {
+        return lastInterestRateDate;
+    }
 
+    public void setLastInterestRateDate(LocalDate lastInterestRateDate) {
+        this.lastInterestRateDate = lastInterestRateDate;
+    }
 }

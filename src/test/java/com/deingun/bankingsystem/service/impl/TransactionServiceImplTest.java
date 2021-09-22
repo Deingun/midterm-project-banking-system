@@ -111,8 +111,8 @@ class TransactionServiceImplTest {
         checkingAccountTest3.setAccountNumber(checkingAccountTest3.getEntityNumber() + checkingAccountTest3.getBranchNumber() + checkingAccountTest3.getId().toString());
         checkingAccountRepository.saveAll(List.of(checkingAccountTest1, checkingAccountTest2, checkingAccountTest3));
 
-        creditCardAccountTest1 = new CreditCardAccount("0049", "1500", balance, accountHolderTest1, accountHolderTest2, AccountType.CREDIT_CARD);
-        creditCardAccountTest2 = new CreditCardAccount("0049", "2020", balance, accountHolderTest2, accountHolderTest1, new BigDecimal("500"), 0.15F, AccountType.CREDIT_CARD);
+        creditCardAccountTest1 = new CreditCardAccount("0049", "1500", balance, accountHolderTest1, accountHolderTest2, AccountType.CREDIT_CARD,LocalDate.now());
+        creditCardAccountTest2 = new CreditCardAccount("0049", "2020", balance, accountHolderTest2, accountHolderTest1, new BigDecimal("500"), 0.15F, AccountType.CREDIT_CARD,LocalDate.now());
 
 
         creditCardAccountRepository.saveAll(List.of(creditCardAccountTest1, creditCardAccountTest2));
@@ -120,9 +120,9 @@ class TransactionServiceImplTest {
         creditCardAccountTest2.setAccountNumber(creditCardAccountTest2.getEntityNumber() + creditCardAccountTest2.getBranchNumber() + creditCardAccountTest2.getId().toString());
         creditCardAccountRepository.saveAll(List.of(creditCardAccountTest1, creditCardAccountTest2));
 
-        savingAccountTest1 = new SavingAccount("0049", "1500", balance, accountHolderTest1, accountHolderTest2, "123abc", minimumBalance, LocalDate.now(), Status.ACTIVE, 0.0050F, AccountType.SAVING);
-        savingAccountTest2 = new SavingAccount("0049", "1500", balance, accountHolderTest2, accountHolderTest1, "123abc", minimumBalance, LocalDate.now(), Status.ACTIVE, AccountType.SAVING);
-        savingAccountTest3 = new SavingAccount("0049", "1500", new Money(new BigDecimal("200")), accountHolderTest2, accountHolderTest1, "123abc", minimumBalance, LocalDate.now(), Status.ACTIVE, AccountType.SAVING);
+        savingAccountTest1 = new SavingAccount("0049", "1500", balance, accountHolderTest1, accountHolderTest2, "123abc", minimumBalance, LocalDate.now(), Status.ACTIVE, 0.0050F, AccountType.SAVING, LocalDate.now());
+        savingAccountTest2 = new SavingAccount("0049", "1500", balance, accountHolderTest2, accountHolderTest1, "123abc", minimumBalance, LocalDate.now(), Status.ACTIVE, AccountType.SAVING, LocalDate.now());
+        savingAccountTest3 = new SavingAccount("0049", "1500", new Money(new BigDecimal("200")), accountHolderTest2, accountHolderTest1, "123abc", minimumBalance, LocalDate.now(), Status.ACTIVE, AccountType.SAVING,LocalDate.now());
 
         savingAccountRepository.saveAll(List.of(savingAccountTest1, savingAccountTest2,savingAccountTest3));
         savingAccountTest1.setAccountNumber(savingAccountTest1.getEntityNumber() + savingAccountTest1.getBranchNumber() + savingAccountTest1.getId().toString());

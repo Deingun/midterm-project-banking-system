@@ -116,15 +116,5 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Override
-    public void updateAccountHolder(Long id, String username, String password, String name, String nif, LocalDate dateOfBirth, Address address, String mailingAddress) {
-
-    }
-
-    @Override
-    public void deleteAccountHolder(Long id) {
-
-    }
-
 
 }

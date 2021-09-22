@@ -117,7 +117,7 @@ public class Transaction {
         this.timeStamp = timeStamp;
     }
 
-        public String getOriginAccountNumber() {
+    public String getOriginAccountNumber() {
         return originAccount.getAccountNumber();
     }
 
@@ -125,7 +125,7 @@ public class Transaction {
         return destinationAccount.getAccountNumber();
     }
 
-        public String getPaymasterName() {
+    public String getPaymasterName() {
         return paymaster.getUsername();
     }
 

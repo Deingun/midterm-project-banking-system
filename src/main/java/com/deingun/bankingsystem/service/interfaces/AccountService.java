@@ -20,4 +20,6 @@ public interface AccountService {
                                 String credit_limit, String interestRate);
 
     void updateBalance(String accountNumber, String amount);
+
+    void applyInterestRate(List<Account> accountList);
 }
