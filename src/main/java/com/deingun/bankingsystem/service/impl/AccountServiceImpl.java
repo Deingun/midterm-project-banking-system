@@ -82,15 +82,15 @@ public class AccountServiceImpl implements AccountService {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Account number provided does not exist");
         } else {
             if (optionalAccount.get().getSecondaryOwner() != null) {
-                if (optionalAccount.get().getPrimaryOwner().getUsername() != customUserDetails.getUsername()
-                        && optionalAccount.get().getSecondaryOwner().getUsername() != optionalUser.get().getUsername()) {
+                if (!optionalAccount.get().getPrimaryOwner().getUsername().equals(customUserDetails.getUsername())
+                        && !optionalAccount.get().getSecondaryOwner().getUsername().equals(optionalUser.get().getUsername())) {
                     throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Account number provided does not correspond to the active user in the application");
                 } else {
                     applyInterestRate(List.of(optionalAccount.get()));
                     return optionalAccount.get().getBalance().toString();
                 }
             } else {
-                if (optionalAccount.get().getPrimaryOwner().getUsername() != optionalUser.get().getUsername()) {
+                if (!optionalAccount.get().getPrimaryOwner().getUsername().equals(optionalUser.get().getUsername())) {
                     throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Account number provided does not correspond to the active user in the application");
                 } else {
                     applyInterestRate(List.of(optionalAccount.get()));
@@ -109,12 +109,12 @@ public class AccountServiceImpl implements AccountService {
      */
 
     @Override
-    public Account createCheckingAccount(String entityNumber, String branchNumber, String amount, Long primaryOwnerId, Long secondaryOwnerId, String secretKey) {
+    public Account createCheckingAccount(String entityNumber, String branchNumber, BigDecimal amount, Long primaryOwnerId, Long secondaryOwnerId, String secretKey) {
 
         CheckingAccount checkingAccount;
         StudentCheckingAccount studentCheckingAccount;
 
-            Money balance = new Money(new BigDecimal(amount));
+            Money balance = new Money(amount);
             Optional<AccountHolder> optionalPrimaryAccountHolder = accountHolderRepository.findById(primaryOwnerId);
             if (optionalPrimaryAccountHolder.isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Primary Owner does not exist");
@@ -155,11 +155,11 @@ public class AccountServiceImpl implements AccountService {
      * @param entityNumber, branchNumber, amount, primaryOwnerId, secondaryOwnerId, secretKey, minimumBalance, interestRate
      */
     @Override
-    public Account createSavingAccount(String entityNumber, String branchNumber, String amount, Long primaryOwnerId, Long secondaryOwnerId, String secretKey, String minimumBalance, String interestRate) {
+    public Account createSavingAccount(String entityNumber, String branchNumber, BigDecimal amount, Long primaryOwnerId, Long secondaryOwnerId, String secretKey, String minimumBalance, String interestRate) {
         SavingAccount savingAccount;
 
 
-            Money balance = new Money(new BigDecimal(amount));
+            Money balance = new Money(amount);
             Optional<AccountHolder> optionalPrimaryAccountHolder = accountHolderRepository.findById(primaryOwnerId);
 
             if (optionalPrimaryAccountHolder.isEmpty()) {
@@ -199,11 +199,11 @@ public class AccountServiceImpl implements AccountService {
      * @param entityNumber, branchNumber, amount, primaryOwnerId, secondaryOwnerId, credit_limit, interestRate
      */
     @Override
-    public Account createCreditCardAccount(String entityNumber, String branchNumber, String amount, Long primaryOwnerId, Long secondaryOwnerId, String credit_limit, String interestRate) {
+    public Account createCreditCardAccount(String entityNumber, String branchNumber, BigDecimal amount, Long primaryOwnerId, Long secondaryOwnerId, String credit_limit, String interestRate) {
         CreditCardAccount creditCardAccount;
 
 
-            Money balance = new Money(new BigDecimal(amount));
+            Money balance = new Money(amount);
             Optional<AccountHolder> optionalPrimaryAccountHolder = accountHolderRepository.findById(primaryOwnerId);
 
             if (optionalPrimaryAccountHolder.isEmpty()) {
@@ -255,7 +255,7 @@ public class AccountServiceImpl implements AccountService {
      * @param accountNumber, amount
      */
     @Override
-    public void updateBalance(String accountNumber, String amount) {
+    public void updateBalance(String accountNumber, BigDecimal amount) {
         Optional<Account> optionalAccount = accountRepository.findByAccountNumber(accountNumber);
         if (optionalAccount.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Account number provided does not exist");
@@ -265,7 +265,7 @@ public class AccountServiceImpl implements AccountService {
                 throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The amount must be more than zero");
             } else {
                 Account account = optionalAccount.get();
-                account.setBalance(new Money(new BigDecimal(amount)));
+                account.setBalance(new Money(amount));
                 accountRepository.save(account);
             }
         }

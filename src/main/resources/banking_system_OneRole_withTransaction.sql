@@ -149,6 +149,7 @@ select * from accounts;
 select * from checking_account;
 select * from student_checking_account;
 select * from saving_account;
+select * from credit_card_account;
 select * from transactions;
 select * from third_party;
 delete from user where id IS NOT NULL;
@@ -159,7 +160,8 @@ delete from user where id = 5;
 delete from third_party where id = 1;
 
 update saving_account set last_interest_rate_date = '2020-08-20' WHERE id = 1;
-
+update credit_card_account set last_interest_rate_date = '2020-08-20' WHERE id = 1;
+update accounts set balance = 500 WHERE id = 3;
 select u.username from user u left join admin a on u.id = a.user_id where u.username is NOT NULL;
 
 select * from accounts where primary_owner_id = 2 OR primary_owner_id = 2;

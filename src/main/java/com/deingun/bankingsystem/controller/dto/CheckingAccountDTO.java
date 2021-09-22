@@ -1,16 +1,23 @@
 package com.deingun.bankingsystem.controller.dto;
 
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 
 public class CheckingAccountDTO {
 
     @NotEmpty(message = "Entity must be provided")
+    @Length(min = 4,max = 4, message = "Entity number must contain 4 digits")
     private String entityNumber;
     @NotEmpty(message = "Branch must be provided")
+    @Length(min = 4,max = 4, message = "Entity number must contain 4 digits")
     private String branchNumber;
-    @NotEmpty(message = "Amount must be provided")
-    private String amount;
+    @NotNull(message = "Amount must be provided")
+    @DecimalMin(value = "0.0", message = "Amount cannot be negative")
+    private BigDecimal amount;
     private String currency;
     @NotNull(message = "Primary Owner must be provided")
     private Long primaryOwnerId;
@@ -34,11 +41,11 @@ public class CheckingAccountDTO {
         this.branchNumber = branchNumber;
     }
 
-    public String getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(String amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 

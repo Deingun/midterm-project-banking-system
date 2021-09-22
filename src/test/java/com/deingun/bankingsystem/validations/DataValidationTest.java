@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.validation.constraints.AssertTrue;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Scanner;
 
@@ -33,14 +34,14 @@ class DataValidationTest {
 
     @Test
     void validateAmount_ValidAmount_False() {
-        String amount = "100";
+        BigDecimal amount = new BigDecimal(100);
         Boolean invalidAmount = DataValidation.validateAmount(amount);
         assertFalse(invalidAmount);
     }
 
     @Test
     void validateAmount_InvalidAmount_True() {
-        String amount = "-100";
+        BigDecimal amount = new BigDecimal(-100);
         Boolean invalidAmount = DataValidation.validateAmount(amount);
         assertTrue(invalidAmount);
     }

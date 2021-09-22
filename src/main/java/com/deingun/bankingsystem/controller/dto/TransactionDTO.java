@@ -1,15 +1,20 @@
 package com.deingun.bankingsystem.controller.dto;
 
 
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
+
 public class TransactionDTO {
 
+    @NotEmpty(message = "Origin account must be provided")
     private String originAccount;
+    @NotEmpty(message = "Destination account must be provided")
     private String destinationAccount;
-    private String accountNumber;
-    private String amount;
-    private String hashedKey;
-    private String secretKey;
-    private String transactionType;
+    @NotNull(message = "Amount must be provided")
+    @DecimalMin(value = "0.0", message = "Amount cannot be negative")
+    private BigDecimal amount;
 
 
     public String getOriginAccount() {
@@ -28,45 +33,14 @@ public class TransactionDTO {
         this.destinationAccount = destinationAccount;
     }
 
-
-    public String getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(String amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
-    public String getHashedKey() {
-        return hashedKey;
-    }
 
-    public void setHashedKey(String hashedKey) {
-        this.hashedKey = hashedKey;
-    }
-
-    public String getTransactionType() {
-        return transactionType;
-    }
-
-    public void setTransactionType(String transactionType) {
-        this.transactionType = transactionType;
-    }
-
-    public String getAccountNumber() {
-        return accountNumber;
-    }
-
-    public void setAccountNumber(String accountNumber) {
-        this.accountNumber = accountNumber;
-    }
-
-    public String getSecretKey() {
-        return secretKey;
-    }
-
-    public void setSecretKey(String secretKey) {
-        this.secretKey = secretKey;
-    }
 }
 

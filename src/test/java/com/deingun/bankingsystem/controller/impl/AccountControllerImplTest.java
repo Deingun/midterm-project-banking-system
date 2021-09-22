@@ -115,9 +115,10 @@ class AccountControllerImplTest {
         creditCardAccountRepository.deleteAll();
         savingAccountRepository.deleteAll();
         checkingAccountRepository.deleteAll();
-        userRepository.deleteAll();
+        accountRepository.deleteAll();
         accountHolderRepository.deleteAll();
         adminRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test

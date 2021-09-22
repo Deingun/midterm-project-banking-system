@@ -13,10 +13,7 @@ import com.deingun.bankingsystem.repository.user.UserRepository;
 import com.deingun.bankingsystem.security.CustomUserDetails;
 import com.deingun.bankingsystem.utils.Address;
 import com.deingun.bankingsystem.utils.Money;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -152,7 +149,7 @@ class TransactionServiceImplTest {
         accountRepository.deleteAll();
         userRepository.deleteAll();
         accountHolderRepository.deleteAll();
-        customUserDetails = null;
+
     }
 
     @Test
@@ -160,11 +157,11 @@ class TransactionServiceImplTest {
 
         Optional<Account> optionalOriginAccount = accountRepository.findByAccountNumber(checkingAccountTest1.getAccountNumber());
         Optional<Account> optionalDestinationAccount = accountRepository.findByAccountNumber(checkingAccountTest2.getAccountNumber());
-        customUserDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername("accountHolderTest1");
+        customUserDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(optionalOriginAccount.get().getPrimaryOwner().getUsername());
 
         Optional<User> optionalUser = userRepository.findByUsername(customUserDetails.getUsername());
         transactionServiceImpl.newTransaction(optionalOriginAccount.get().getAccountNumber(), optionalDestinationAccount.get().getAccountNumber(),
-                "300", customUserDetails);
+                new BigDecimal(300), customUserDetails);
         accountRepository.flush();
 
         Optional<Account> optionalOriginAccountResult = accountRepository.findByAccountNumber(checkingAccountTest1.getAccountNumber());
@@ -175,7 +172,7 @@ class TransactionServiceImplTest {
     }
 
     @Test
-    void newTransaction_InvalidAmountMoreThanBalance_newTransaction() {
+    void newTransaction_InvalidAmountMoreThanBalance_ThrowException() {
 
         Optional<Account> optionalOriginAccount = accountRepository.findByAccountNumber(checkingAccountTest1.getAccountNumber());
         Optional<Account> optionalDestinationAccount = accountRepository.findByAccountNumber(checkingAccountTest2.getAccountNumber());
@@ -184,26 +181,12 @@ class TransactionServiceImplTest {
 
         Assertions.assertThrows(ResponseStatusException.class, () -> {
             transactionServiceImpl.newTransaction(optionalOriginAccount.get().getAccountNumber(), optionalDestinationAccount.get().getAccountNumber(),
-                    "2000", customUserDetails);
+                    new BigDecimal(2000), customUserDetails);
         });
     }
 
     @Test
-    void newTransaction_InvalidAmountLessThanZero_newTransaction() {
-
-        Optional<Account> optionalOriginAccount = accountRepository.findByAccountNumber(checkingAccountTest1.getAccountNumber());
-        Optional<Account> optionalDestinationAccount = accountRepository.findByAccountNumber(checkingAccountTest2.getAccountNumber());
-        customUserDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(optionalOriginAccount.get().getPrimaryOwner().getUsername());
-        Optional<User> optionalUser = userRepository.findByUsername(customUserDetails.getUsername());
-
-        Assertions.assertThrows(ResponseStatusException.class, () -> {
-            transactionServiceImpl.newTransaction(optionalOriginAccount.get().getAccountNumber(), optionalDestinationAccount.get().getAccountNumber(),
-                    "-100", customUserDetails);
-        });
-    }
-
-    @Test
-    void newTransaction_InvalidOriginAccount_newTransaction() {
+    void newTransaction_InvalidOriginAccount_ThrowException() {
 
         Optional<Account> optionalOriginAccount = accountRepository.findByAccountNumber(checkingAccountTest1.getAccountNumber());
         Optional<Account> optionalDestinationAccount = accountRepository.findByAccountNumber(checkingAccountTest2.getAccountNumber());
@@ -212,12 +195,12 @@ class TransactionServiceImplTest {
 
         Assertions.assertThrows(ResponseStatusException.class, () -> {
             transactionServiceImpl.newTransaction("9999999", optionalDestinationAccount.get().getAccountNumber(),
-                    "700", customUserDetails);
+                    new BigDecimal(700), customUserDetails);
         });
     }
 
     @Test
-    void newTransaction_InvalidDestinationAccount_newTransaction() {
+    void newTransaction_InvalidDestinationAccount_ThrowException() {
 
         Optional<Account> optionalOriginAccount = accountRepository.findByAccountNumber(checkingAccountTest1.getAccountNumber());
         Optional<Account> optionalDestinationAccount = accountRepository.findByAccountNumber(checkingAccountTest2.getAccountNumber());
@@ -226,7 +209,7 @@ class TransactionServiceImplTest {
 
         Assertions.assertThrows(ResponseStatusException.class, () -> {
             transactionServiceImpl.newTransaction(optionalOriginAccount.get().getAccountNumber(), "999999999999",
-                    "700", customUserDetails);
+                    new BigDecimal(700), customUserDetails);
         });
     }
 
@@ -240,29 +223,30 @@ class TransactionServiceImplTest {
 
         Assertions.assertThrows(ResponseStatusException.class, () -> {
             transactionServiceImpl.newTransaction(optionalOriginAccount.get().getAccountNumber(), "999999999999",
-                    "700", customUserDetails);
+                    new BigDecimal(700), customUserDetails);
         });
     }
 
     @Test
     void validateBalance_EnoughtBalanceInAccount_ReturnFalse() {
-        assertFalse(transactionServiceImpl.validateBalance(checkingAccountTest1.getAccountNumber(),"500"));
+        assertFalse(transactionServiceImpl.validateBalance(checkingAccountTest1.getAccountNumber(),new BigDecimal(500)));
     }
 
     @Test
     void validateBalance_InsufficientBalanceInAccount_ReturnTrue() {
-        assertTrue(transactionServiceImpl.validateBalance(checkingAccountTest1.getAccountNumber(),"2000"));
+        assertTrue(transactionServiceImpl.validateBalance(checkingAccountTest1.getAccountNumber(),new BigDecimal(2000)));
     }
 
     @Test
     void validateBalanceWithPenaltyFee_ApplyPenalty_UpdateAccountBalance() {
-        assertTrue(transactionServiceImpl.validateBalanceWithPenaltyFee(checkingAccountTest3.getAccountNumber(),"200"));
+        assertTrue(transactionServiceImpl.validateBalanceWithPenaltyFee(checkingAccountTest3.getAccountNumber(),new BigDecimal(200)));
     }
 
     @Test
     void validateBalanceWithPenaltyFee_NotApplyPenalty_UpdateAccountBalance() {
-        assertFalse(transactionServiceImpl.validateBalanceWithPenaltyFee(checkingAccountTest1.getAccountNumber(),"200"));
+        assertFalse(transactionServiceImpl.validateBalanceWithPenaltyFee(checkingAccountTest1.getAccountNumber(),new BigDecimal(200)));
     }
+
 
     @Test
     void validateOwner_ValidOwner_ReturnFalse() {

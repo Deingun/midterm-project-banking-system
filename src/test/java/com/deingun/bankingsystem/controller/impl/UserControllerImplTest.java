@@ -87,10 +87,10 @@ class UserControllerImplTest {
     @AfterEach
     void tearDown() {
 
-        userRepository.deleteAll();
         accountHolderRepository.deleteAll();
         adminRepository.deleteAll();
         thirdPartyRepository.deleteAll();
+        userRepository.deleteAll();
 
     }
 

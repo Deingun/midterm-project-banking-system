@@ -46,8 +46,8 @@ class AccountHolderRepositoryTest {
 
     @AfterEach
     void tearDown() {
-        userRepository.deleteAll();
         accountHolderRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test

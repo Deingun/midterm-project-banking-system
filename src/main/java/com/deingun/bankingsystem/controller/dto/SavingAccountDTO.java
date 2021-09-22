@@ -5,6 +5,7 @@ import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 
 public class SavingAccountDTO {
 
@@ -12,8 +13,9 @@ public class SavingAccountDTO {
     private String entityNumber;
     @NotEmpty(message = "Branch must be provided")
     private String branchNumber;
-    @NotEmpty(message = "Amount must be provided")
-    private String amount;
+    @NotNull(message = "Amount must be provided")
+    @DecimalMin(value = "0.0", message = "Amount cannot be negative")
+    private BigDecimal amount;
     private String currency;
     @NotNull(message = "Primary Owner must be provided")
     private Long primaryOwnerId;
@@ -41,11 +43,11 @@ public class SavingAccountDTO {
         this.branchNumber = branchNumber;
     }
 
-    public String getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(String amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 

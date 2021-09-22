@@ -1,5 +1,6 @@
 package com.deingun.bankingsystem.controller.dto;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -24,6 +25,7 @@ public class AccountHolderDTO {
     private String country;
     @NotNull(message = "Postal Code must be provided")
     private Integer postalCode;
+    @Email(message = "Must be a properly formatted email address")
     private String mailingAddress;
 
     public Long getId() {

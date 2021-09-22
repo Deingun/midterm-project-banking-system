@@ -7,13 +7,11 @@ import com.deingun.bankingsystem.model.user.AccountHolder;
 import com.deingun.bankingsystem.model.user.ThirdParty;
 import com.deingun.bankingsystem.model.user.User;
 import com.deingun.bankingsystem.service.interfaces.UserService;
-import com.deingun.bankingsystem.utils.Address;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController

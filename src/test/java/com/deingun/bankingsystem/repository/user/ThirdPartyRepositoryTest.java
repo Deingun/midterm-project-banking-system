@@ -41,9 +41,8 @@ class ThirdPartyRepositoryTest {
 
     @AfterEach
     void tearDown() {
-
-        userRepository.deleteAll();
         thirdPartyRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test

@@ -42,113 +42,92 @@ public class TransactionServiceImpl implements TransactionService {
     TransactionRepository transactionRepository;
 
     @Override
-    public Transaction newTransaction(String originAccountNumber, String destinationAccountNumber, String amount, CustomUserDetails customUserDetails) {
+    public Transaction newTransaction(String originAccountNumber, String destinationAccountNumber, BigDecimal amount, CustomUserDetails customUserDetails) {
 
-        if (originAccountNumber == null) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Origin account number must be provided");
-        } else if (destinationAccountNumber == null) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Destination account number must be provided");
-        } else if (amount == null) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Amount must be provided");
-        } else if (DataValidation.validateAmount(amount)) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The amount must be more than zero");
+
+        Optional<Account> optionalOriginAccount = accountRepository.findByAccountNumber(originAccountNumber);
+        Optional<Account> optionalDestinationAccount = accountRepository.findByAccountNumber(destinationAccountNumber);
+        Optional<User> optionalUser = userRepository.findByUsername(customUserDetails.getUsername());
+
+        if (optionalOriginAccount.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The origin account provided does not exist");
+        } else if (optionalDestinationAccount.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The destination account provided does not exist");
+        } else if (validateOwner(originAccountNumber, customUserDetails)) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The transaction cannot be made since you are not the primary or secondary owner of the selected account.");
+        } else if (validateBalance(originAccountNumber, amount)) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The account does not have sufficient funds to complete the transaction.");
+        } else if (validateBalanceWithPenaltyFee(originAccountNumber, amount)) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The account does not have sufficient funds to complete the transaction. \" " +
+                    "The resulting balance would be less than the minimum allowed balance and there are not enough funds to charge the penalty fee.");
         } else {
-            Optional<Account> optionalOriginAccount = accountRepository.findByAccountNumber(originAccountNumber);
-            Optional<Account> optionalDestinationAccount = accountRepository.findByAccountNumber(destinationAccountNumber);
-            Optional<User> optionalUser = userRepository.findByUsername(customUserDetails.getUsername());
 
-            if (optionalOriginAccount.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The origin account provided does not exist");
-            } else if (optionalDestinationAccount.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The destination account provided does not exist");
-            } else if (validateOwner(originAccountNumber, customUserDetails)) {
-                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The transaction cannot be made since you are not the primary or secondary owner of the selected account.");
-            } else if (validateBalance(originAccountNumber, amount)) {
-                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The account does not have sufficient funds to complete the transaction.");
-            } else if (validateBalanceWithPenaltyFee(originAccountNumber, amount)) {
-                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The account does not have sufficient funds to complete the transaction. \" " +
-                        "The resulting balance would be less than the minimum allowed balance and there are not enough funds to charge the penalty fee.");
-            } else {
+            Optional<User> optionalPaymasterUser = userRepository.findById(optionalOriginAccount.get().getPrimaryOwner().getId());
+            Optional<User> optionalReceiverUser = userRepository.findById(optionalDestinationAccount.get().getPrimaryOwner().getId());
 
-                Optional<User> optionalPaymasterUser = userRepository.findById(optionalOriginAccount.get().getPrimaryOwner().getId());
-                Optional<User> optionalReceiverUser = userRepository.findById(optionalDestinationAccount.get().getPrimaryOwner().getId());
+            Transaction transaction = new Transaction(optionalOriginAccount.get(), optionalDestinationAccount.get(),
+                    optionalPaymasterUser.get(), optionalReceiverUser.get(), new Money(amount), LocalDateTime.now());
 
-                Transaction transaction = new Transaction(optionalOriginAccount.get(), optionalDestinationAccount.get(),
-                        optionalPaymasterUser.get(), optionalReceiverUser.get(), new Money(new BigDecimal(amount)), LocalDateTime.now());
+            BigDecimal newBalanceOriginAccount = optionalOriginAccount.get().getBalance().decreaseAmount(new Money(amount));
+            optionalOriginAccount.get().setBalance(new Money(newBalanceOriginAccount));
 
-                BigDecimal newBalanceOriginAccount = optionalOriginAccount.get().getBalance().decreaseAmount(new Money(new BigDecimal(amount)));
-                optionalOriginAccount.get().setBalance(new Money(newBalanceOriginAccount));
+            BigDecimal newBalanceDestinationAccount = optionalDestinationAccount.get().getBalance().increaseAmount(new Money(amount));
+            optionalDestinationAccount.get().setBalance(new Money(newBalanceDestinationAccount));
 
-                BigDecimal newBalanceDestinationAccount = optionalDestinationAccount.get().getBalance().increaseAmount(new Money(new BigDecimal(amount)));
-                optionalDestinationAccount.get().setBalance(new Money(newBalanceDestinationAccount));
+            accountRepository.save(optionalOriginAccount.get());
+            accountRepository.save(optionalDestinationAccount.get());
 
-                accountRepository.save(optionalOriginAccount.get());
-                accountRepository.save(optionalDestinationAccount.get());
+            chargePenaltyFee(optionalOriginAccount.get().getAccountNumber(), newBalanceOriginAccount);
 
-                chargePenaltyFee(optionalOriginAccount.get().getAccountNumber(), newBalanceOriginAccount);
-
-                return transactionRepository.save(transaction);
-            }
+            return transactionRepository.save(transaction);
         }
+
 
     }
 
     @Override
-    public String newThirdPartyTransaction(String hashedKey, String accountNumber, String amount, String secretKey, TransactionType transactionType, CustomUserDetails customUserDetails) {
+    public String newThirdPartyTransaction(String hashedKey, String accountNumber, BigDecimal amount, String secretKey, TransactionType transactionType, CustomUserDetails customUserDetails) {
 
-        if (accountNumber == null) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Account number must be provided");
-        } else if (amount == null) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Amount must be provided");
-        }else if (DataValidation.validateAmount(amount)) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The amount must be more than zero");
-        } else if (hashedKey == null) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The hashed key must be provided");
-        }else if (transactionType == null) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The transactionType must be provided");
+
+        Optional<Account> optionalAccount = accountRepository.findByAccountNumber(accountNumber);
+        Optional<User> optionalUser = userRepository.findByUsername(customUserDetails.getUsername());
+        ThirdParty thirdParty = (ThirdParty) optionalUser.get();
+
+        if (optionalAccount.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The account provided does not exist");
+        } else if (!thirdParty.getHashedKey().equals(hashedKey)) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The hashed key provided is wrong");
+        } else if (transactionType == TransactionType.DEBIT && validateBalance(accountNumber, amount)) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The account does not have sufficient funds to complete the transaction.");
+        } else if (transactionType == TransactionType.DEBIT && validateBalanceWithPenaltyFee(accountNumber, amount)) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The account does not have sufficient funds to complete the transaction. \" " +
+                    "The resulting balance would be less than the minimum allowed balance and there are not enough funds to charge the penalty fee.");
+        } else if (optionalAccount.get() instanceof CreditCardAccount) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The account type provided in incorrect.");
         } else {
-            Optional<Account> optionalAccount = accountRepository.findByAccountNumber(accountNumber);
-            Optional<User> optionalUser = userRepository.findByUsername(customUserDetails.getUsername());
-            ThirdParty thirdParty = (ThirdParty) optionalUser.get();
 
-            if (optionalAccount.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The account provided does not exist");
-            }else if(!thirdParty.getHashedKey().equals(hashedKey)){
-                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The hashed key provided is wrong");
-            }else if (transactionType == TransactionType.DEBIT && validateBalance(accountNumber, amount)) {
-                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The account does not have sufficient funds to complete the transaction.");
-            }else if (transactionType == TransactionType.DEBIT && validateBalanceWithPenaltyFee(accountNumber, amount)) {
-                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The account does not have sufficient funds to complete the transaction. \" " +
-                        "The resulting balance would be less than the minimum allowed balance and there are not enough funds to charge the penalty fee.");
-            }else if (optionalAccount.get() instanceof CreditCardAccount) {
-                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The account type provided in incorrect.");
-            }else{
+            String accountSecretKey = getSecretKey(accountNumber);
 
-                String accountSecretKey = getSecretKey(accountNumber);
+            if (!accountSecretKey.equals(secretKey)) {
+                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The secretKey key provided is wrong");
+            } else {
 
-                if(!accountSecretKey.equals(secretKey)){
-                    throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The secretKey key provided is wrong");
-                }else{
+                Transaction transaction = new Transaction(thirdParty, optionalAccount.get(), new Money(amount), LocalDateTime.now());
+                if (transactionType == TransactionType.CREDIT) {
+                    BigDecimal newBalanceAccount = optionalAccount.get().getBalance().increaseAmount(new Money(amount));
+                    optionalAccount.get().setBalance(new Money(newBalanceAccount));
+                    accountRepository.save(optionalAccount.get());
+                    transactionRepository.save(transaction);
+                    return amount + " USD credit made to the account " + accountNumber + ".";
 
-                    Transaction transaction = new Transaction(thirdParty, optionalAccount.get(), new Money(new BigDecimal(amount)), LocalDateTime.now());
-                    if(transactionType == TransactionType.CREDIT){
-                        BigDecimal newBalanceAccount = optionalAccount.get().getBalance().increaseAmount(new Money(new BigDecimal(amount)));
-                        optionalAccount.get().setBalance(new Money(newBalanceAccount));
-                        accountRepository.save(optionalAccount.get());
-                        transactionRepository.save(transaction);
-                        return amount +" USD credit made to the account " + accountNumber + ".";
-
-                    }else{
-                        BigDecimal newBalanceAccount = optionalAccount.get().getBalance().decreaseAmount(new Money(new BigDecimal(amount)));
-                        optionalAccount.get().setBalance(new Money(newBalanceAccount));
-                        accountRepository.save(optionalAccount.get());
-                        chargePenaltyFee(optionalAccount.get().getAccountNumber(), newBalanceAccount);
-                        transactionRepository.save(transaction);
-                        return amount +" USD debit made to the account " + accountNumber + ".";
-                    }
-
+                } else {
+                    BigDecimal newBalanceAccount = optionalAccount.get().getBalance().decreaseAmount(new Money(amount));
+                    optionalAccount.get().setBalance(new Money(newBalanceAccount));
+                    accountRepository.save(optionalAccount.get());
+                    chargePenaltyFee(optionalAccount.get().getAccountNumber(), newBalanceAccount);
+                    transactionRepository.save(transaction);
+                    return amount + " USD debit made to the account " + accountNumber + ".";
                 }
-
             }
         }
     }
@@ -158,17 +137,12 @@ public class TransactionServiceImpl implements TransactionService {
      *
      * @param accountNumber, amount
      */
-    public boolean validateBalance(String accountNumber, String amount) {
+    public boolean validateBalance(String accountNumber, BigDecimal amount) {
         Optional<Account> optionalAccount = accountRepository.findByAccountNumber(accountNumber);
         BigDecimal balance = optionalAccount.get().getBalance().getAmount();
-        BigDecimal transactionAmount = new BigDecimal(amount);
-        int result = balance.compareTo(transactionAmount);
+        int result = balance.compareTo(amount);
 
-        if (result != 1) {
-            return true;
-        } else {
-            return false;
-        }
+        return result != 1;
     }
 
     /**
@@ -176,19 +150,14 @@ public class TransactionServiceImpl implements TransactionService {
      *
      * @param accountNumber, amount
      */
-    public boolean validateBalanceWithPenaltyFee(String accountNumber, String amount) {
+    public boolean validateBalanceWithPenaltyFee(String accountNumber, BigDecimal amount) {
         Optional<Account> optionalAccount = accountRepository.findByAccountNumber(accountNumber);
         BigDecimal balance = optionalAccount.get().getBalance().getAmount();
-        BigDecimal transactionAmount = new BigDecimal(amount);
         BigDecimal penaltyFee = optionalAccount.get().getPENALTYFEE();
 
         if (optionalAccount.get().getAccountType() == AccountType.CHECKING || optionalAccount.get().getAccountType() == AccountType.SAVING) {
-            int result = balance.compareTo(transactionAmount.add(penaltyFee));
-            if (result == -1) {
-                return true;
-            } else {
-                return false;
-            }
+            int result = balance.compareTo(amount.add(penaltyFee));
+            return result < 0;
         } else {
             return false;
         }
@@ -204,17 +173,9 @@ public class TransactionServiceImpl implements TransactionService {
         Optional<User> optionalUser = userRepository.findByUsername(customUserDetails.getUsername());
 
         if (optionalAccount.get().getSecondaryOwner() != null) {
-            if (optionalAccount.get().getPrimaryOwner().getId() != optionalUser.get().getId() && optionalAccount.get().getSecondaryOwner().getId() != optionalUser.get().getId()) {
-                return true;
-            } else {
-                return false;
-            }
+            return !optionalAccount.get().getPrimaryOwner().getId().equals(optionalUser.get().getId()) && !optionalAccount.get().getSecondaryOwner().getId().equals(optionalUser.get().getId());
         } else {
-            if (optionalAccount.get().getPrimaryOwner().getId() != optionalUser.get().getId()) {
-                return true;
-            } else {
-                return false;
-            }
+            return !optionalAccount.get().getPrimaryOwner().getId().equals(optionalUser.get().getId());
         }
     }
 
@@ -256,13 +217,13 @@ public class TransactionServiceImpl implements TransactionService {
 
         Optional<Account> optionalAccount = accountRepository.findByAccountNumber(accountNumber);
 
-        if(optionalAccount.get() instanceof CheckingAccount){
+        if (optionalAccount.get() instanceof CheckingAccount) {
             CheckingAccount checkingAccount = (CheckingAccount) optionalAccount.get();
             return checkingAccount.getSecretKey();
-        }else if(optionalAccount.get() instanceof StudentCheckingAccount){
+        } else if (optionalAccount.get() instanceof StudentCheckingAccount) {
             StudentCheckingAccount studentCheckingAccount = (StudentCheckingAccount) optionalAccount.get();
             return studentCheckingAccount.getSecretKey();
-        }else{
+        } else {
             SavingAccount savingAccount = (SavingAccount) optionalAccount.get();
             return savingAccount.getSecretKey();
         }

@@ -3,7 +3,6 @@ package com.deingun.bankingsystem.model.user;
 import com.deingun.bankingsystem.enums.Role;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 
 @Entity

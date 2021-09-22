@@ -38,6 +38,9 @@ class SavingAccountRepositoryTest {
     UserRepository userRepository;
 
     @Autowired
+    AccountRepository accountRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
 
@@ -72,8 +75,9 @@ class SavingAccountRepositoryTest {
     @AfterEach
     void tearDown() {
         savingAccountRepository.deleteAll();
-        userRepository.deleteAll();
         accountHolderRepository.deleteAll();
+        userRepository.deleteAll();
+        accountRepository.deleteAll();
     }
 
     @Test
