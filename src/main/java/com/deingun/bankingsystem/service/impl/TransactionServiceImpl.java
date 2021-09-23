@@ -76,8 +76,7 @@ public class TransactionServiceImpl implements TransactionService {
         } else if (validateBalance(originAccountNumber, amount)) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The account does not have sufficient funds to complete the transaction.");
         } else if (validateBalanceWithPenaltyFee(originAccountNumber, amount)) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The account does not have sufficient funds to complete the transaction. \" " +
-                    "The resulting balance would be less than the minimum allowed balance and there are not enough funds to charge the penalty fee.");
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The account does not have sufficient funds to complete the transaction. The resulting balance would be less than the minimum allowed balance and there are not enough funds to charge the penalty fee.");
         } else if (!validateStatus(originAccountNumber)) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The state account is frozen. Unable to make transactions.");
         } else if (maxTransactionAllowed(originAccountNumber)) {
