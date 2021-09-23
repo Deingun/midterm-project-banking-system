@@ -1,5 +1,6 @@
 package com.deingun.bankingsystem.service.interfaces;
 
+import com.deingun.bankingsystem.enums.Status;
 import com.deingun.bankingsystem.model.account.Account;
 import com.deingun.bankingsystem.security.CustomUserDetails;
 
@@ -23,4 +24,6 @@ public interface AccountService {
     void updateBalance(String accountNumber, BigDecimal amount);
 
     void applyInterestRate(List<Account> accountList);
+
+    void updateStatus(String accountNumber, Status status);
 }

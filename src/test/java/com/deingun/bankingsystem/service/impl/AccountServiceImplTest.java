@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.ConstraintViolationException;
 import java.math.BigDecimal;
@@ -184,6 +185,15 @@ class AccountServiceImplTest {
     @Test
     void updateBalance() {
     }
+
+    @Test
+    void updateStatus_ValidStatus_StatusUpdate() {
+        accountService.updateStatus(checkingAccountTest1.getAccountNumber(),Status.FROZEN);
+        Optional<CheckingAccount> optionalCheckingAccount = checkingAccountRepository.findById(checkingAccountTest1.getId());
+        assertSame(optionalCheckingAccount.get().getStatus(), Status.FROZEN);
+    }
+
+
 
     @Test
     void applyInterestRate() {

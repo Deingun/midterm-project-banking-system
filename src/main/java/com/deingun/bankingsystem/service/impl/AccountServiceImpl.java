@@ -23,6 +23,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -322,6 +323,35 @@ public class AccountServiceImpl implements AccountService {
                     creditCardAccountRepository.save(creditCardAccount);
                 }
             }
+        }
+    }
+
+    @Override
+    public void updateStatus(String accountNumber, Status status) {
+        Optional<Account> optionalAccount = accountRepository.findByAccountNumber(accountNumber);
+        if (optionalAccount.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Account number provided does not exist");
+        } else {
+
+           try{
+               if (optionalAccount.get() instanceof CheckingAccount) {
+                   CheckingAccount checkingAccount = (CheckingAccount) optionalAccount.get();
+                   checkingAccount.setStatus(status);
+                   checkingAccountRepository.save(checkingAccount);
+               } else if (optionalAccount.get() instanceof StudentCheckingAccount) {
+                   StudentCheckingAccount studentCheckingAccount = (StudentCheckingAccount) optionalAccount.get();
+                   studentCheckingAccount.setStatus(status);
+                   studentCheckingAccountRepository.save(studentCheckingAccount);
+               } else if (optionalAccount.get() instanceof SavingAccount) {
+                   SavingAccount savingAccount = (SavingAccount) optionalAccount.get();
+                   savingAccount.setStatus(status);
+                   savingAccountRepository.save(savingAccount);
+               }
+           }catch (Exception e){
+               throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Status provided is not correct. Must be ACTIVE or FROZEN");
+           }
+
+
         }
     }
 

@@ -4,6 +4,7 @@ import com.deingun.bankingsystem.controller.dto.CheckingAccountDTO;
 import com.deingun.bankingsystem.controller.dto.CreditCardAccountDTO;
 import com.deingun.bankingsystem.controller.dto.SavingAccountDTO;
 import com.deingun.bankingsystem.controller.dto.TransactionDTO;
+import com.deingun.bankingsystem.enums.Status;
 import com.deingun.bankingsystem.model.Transaction;
 import com.deingun.bankingsystem.model.account.Account;
 import com.deingun.bankingsystem.model.account.CheckingAccount;
@@ -26,4 +27,6 @@ public interface AccountController {
     Account createCreditCardAccount(CreditCardAccountDTO creditCardAccountDTO);
 
     void updateBalance(String accountNumber, TransactionDTO transactionDTO);
+
+    void updateStatus(String accountNumber, Status status);
 }
