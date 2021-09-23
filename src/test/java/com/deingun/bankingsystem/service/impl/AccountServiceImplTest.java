@@ -188,7 +188,7 @@ class AccountServiceImplTest {
 
     @Test
     void updateStatus_ValidStatus_StatusUpdate() {
-        accountService.updateStatus(checkingAccountTest1.getAccountNumber(),Status.FROZEN);
+        accountService.updateStatus(checkingAccountTest1.getAccountNumber(),"frozen");
         Optional<CheckingAccount> optionalCheckingAccount = checkingAccountRepository.findById(checkingAccountTest1.getId());
         assertSame(optionalCheckingAccount.get().getStatus(), Status.FROZEN);
     }

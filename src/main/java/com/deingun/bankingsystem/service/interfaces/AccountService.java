@@ -25,5 +25,5 @@ public interface AccountService {
 
     void applyInterestRate(List<Account> accountList);
 
-    void updateStatus(String accountNumber, Status status);
+    void updateStatus(String accountNumber, String status);
 }

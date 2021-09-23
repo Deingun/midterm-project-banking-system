@@ -28,5 +28,5 @@ public interface AccountController {
 
     void updateBalance(String accountNumber, TransactionDTO transactionDTO);
 
-    void updateStatus(String accountNumber, Status status);
+    void updateStatus(String accountNumber, String status);
 }

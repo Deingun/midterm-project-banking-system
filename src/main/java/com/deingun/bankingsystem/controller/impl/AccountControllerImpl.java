@@ -44,7 +44,7 @@ public class AccountControllerImpl implements AccountController {
 
     @PatchMapping("/accounts/status/{accountNumber}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateStatus(@PathVariable(name = "accountNumber") String accountNumber, @RequestBody Status status) {
+    public void updateStatus(@PathVariable(name = "accountNumber") String accountNumber, @RequestBody String status) {
         accountService.updateStatus(accountNumber, status);
     }
 

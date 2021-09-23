@@ -327,30 +327,36 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void updateStatus(String accountNumber, Status status) {
+    public void updateStatus(String accountNumber, String status) {
         Optional<Account> optionalAccount = accountRepository.findByAccountNumber(accountNumber);
         if (optionalAccount.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Account number provided does not exist");
         } else {
 
-           try{
-               if (optionalAccount.get() instanceof CheckingAccount) {
-                   CheckingAccount checkingAccount = (CheckingAccount) optionalAccount.get();
-                   checkingAccount.setStatus(status);
-                   checkingAccountRepository.save(checkingAccount);
-               } else if (optionalAccount.get() instanceof StudentCheckingAccount) {
-                   StudentCheckingAccount studentCheckingAccount = (StudentCheckingAccount) optionalAccount.get();
-                   studentCheckingAccount.setStatus(status);
-                   studentCheckingAccountRepository.save(studentCheckingAccount);
-               } else if (optionalAccount.get() instanceof SavingAccount) {
-                   SavingAccount savingAccount = (SavingAccount) optionalAccount.get();
-                   savingAccount.setStatus(status);
-                   savingAccountRepository.save(savingAccount);
-               }
-           }catch (Exception e){
-               throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Status provided is not correct. Must be ACTIVE or FROZEN");
-           }
+            status = status.toUpperCase(Locale.ROOT);
+               switch (status) {
 
+                       case "FROZEN":
+
+                   case "ACTIVE":
+                       if (optionalAccount.get() instanceof CheckingAccount) {
+                               CheckingAccount checkingAccount = (CheckingAccount) optionalAccount.get();
+                               checkingAccount.setStatus(Status.valueOf(status));
+                               checkingAccountRepository.save(checkingAccount);
+                           } else if (optionalAccount.get() instanceof StudentCheckingAccount) {
+                               StudentCheckingAccount studentCheckingAccount = (StudentCheckingAccount) optionalAccount.get();
+                               studentCheckingAccount.setStatus(Status.valueOf(status));
+                               studentCheckingAccountRepository.save(studentCheckingAccount);
+                           } else if (optionalAccount.get() instanceof SavingAccount) {
+                               SavingAccount savingAccount = (SavingAccount) optionalAccount.get();
+                               savingAccount.setStatus(Status.valueOf(status));
+                               savingAccountRepository.save(savingAccount);
+                           }
+                           break;
+
+                       default: throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Incorrect Status, must be FROZEN OR ACTIVE");
+
+                   }
 
         }
     }
