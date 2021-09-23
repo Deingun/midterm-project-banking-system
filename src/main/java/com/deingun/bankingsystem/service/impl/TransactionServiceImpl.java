@@ -10,6 +10,8 @@ import com.deingun.bankingsystem.model.user.User;
 import com.deingun.bankingsystem.repository.TransactionRepository;
 import com.deingun.bankingsystem.repository.account.AccountRepository;
 import com.deingun.bankingsystem.repository.account.CheckingAccountRepository;
+import com.deingun.bankingsystem.repository.account.SavingAccountRepository;
+import com.deingun.bankingsystem.repository.account.StudentCheckingAccountRepository;
 import com.deingun.bankingsystem.repository.user.UserRepository;
 import com.deingun.bankingsystem.security.CustomUserDetails;
 import com.deingun.bankingsystem.service.interfaces.TransactionService;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +32,8 @@ import java.util.Optional;
 public class TransactionServiceImpl implements TransactionService {
 
     private final DataValidation dataValidation = new DataValidation();
+    private final BigInteger MAXTRANSACTIONSCONTROL =BigInteger.valueOf(3);
+
 
     @Autowired
     AccountRepository accountRepository;
@@ -37,22 +42,30 @@ public class TransactionServiceImpl implements TransactionService {
     CheckingAccountRepository checkingAccountRepository;
 
     @Autowired
+    StudentCheckingAccountRepository studentCheckingAccountRepository;
+
+    @Autowired
+    SavingAccountRepository savingAccountRepository;
+
+    @Autowired
     UserRepository userRepository;
 
     @Autowired
     TransactionRepository transactionRepository;
 
     /**
-     * method for accountholeders to send money to other accounts.
+     * method for accountholders to send money to other accounts.
      *
-     * @param originAccountNumber, destinationAccountNumber, amount, customUserDetails
+     * @param originAccountNumber String originAccountNumber
+     * @param destinationAccountNumber String destinationAccountNumber
+     * @param amount BigDecimal amount
+     * @param customUserDetails CustomUserDetails customUserDetails
      */
     @Override
     public Transaction newTransaction(String originAccountNumber, String destinationAccountNumber, BigDecimal amount, CustomUserDetails customUserDetails) {
 
         Optional<Account> optionalOriginAccount = accountRepository.findByAccountNumber(originAccountNumber);
         Optional<Account> optionalDestinationAccount = accountRepository.findByAccountNumber(destinationAccountNumber);
-        Optional<User> optionalUser = userRepository.findByUsername(customUserDetails.getUsername());
 
         if (optionalOriginAccount.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The origin account provided does not exist");
@@ -65,10 +78,16 @@ public class TransactionServiceImpl implements TransactionService {
         } else if (validateBalanceWithPenaltyFee(originAccountNumber, amount)) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The account does not have sufficient funds to complete the transaction. \" " +
                     "The resulting balance would be less than the minimum allowed balance and there are not enough funds to charge the penalty fee.");
-        }else if (!validateStatus(originAccountNumber)) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The state account is frozen. Unable to make transactions ");
+        } else if (!validateStatus(originAccountNumber)) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The state account is frozen. Unable to make transactions.");
+        } else if (maxTransactionAllowed(originAccountNumber)) {
+            freezeAccount(optionalOriginAccount.get().getAccountNumber());
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Possible fraud detected by number of transactions in one day. Account is frozen now.");
         }
-        else {
+        else if (twoTransactionAtSameSecond(originAccountNumber,LocalDateTime.now())) {
+            freezeAccount(optionalOriginAccount.get().getAccountNumber());
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Possible fraud detected, two transactions in the same second. Account is frozen now.");
+        }else {
 
             Optional<User> optionalPaymasterUser = userRepository.findById(optionalOriginAccount.get().getPrimaryOwner().getId());
             Optional<User> optionalReceiverUser = userRepository.findById(optionalDestinationAccount.get().getPrimaryOwner().getId());
@@ -91,10 +110,16 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
     }
+
     /**
      * method for third-party users to receive and send money to other accounts.
      *
-     * @param hashedKey, accountNumber, amount, secretKey, transactionType, customUserDetails
+     * @param hashedKey String hashedKey
+     * @param accountNumber String accountNumber
+     * @param amount BigDecimal amount
+     * @param secretKey String secretKey
+     * @param transactionType TransactionType transactionType
+     * @param customUserDetails CustomUserDetails customUserDetails
      */
     @Override
     public String newThirdPartyTransaction(String hashedKey, String accountNumber, BigDecimal amount, String secretKey, TransactionType transactionType, CustomUserDetails customUserDetails) {
@@ -146,7 +171,8 @@ public class TransactionServiceImpl implements TransactionService {
     /**
      * method to validate if there is enough balance in the account
      *
-     * @param accountNumber, amount
+     * @param accountNumber String accountNumber
+     * @param amount BigDecimal amount
      */
     public boolean validateBalance(String accountNumber, BigDecimal amount) {
         Optional<Account> optionalAccount = accountRepository.findByAccountNumber(accountNumber);
@@ -159,32 +185,20 @@ public class TransactionServiceImpl implements TransactionService {
     /**
      * method to validate if the status account is Active
      *
-     * @param accountNumber, amount
+     * @param accountNumber String accountNumber
      */
     public boolean validateStatus(String accountNumber) {
         Optional<Account> optionalAccount = accountRepository.findByAccountNumber(accountNumber);
         if (optionalAccount.get() instanceof CheckingAccount) {
             CheckingAccount checkingAccount = (CheckingAccount) optionalAccount.get();
-                if (checkingAccount.getStatus() == Status.ACTIVE){
-                    return true;
-            }else {
-                    return false;
-                }
-        }else if (optionalAccount.get() instanceof StudentCheckingAccount) {
+            return checkingAccount.getStatus() == Status.ACTIVE;
+        } else if (optionalAccount.get() instanceof StudentCheckingAccount) {
             StudentCheckingAccount studentCheckingAccount = (StudentCheckingAccount) optionalAccount.get();
-            if (studentCheckingAccount.getStatus() == Status.ACTIVE){
-                return true;
-            }else {
-                return false;
-            }
-        }else if (optionalAccount.get() instanceof SavingAccount) {
+            return studentCheckingAccount.getStatus() == Status.ACTIVE;
+        } else if (optionalAccount.get() instanceof SavingAccount) {
             SavingAccount savingAccount = (SavingAccount) optionalAccount.get();
-            if (savingAccount.getStatus() == Status.ACTIVE){
-                return true;
-            }else {
-                return false;
-            }
-        }else{
+            return savingAccount.getStatus() == Status.ACTIVE;
+        } else {
             return true;
         }
     }
@@ -192,7 +206,8 @@ public class TransactionServiceImpl implements TransactionService {
     /**
      * method to validate if there is enough balance in the account to charge the penalty Fee
      *
-     * @param accountNumber, amount
+     * @param accountNumber String accountNumber
+     * @param amount BigDecimal amount
      */
     public boolean validateBalanceWithPenaltyFee(String accountNumber, BigDecimal amount) {
         Optional<Account> optionalAccount = accountRepository.findByAccountNumber(accountNumber);
@@ -210,7 +225,8 @@ public class TransactionServiceImpl implements TransactionService {
     /**
      * method to validate if the account provided corresponds to the active user in the application
      *
-     * @param accountNumber, customUserDetails
+     * @param accountNumber String accountNumber
+     * @param customUserDetails CustomUserDetails customUserDetails
      */
     public boolean validateOwner(String accountNumber, CustomUserDetails customUserDetails) {
         Optional<Account> optionalAccount = accountRepository.findByAccountNumber(accountNumber);
@@ -226,14 +242,15 @@ public class TransactionServiceImpl implements TransactionService {
     /**
      * method to charge the penalty Fee
      *
-     * @param accountNumber, amount
+     * @param accountNumber String accountNumber
+     * @param newBalanceOriginAccount BigDecimal newBalanceOriginAccount
      */
     public void chargePenaltyFee(String accountNumber, BigDecimal newBalanceOriginAccount) {
         Optional<Account> optionalAccount = accountRepository.findByAccountNumber(accountNumber);
         if (optionalAccount.get() instanceof CheckingAccount) {
             CheckingAccount checkingAccount = (CheckingAccount) optionalAccount.get();
             BigDecimal minimumBalance = checkingAccount.getMinimumBalance();
-            if (newBalanceOriginAccount.compareTo(minimumBalance) == -1) {
+            if (newBalanceOriginAccount.compareTo(minimumBalance) < 0) {
                 BigDecimal newBalance = optionalAccount.get().getBalance().decreaseAmount(checkingAccount.getPENALTYFEE());
                 optionalAccount.get().setBalance(new Money(newBalance));
                 accountRepository.save(optionalAccount.get());
@@ -243,7 +260,7 @@ public class TransactionServiceImpl implements TransactionService {
         if (optionalAccount.get() instanceof SavingAccount) {
             SavingAccount savingAccount = (SavingAccount) optionalAccount.get();
             BigDecimal minimumBalance = savingAccount.getMinimumBalance();
-            if (newBalanceOriginAccount.compareTo(minimumBalance) == -1) {
+            if (newBalanceOriginAccount.compareTo(minimumBalance) < 0) {
                 BigDecimal newBalance = optionalAccount.get().getBalance().decreaseAmount(savingAccount.getPENALTYFEE());
                 optionalAccount.get().setBalance(new Money(newBalance));
                 accountRepository.save(optionalAccount.get());
@@ -255,7 +272,7 @@ public class TransactionServiceImpl implements TransactionService {
     /**
      * method to get the secrete key
      *
-     * @param accountNumber
+     * @param accountNumber String accountNumber
      */
     public String getSecretKey(String accountNumber) {
 
@@ -277,10 +294,75 @@ public class TransactionServiceImpl implements TransactionService {
      * method to detect pattern that indicate fraud for transactions made in 24 hours total to more
      * than 150% of the customers highest daily total transactions in any other 24 hour period.
      *
+     * @param accountNumber String accountNumber
      */
-    public boolean maxTransactionAllowed() {
-        return false;
+    public boolean maxTransactionAllowed(String accountNumber) {
+        Optional<Account> optionalAccount = accountRepository.findByAccountNumber(accountNumber);
+        List<Object[]> transactionList = transactionRepository.totalTransactionTodayByAccount(optionalAccount.get().getId());
+        if (optionalAccount.get().getAccountType()==AccountType.CREDIT_CARD){
+            return false;
+        }else{
+            if (!transactionList.isEmpty()) {
+
+                BigInteger transactionDay = (BigInteger) transactionList.get(0)[0];
+                if (transactionDay.compareTo(MAXTRANSACTIONSCONTROL)>0 ) {
+
+                    List<Object[]> maxTransactionOnOneDayList = transactionRepository.maxTotalTransactionOneDay();
+                    BigInteger maxTransactionOnOneDay = (BigInteger) maxTransactionOnOneDayList.get(0)[0];
+                    BigInteger maxTransactionOnOneDayAllowed = (maxTransactionOnOneDay.multiply(new BigInteger("150"))).divide(new BigInteger("150"));
+                    return transactionDay.compareTo(maxTransactionOnOneDayAllowed) > 0;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
 
     }
+
+    /**
+     * method to detect pattern that indicate fraud for more than 2 transactions occurring on a single account within a 1 second period.
+     *
+     * @param accountNumber String accountNumber
+     */
+    public boolean twoTransactionAtSameSecond(String accountNumber, LocalDateTime localDateTime) {
+        Optional<Account> optionalAccount = accountRepository.findByAccountNumber(accountNumber);
+        List<Object[]> transactionList = transactionRepository.getTransactionByAccountAndTimeStamp(optionalAccount.get().getId(),localDateTime);
+        if (optionalAccount.get().getAccountType()==AccountType.CREDIT_CARD){
+            return false;
+        }else{
+            if (!transactionList.isEmpty()) {
+                    return true;
+                } else {
+                    return false;
+                }
+        }
+    }
+
+    /**
+     * method to freeze account when fraud is detected
+     *
+     * @param accountNumber String accountNumber
+     */
+    public void freezeAccount(String accountNumber) {
+        Optional<Account> optionalAccount = accountRepository.findByAccountNumber(accountNumber);
+        if (optionalAccount.get() instanceof CheckingAccount) {
+            CheckingAccount checkingAccount = (CheckingAccount) optionalAccount.get();
+            checkingAccount.setStatus(Status.FROZEN);
+            checkingAccountRepository.save(checkingAccount);
+        }
+        if (optionalAccount.get() instanceof StudentCheckingAccount) {
+            StudentCheckingAccount studentCheckingAccount = (StudentCheckingAccount) optionalAccount.get();
+            studentCheckingAccount.setStatus(Status.FROZEN);
+            studentCheckingAccountRepository.save(studentCheckingAccount);
+        }
+        if (optionalAccount.get() instanceof SavingAccount) {
+            SavingAccount savingAccount = (SavingAccount) optionalAccount.get();
+            savingAccount.setStatus(Status.FROZEN);
+            savingAccountRepository.save(savingAccount);
+        }
+    }
+
 
 }

@@ -3,6 +3,7 @@ package com.deingun.bankingsystem.controller.dto;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
 public class AccountHolderDTO {
@@ -10,6 +11,7 @@ public class AccountHolderDTO {
     @NotEmpty(message = "Username must be provided")
     private String username;
     @NotEmpty(message = "Password must be provided")
+    @Size(min = 6)
     private String password;
     @NotEmpty(message = "Name must be provided")
     private String name;

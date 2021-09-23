@@ -3,9 +3,11 @@ package com.deingun.bankingsystem.repository;
 import com.deingun.bankingsystem.enums.AccountType;
 import com.deingun.bankingsystem.enums.Status;
 import com.deingun.bankingsystem.model.Transaction;
+import com.deingun.bankingsystem.model.account.Account;
 import com.deingun.bankingsystem.model.account.CheckingAccount;
 import com.deingun.bankingsystem.model.user.AccountHolder;
 import com.deingun.bankingsystem.model.user.User;
+import com.deingun.bankingsystem.repository.account.AccountRepository;
 import com.deingun.bankingsystem.repository.account.CheckingAccountRepository;
 import com.deingun.bankingsystem.repository.user.AccountHolderRepository;
 import com.deingun.bankingsystem.repository.user.UserRepository;
@@ -41,6 +43,9 @@ class TransactionRepositoryTest {
 
     @Autowired
     TransactionRepository transactionRepository;
+
+    @Autowired
+    AccountRepository accountRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -105,6 +110,7 @@ class TransactionRepositoryTest {
         checkingAccountRepository.deleteAll();
         userRepository.deleteAll();
         accountHolderRepository.deleteAll();
+        accountRepository.deleteAll();
     }
 
     @Test
@@ -148,7 +154,17 @@ class TransactionRepositoryTest {
 
     @Test
     void TotalTransactionTodayByAccount_ValidId_ObjectListWithMax() {
-        List<Object[]> maxTotalTransactionOneDay = transactionRepository.TotalTransactionTodayByAccount(checkingAccountTest1.getId());
-        assertEquals(new BigInteger("3"), maxTotalTransactionOneDay.get(0)[0]);
+        List<Object[]> maxTotalTransactionOneDay = transactionRepository.totalTransactionTodayByAccount(checkingAccountTest1.getId());
+        BigInteger total = (BigInteger) maxTotalTransactionOneDay.get(0)[0];
+        assertEquals(new BigInteger("3"), total);
+        assertTrue(total.compareTo(new BigInteger("2"))>0);
+
+    }
+
+    @Test
+    void getTransactionByAccountAndTimeStamp_ValidAccount_ObjectList() {
+        Optional<Account> optionalAccount = accountRepository.findByAccountNumber(checkingAccountTest1.getAccountNumber());
+        List<Object[]> TransactionByAccountAndTimeStamp = transactionRepository.getTransactionByAccountAndTimeStamp(optionalAccount.get().getId(),LocalDateTime.of(2021,9,22,17,10,10));
+        assertFalse(TransactionByAccountAndTimeStamp.isEmpty());
     }
 }

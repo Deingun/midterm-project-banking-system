@@ -24,6 +24,7 @@ import javax.validation.constraints.AssertTrue;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -79,6 +80,14 @@ class TransactionServiceImplTest {
     StudentCheckingAccount studentCheckingAccountTest1;
     StudentCheckingAccount studentCheckingAccountTest2;
     CustomUserDetails customUserDetails;
+
+    Transaction transactionTest1;
+    Transaction transactionTest2;
+    Transaction transactionTest3;
+    Transaction transactionTest4;
+    Transaction transactionTest5;
+    Transaction transactionTest6;
+    Transaction transactionTest7;
 
 
     @BeforeEach
@@ -136,6 +145,23 @@ class TransactionServiceImplTest {
         studentCheckingAccountTest1.setAccountNumber(studentCheckingAccountTest1.getEntityNumber() + studentCheckingAccountTest1.getBranchNumber() + studentCheckingAccountTest1.getId().toString());
         studentCheckingAccountTest2.setAccountNumber(studentCheckingAccountTest2.getEntityNumber() + studentCheckingAccountTest2.getBranchNumber() + studentCheckingAccountTest2.getId().toString());
         studentCheckingAccountRepository.saveAll(List.of(studentCheckingAccountTest1, studentCheckingAccountTest2));
+
+        User user1 = userRepository.findByUsername(accountHolderTest1.getUsername()).get();
+        User user2 = userRepository.findByUsername(accountHolderTest2.getUsername()).get();
+        Money amount1 = new Money(new BigDecimal("10"));
+        transactionTest1 = new Transaction(checkingAccountTest1, checkingAccountTest2, user1, user2, amount1, LocalDateTime.now());
+        Money amount2 = new Money(new BigDecimal("50"));
+        transactionTest2 = new Transaction(checkingAccountTest1, checkingAccountTest2, user2, user1, amount2, LocalDateTime.now());
+        transactionRepository.saveAll(List.of(transactionTest1, transactionTest2));
+        Money amount3 = new Money(new BigDecimal("20"));
+        transactionTest3 = new Transaction(checkingAccountTest1, checkingAccountTest2, user1, user2, amount2, LocalDateTime.now());
+
+        Money amount4 = new Money(new BigDecimal("1"));
+        transactionTest4 = new Transaction(checkingAccountTest1, checkingAccountTest2, user2, user1, amount4, LocalDateTime.of(2021,9,22,17,10,10));
+        transactionTest5 = new Transaction(checkingAccountTest1, checkingAccountTest2, user2, user1, amount4, LocalDateTime.of(2021,9,22,18,10,10));
+        transactionTest6 = new Transaction(checkingAccountTest1, checkingAccountTest2, user2, user1, amount4, LocalDateTime.of(2021,9,22,19,10,10));
+        transactionTest7 = new Transaction(checkingAccountTest1, checkingAccountTest2, user2, user1, amount4, LocalDateTime.of(2021,9,22,20,10,10));
+        transactionRepository.saveAll(List.of(transactionTest1, transactionTest2, transactionTest3,transactionTest4,transactionTest5,transactionTest6,transactionTest7));
     }
 
     @AfterEach
@@ -299,5 +325,57 @@ class TransactionServiceImplTest {
         checkingAccountTest1.setStatus(Status.FROZEN);
         checkingAccountRepository.save(checkingAccountTest1);
         assertFalse(transactionServiceImpl.validateStatus(checkingAccountTest1.getAccountNumber()));
+    }
+
+    @Test
+    void maxTransactionAllowed_DetectFraud_ReturnTrue() {
+        User user1 = userRepository.findByUsername(accountHolderTest1.getUsername()).get();
+        User user2 = userRepository.findByUsername(accountHolderTest2.getUsername()).get();
+        Money amount4 = new Money(new BigDecimal("1"));
+        Transaction transactionFraudTest1 = new Transaction(checkingAccountTest2, checkingAccountTest1, user1, user2, amount4, LocalDateTime.now());
+        Transaction transactionFraudTest2 = new Transaction(checkingAccountTest2, checkingAccountTest1, user1, user2, amount4, LocalDateTime.now());
+        Transaction transactionFraudTest3 = new Transaction(checkingAccountTest2, checkingAccountTest1, user1, user2, amount4, LocalDateTime.now());
+        Transaction transactionFraudTest4 = new Transaction(checkingAccountTest2, checkingAccountTest1, user1, user2, amount4, LocalDateTime.now());
+        Transaction transactionFraudTest5 = new Transaction(checkingAccountTest2, checkingAccountTest1, user1, user2, amount4, LocalDateTime.now());
+        transactionRepository.saveAll(List.of(transactionFraudTest1, transactionFraudTest2, transactionFraudTest3,transactionFraudTest4,transactionFraudTest5));
+        assertTrue(transactionServiceImpl.maxTransactionAllowed(checkingAccountTest2.getAccountNumber()));
+
+    }
+
+    @Test
+    void maxTransactionAllowed_DetectFraud_ReturnFalse() {
+        User user1 = userRepository.findByUsername(accountHolderTest1.getUsername()).get();
+        User user2 = userRepository.findByUsername(accountHolderTest2.getUsername()).get();
+        Money amount4 = new Money(new BigDecimal("1"));
+        Transaction transactionFraudTest1 = new Transaction(checkingAccountTest2, checkingAccountTest1, user1, user2, amount4, LocalDateTime.now());
+        Transaction transactionFraudTest2 = new Transaction(checkingAccountTest2, checkingAccountTest1, user1, user2, amount4, LocalDateTime.now());
+        Transaction transactionFraudTest3 = new Transaction(checkingAccountTest2, checkingAccountTest1, user1, user2, amount4, LocalDateTime.now());
+        Transaction transactionFraudTest4 = new Transaction(checkingAccountTest2, checkingAccountTest1, user1, user2, amount4, LocalDateTime.now());
+        transactionRepository.saveAll(List.of(transactionFraudTest1, transactionFraudTest2, transactionFraudTest3,transactionFraudTest4));
+        assertFalse(transactionServiceImpl.maxTransactionAllowed(checkingAccountTest2.getAccountNumber()));
+
+    }
+
+    @Test
+    void twoTransactionAtSameSecond_DetectFraud_ReturnTrue() {
+        User user1 = userRepository.findByUsername(accountHolderTest1.getUsername()).get();
+        User user2 = userRepository.findByUsername(accountHolderTest2.getUsername()).get();
+        Money amount4 = new Money(new BigDecimal("1"));
+        Transaction transactionFraudTest1 = new Transaction(checkingAccountTest2, checkingAccountTest1, user1, user2, amount4, LocalDateTime.of(2021,9,23,10,10,10));
+        transactionRepository.saveAll(List.of(transactionFraudTest1));
+        assertTrue(transactionServiceImpl.twoTransactionAtSameSecond(checkingAccountTest2.getAccountNumber(),LocalDateTime.of(2021,9,23,10,10,10)));
+
+    }
+
+    @Test
+    void freezeAccount_ValidAccount_FreezeAccount() {
+        transactionServiceImpl.freezeAccount(checkingAccountTest1.getAccountNumber());
+        Optional<CheckingAccount> optionalCheckingAccount = checkingAccountRepository.findById(checkingAccountTest1.getId());
+        assertSame(optionalCheckingAccount.get().getStatus(), Status.FROZEN);
+
+        transactionServiceImpl.freezeAccount(savingAccountTest1.getAccountNumber());
+        Optional<SavingAccount> optionalSavingAccount = savingAccountRepository.findById(savingAccountTest1.getId());
+        assertSame(optionalSavingAccount.get().getStatus(), Status.FROZEN);
+
     }
 }

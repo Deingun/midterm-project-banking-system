@@ -18,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.persistence.RollbackException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -56,7 +55,7 @@ public class AccountServiceImpl implements AccountService {
     /**
      * method to create a new find all accounts of the active user in the application
      *
-     * @param customUserDetails
+     * @param customUserDetails CustomUserDetails
      */
     @Override
     public List<Account> findAllAccounts(CustomUserDetails customUserDetails) {
@@ -73,7 +72,12 @@ public class AccountServiceImpl implements AccountService {
             return null;
         }
     }
-
+    /**
+     * method to get account Balance of one account of the active user in the app
+     *
+     * @param accountNumber String
+     * @param customUserDetails CustomUserDetails
+     */
     @Override
     public String getAccountBalance(String accountNumber, CustomUserDetails customUserDetails) {
         Optional<Account> optionalAccount = accountRepository.findByAccountNumber(accountNumber);
@@ -105,7 +109,12 @@ public class AccountServiceImpl implements AccountService {
     /**
      * method to create a new Checking account, if the primaryOwner is less than 24, a StudentChecking account it will be created otherwise a regular Checking Account it will be created.
      *
-     * @param entityNumber, branchNumber, amount, primaryOwnerId,  secondaryOwnerId, secretKey
+     * @param entityNumber String
+     * @param branchNumber String
+     * @param amount BigDecimal
+     * @param primaryOwnerId Long
+     * @param secondaryOwnerId Long
+     * @param secretKey String
      */
 
     @Override
@@ -152,7 +161,14 @@ public class AccountServiceImpl implements AccountService {
     /**
      * method to create a new Saving account
      *
-     * @param entityNumber, branchNumber, amount, primaryOwnerId, secondaryOwnerId, secretKey, minimumBalance, interestRate
+     * @param entityNumber String
+     * @param branchNumber String
+     * @param amount BigDecimal
+     * @param primaryOwnerId Long
+     * @param secondaryOwnerId Long
+     * @param secretKey String
+     * @param minimumBalance String
+     * @param interestRate String
      */
     @Override
     public Account createSavingAccount(String entityNumber, String branchNumber, BigDecimal amount, Long primaryOwnerId, Long secondaryOwnerId, String secretKey, String minimumBalance, String interestRate) {
@@ -196,7 +212,13 @@ public class AccountServiceImpl implements AccountService {
     /**
      * method to create a new Credit Card account
      *
-     * @param entityNumber, branchNumber, amount, primaryOwnerId, secondaryOwnerId, credit_limit, interestRate
+     * @param entityNumber String
+     * @param branchNumber String
+     * @param amount BigDecimal
+     * @param primaryOwnerId Long
+     * @param secondaryOwnerId Long
+     * @param credit_limit String
+     * @param interestRate String
      */
     @Override
     public Account createCreditCardAccount(String entityNumber, String branchNumber, BigDecimal amount, Long primaryOwnerId, Long secondaryOwnerId, String credit_limit, String interestRate) {
@@ -219,11 +241,7 @@ public class AccountServiceImpl implements AccountService {
                             AccountType.CREDIT_CARD,LocalDate.now()));
                     creditCardAccount.setAccountNumber(creditCardAccount.getEntityNumber() + creditCardAccount.getBranchNumber() + creditCardAccount.getId().toString());
                     if (credit_limit != null) {
-                        try {
-                            creditCardAccount.setCreditLimit(new BigDecimal(credit_limit));
-                        } catch (RollbackException e) {
-                            throw e;
-                        }
+                        creditCardAccount.setCreditLimit(new BigDecimal(credit_limit));
 
                     } else if (interestRate != null) {
                         creditCardAccount.setInterestRate(Float.valueOf(interestRate));
@@ -236,11 +254,7 @@ public class AccountServiceImpl implements AccountService {
                         AccountType.CREDIT_CARD,LocalDate.now()));
                 creditCardAccount.setAccountNumber(creditCardAccount.getEntityNumber() + creditCardAccount.getBranchNumber() + creditCardAccount.getId().toString());
                 if (credit_limit != null) {
-                    try {
-                        creditCardAccount.setCreditLimit(new BigDecimal(credit_limit));
-                    } catch (RollbackException e) {
-                        throw e;
-                    }
+                    creditCardAccount.setCreditLimit(new BigDecimal(credit_limit));
                 } else if (interestRate != null) {
                     creditCardAccount.setInterestRate(Float.valueOf(interestRate));
                 }
@@ -252,7 +266,8 @@ public class AccountServiceImpl implements AccountService {
     /**
      * method to Update Balance of any account by Admin User
      *
-     * @param accountNumber, amount
+     * @param accountNumber String
+     * @param amount BigDecimal
      */
     @Override
     public void updateBalance(String accountNumber, BigDecimal amount) {
@@ -274,7 +289,7 @@ public class AccountServiceImpl implements AccountService {
     /**
      * method to apply interest Rate if applicable
      *
-     * @param accountList
+     * @param accountList List<Account>
      */
     @Override
     public void applyInterestRate(List<Account> accountList) {

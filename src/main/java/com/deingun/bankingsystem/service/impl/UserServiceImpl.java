@@ -37,7 +37,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     ThirdPartyRepository thirdPartyRepository;
 
-
+    /**
+     * method to find all Users in the application
+     */
     @Override
     public List<User> findAll() {
 
@@ -48,11 +50,19 @@ public class UserServiceImpl implements UserService {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There are no users.");
     }
 
+    /**
+     * method to find AccountHolders by Id
+     * @param id Long
+     */
     @Override
     public AccountHolder findById(Long id) {
         return accountHolderRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account holder with id " + id + " not found"));
     }
 
+    /**
+     * method to find all AccountHolders
+     *
+     */
     @Override
     public List<AccountHolder> findAllAccountHolders() {
         List<AccountHolder> accountHolderList = accountHolderRepository.findAll();
@@ -65,7 +75,16 @@ public class UserServiceImpl implements UserService {
     /**
      * method to create a new Account Holder, validates if all the required data is provided and if it´s in a correct format
      *
-     * @param username, password, name, nif,  dateOfBirth, street, city, country, postalCode, mailingAddress
+     * @param username String
+     * @param password String
+     * @param name String
+     * @param nif String
+     * @param dateOfBirth LocalDate
+     * @param street String
+     * @param city String
+     * @param country String
+     * @param postalCode Integer
+     * @param mailingAddress String
      */
     @Override
     public AccountHolder createAccountHolder(String username, String password, String name, String nif, LocalDate dateOfBirth, String street, String city, String country, Integer postalCode, String mailingAddress) {
@@ -78,11 +97,7 @@ public class UserServiceImpl implements UserService {
 
                 if (DataValidation.validateName(name)) {
                     throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The name entered is invalid. It must contain at least name and surname");
-                } else if (DataValidation.validatePassword(password)) {
-                    throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The password must be at least 6 characters");
-                } else if (mailingAddress != null && DataValidation.validateMail(mailingAddress)) {
-                    throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The email entered is invalid.");
-                } else {
+                }  else {
 
                     if (mailingAddress == null) {
                         mailingAddress = "Email not provided";
@@ -94,7 +109,14 @@ public class UserServiceImpl implements UserService {
 
         }
     }
-
+    /**
+     * method to create a new Third Party
+     *
+     * @param username String
+     * @param password String
+     * @param name String
+     * @param hashedKey String
+     */
     @Override
     public ThirdParty createThirdParty(String username, String password, String name, String hashedKey) {
 
@@ -103,18 +125,10 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "User already exist");
         } else {
 
-                if (DataValidation.validatePassword(password)) {
-                    throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The password must be at least 6 characters");
-                }else if (DataValidation.validatePassword(hashedKey)) {
-                    throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The hashed Key must be at least 6 characters");
-                }else{
                     ThirdParty thirdParty = new ThirdParty(username,passwordEncoder.encode(password),LocalDate.now(),name,hashedKey);
                     return thirdPartyRepository.save(thirdParty);
 
-                }
-
         }
     }
-
 
 }
