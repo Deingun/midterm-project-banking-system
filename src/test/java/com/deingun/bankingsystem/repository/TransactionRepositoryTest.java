@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -53,6 +54,10 @@ class TransactionRepositoryTest {
     Transaction transactionTest1;
     Transaction transactionTest2;
     Transaction transactionTest3;
+    Transaction transactionTest4;
+    Transaction transactionTest5;
+    Transaction transactionTest6;
+    Transaction transactionTest7;
 
 
     @BeforeEach
@@ -85,8 +90,13 @@ class TransactionRepositoryTest {
         transactionRepository.saveAll(List.of(transactionTest1, transactionTest2));
         Money amount3 = new Money(new BigDecimal("20"));
         transactionTest3 = new Transaction(checkingAccountTest1, checkingAccountTest2, user1, user2, amount2, LocalDateTime.now());
-        transactionRepository.saveAll(List.of(transactionTest1, transactionTest2, transactionTest3));
 
+        Money amount4 = new Money(new BigDecimal("1"));
+        transactionTest4 = new Transaction(checkingAccountTest1, checkingAccountTest2, user2, user1, amount4, LocalDateTime.of(2021,9,22,17,10,10));
+        transactionTest5 = new Transaction(checkingAccountTest1, checkingAccountTest2, user2, user1, amount4, LocalDateTime.of(2021,9,22,18,10,10));
+        transactionTest6 = new Transaction(checkingAccountTest1, checkingAccountTest2, user2, user1, amount4, LocalDateTime.of(2021,9,22,19,10,10));
+        transactionTest7 = new Transaction(checkingAccountTest1, checkingAccountTest2, user2, user1, amount4, LocalDateTime.of(2021,9,22,20,10,10));
+        transactionRepository.saveAll(List.of(transactionTest1, transactionTest2, transactionTest3,transactionTest4,transactionTest5,transactionTest6,transactionTest7));
     }
 
     @AfterEach
@@ -112,7 +122,7 @@ class TransactionRepositoryTest {
     @Test
     void findAll_noParams_TransactionList() {
         List<Transaction> transactionList = transactionRepository.findAll();
-        assertEquals(3, transactionList.size());
+        assertEquals(7, transactionList.size());
     }
 
     @Test
@@ -122,5 +132,23 @@ class TransactionRepositoryTest {
         assertEquals(new BigDecimal("50.00"), transactionList.get(1).getAmount().getAmount());
         assertEquals("USD", transactionList.get(1).getAmount().getCurrency().toString());
         assertEquals("accountHolderTest2", transactionList.get(1).getReceiverName());
+    }
+
+    @Test
+    void findAllByOriginAccountId_ValidId_TransactionList() {
+        List<Transaction> transactionList = transactionRepository.findAllByOriginAccountId(checkingAccountTest1.getId());
+        assertEquals(7, transactionList.size());
+    }
+
+    @Test
+    void maxTotalTransactionOneDay_NoParams_ObjectListWithMax() {
+        List<Object[]> maxTotalTransactionOneDay = transactionRepository.maxTotalTransactionOneDay();
+        assertEquals(new BigInteger("4"), maxTotalTransactionOneDay.get(0)[0]);
+    }
+
+    @Test
+    void TotalTransactionTodayByAccount_ValidId_ObjectListWithMax() {
+        List<Object[]> maxTotalTransactionOneDay = transactionRepository.TotalTransactionTodayByAccount(checkingAccountTest1.getId());
+        assertEquals(new BigInteger("3"), maxTotalTransactionOneDay.get(0)[0]);
     }
 }

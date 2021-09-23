@@ -288,4 +288,16 @@ class TransactionServiceImplTest {
     void getSecretKey() {
         assertEquals("123abc", transactionServiceImpl.getSecretKey(checkingAccountTest1.getAccountNumber()));
     }
+
+    @Test
+    void validateStatus_StatusActive_ReturnTrue() {
+        assertTrue(transactionServiceImpl.validateStatus(checkingAccountTest1.getAccountNumber()));
+    }
+
+    @Test
+    void validateStatus_StatusFrozen_ReturnFalse() {
+        checkingAccountTest1.setStatus(Status.FROZEN);
+        checkingAccountRepository.save(checkingAccountTest1);
+        assertFalse(transactionServiceImpl.validateStatus(checkingAccountTest1.getAccountNumber()));
+    }
 }

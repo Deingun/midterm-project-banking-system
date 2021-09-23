@@ -1,6 +1,7 @@
 package com.deingun.bankingsystem.service.impl;
 
 import com.deingun.bankingsystem.enums.AccountType;
+import com.deingun.bankingsystem.enums.Status;
 import com.deingun.bankingsystem.enums.TransactionType;
 import com.deingun.bankingsystem.model.Transaction;
 import com.deingun.bankingsystem.model.account.*;
@@ -41,9 +42,13 @@ public class TransactionServiceImpl implements TransactionService {
     @Autowired
     TransactionRepository transactionRepository;
 
+    /**
+     * method for accountholeders to send money to other accounts.
+     *
+     * @param originAccountNumber, destinationAccountNumber, amount, customUserDetails
+     */
     @Override
     public Transaction newTransaction(String originAccountNumber, String destinationAccountNumber, BigDecimal amount, CustomUserDetails customUserDetails) {
-
 
         Optional<Account> optionalOriginAccount = accountRepository.findByAccountNumber(originAccountNumber);
         Optional<Account> optionalDestinationAccount = accountRepository.findByAccountNumber(destinationAccountNumber);
@@ -60,7 +65,10 @@ public class TransactionServiceImpl implements TransactionService {
         } else if (validateBalanceWithPenaltyFee(originAccountNumber, amount)) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The account does not have sufficient funds to complete the transaction. \" " +
                     "The resulting balance would be less than the minimum allowed balance and there are not enough funds to charge the penalty fee.");
-        } else {
+        }else if (!validateStatus(originAccountNumber)) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The state account is frozen. Unable to make transactions ");
+        }
+        else {
 
             Optional<User> optionalPaymasterUser = userRepository.findById(optionalOriginAccount.get().getPrimaryOwner().getId());
             Optional<User> optionalReceiverUser = userRepository.findById(optionalDestinationAccount.get().getPrimaryOwner().getId());
@@ -82,9 +90,12 @@ public class TransactionServiceImpl implements TransactionService {
             return transactionRepository.save(transaction);
         }
 
-
     }
-
+    /**
+     * method for third-party users to receive and send money to other accounts.
+     *
+     * @param hashedKey, accountNumber, amount, secretKey, transactionType, customUserDetails
+     */
     @Override
     public String newThirdPartyTransaction(String hashedKey, String accountNumber, BigDecimal amount, String secretKey, TransactionType transactionType, CustomUserDetails customUserDetails) {
 
@@ -143,6 +154,39 @@ public class TransactionServiceImpl implements TransactionService {
         int result = balance.compareTo(amount);
 
         return result != 1;
+    }
+
+    /**
+     * method to validate if the status account is Active
+     *
+     * @param accountNumber, amount
+     */
+    public boolean validateStatus(String accountNumber) {
+        Optional<Account> optionalAccount = accountRepository.findByAccountNumber(accountNumber);
+        if (optionalAccount.get() instanceof CheckingAccount) {
+            CheckingAccount checkingAccount = (CheckingAccount) optionalAccount.get();
+                if (checkingAccount.getStatus() == Status.ACTIVE){
+                    return true;
+            }else {
+                    return false;
+                }
+        }else if (optionalAccount.get() instanceof StudentCheckingAccount) {
+            StudentCheckingAccount studentCheckingAccount = (StudentCheckingAccount) optionalAccount.get();
+            if (studentCheckingAccount.getStatus() == Status.ACTIVE){
+                return true;
+            }else {
+                return false;
+            }
+        }else if (optionalAccount.get() instanceof SavingAccount) {
+            SavingAccount savingAccount = (SavingAccount) optionalAccount.get();
+            if (savingAccount.getStatus() == Status.ACTIVE){
+                return true;
+            }else {
+                return false;
+            }
+        }else{
+            return true;
+        }
     }
 
     /**
@@ -209,7 +253,7 @@ public class TransactionServiceImpl implements TransactionService {
 
 
     /**
-     * method to charge the penalty Fee
+     * method to get the secrete key
      *
      * @param accountNumber
      */
@@ -227,6 +271,16 @@ public class TransactionServiceImpl implements TransactionService {
             SavingAccount savingAccount = (SavingAccount) optionalAccount.get();
             return savingAccount.getSecretKey();
         }
+    }
+
+    /**
+     * method to detect pattern that indicate fraud for transactions made in 24 hours total to more
+     * than 150% of the customers highest daily total transactions in any other 24 hour period.
+     *
+     */
+    public boolean maxTransactionAllowed() {
+        return false;
+
     }
 
 }
