@@ -6,6 +6,7 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class SavingAccountDTO {
 
@@ -23,9 +24,9 @@ public class SavingAccountDTO {
     @NotEmpty(message = "Secret Key must be provided")
     private String secretKey;
     @DecimalMin(value = "100", message = "The minimum balance of a savings account cannot be less than 100")
-    private String minimumBalance;
+    private BigDecimal minimumBalance;
     @DecimalMax(value = "0.5")
-    private String interestRate;
+    private Float interestRate;
 
     public String getEntityNumber() {
         return entityNumber;
@@ -44,7 +45,7 @@ public class SavingAccountDTO {
     }
 
     public BigDecimal getAmount() {
-        return amount;
+        return amount.setScale(2,RoundingMode.HALF_EVEN);
     }
 
     public void setAmount(BigDecimal amount) {
@@ -83,19 +84,19 @@ public class SavingAccountDTO {
         this.secretKey = secretKey;
     }
 
-    public String getMinimumBalance() {
-        return minimumBalance;
+    public BigDecimal getMinimumBalance() {
+        return minimumBalance.setScale(2, RoundingMode.HALF_EVEN);
     }
 
-    public void setMinimumBalance(String minimumBalance) {
+    public void setMinimumBalance(BigDecimal minimumBalance) {
         this.minimumBalance = minimumBalance;
     }
 
-    public String getInterestRate() {
+    public Float getInterestRate() {
         return interestRate;
     }
 
-    public void setInterestRate(String interestRate) {
+    public void setInterestRate(Float interestRate) {
         this.interestRate = interestRate;
     }
 }

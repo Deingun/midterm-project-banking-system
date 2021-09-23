@@ -142,7 +142,6 @@ class AccountControllerImplTest {
         String accountNumber = checkingAccountTest1.getAccountNumber();
         MvcResult mvcResult = mockMvc.perform(get("/accounts/" + accountNumber).with(httpBasic("accountHolderTest1", "123456")))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn();
 
         assertTrue(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8).contains("1000"));

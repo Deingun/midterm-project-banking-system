@@ -5,6 +5,7 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class TransactionDTO {
 
@@ -34,7 +35,7 @@ public class TransactionDTO {
     }
 
     public BigDecimal getAmount() {
-        return amount;
+        return amount.setScale(2, RoundingMode.HALF_EVEN);
     }
 
     public void setAmount(BigDecimal amount) {

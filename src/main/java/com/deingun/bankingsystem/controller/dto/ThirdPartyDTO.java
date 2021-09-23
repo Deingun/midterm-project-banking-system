@@ -8,7 +8,7 @@ public class ThirdPartyDTO {
     @NotEmpty(message = "Username must be provided")
     private String username;
     @NotEmpty(message = "Password must be provided")
-    @Size(min = 6)
+    @Size(min = 6, message = "The password must contain at least 6 characters")
     private String password;
     @NotEmpty(message = "Name must be provided")
     private String name;

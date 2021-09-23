@@ -15,10 +15,10 @@ public interface AccountService {
     Account createCheckingAccount(String entityNumber, String branchNumber, BigDecimal amount, Long primaryOwnerId, Long secondaryOwnerId, String secretKey);
 
     Account createSavingAccount(String entityNumber, String branchNumber, BigDecimal amount, Long primaryOwnerId, Long secondaryOwnerId,
-                                String secretKey, String minimumBalance, String interestRate);
+                                String secretKey, BigDecimal minimumBalance, Float interestRate);
 
     Account createCreditCardAccount(String entityNumber, String branchNumber, BigDecimal amount, Long primaryOwnerId, Long secondaryOwnerId,
-                                String credit_limit, String interestRate);
+                                    BigDecimal credit_limit, Float interestRate);
 
     void updateBalance(String accountNumber, BigDecimal amount);
 

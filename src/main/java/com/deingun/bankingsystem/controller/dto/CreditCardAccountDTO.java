@@ -5,6 +5,7 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class CreditCardAccountDTO {
 
@@ -20,9 +21,9 @@ public class CreditCardAccountDTO {
     private Long primaryOwnerId;
     private Long secondaryOwnerId;
     @DecimalMax(value = "100000",message = "The credit limit cannot exceed 100,000.00")
-    private String creditLimit;
+    private BigDecimal creditLimit;
     @DecimalMin(value = "0.1",message = "The interest rate cannot be less than 0.1")
-    private String interestRate;
+    private Float interestRate;
 
     public String getEntityNumber() {
         return entityNumber;
@@ -41,7 +42,7 @@ public class CreditCardAccountDTO {
     }
 
     public BigDecimal getAmount() {
-        return amount;
+        return amount.setScale(2, RoundingMode.HALF_EVEN);
     }
 
     public void setAmount(BigDecimal amount) {
@@ -72,19 +73,19 @@ public class CreditCardAccountDTO {
         this.secondaryOwnerId = secondaryOwnerId;
     }
 
-    public String getCreditLimit() {
-        return creditLimit;
+    public BigDecimal getCreditLimit() {
+        return creditLimit.setScale(2,RoundingMode.HALF_EVEN);
     }
 
-    public void setCreditLimit(String creditLimit) {
+    public void setCreditLimit(BigDecimal creditLimit) {
         this.creditLimit = creditLimit;
     }
 
-    public String getInterestRate() {
+    public Float getInterestRate() {
         return interestRate;
     }
 
-    public void setInterestRate(String interestRate) {
+    public void setInterestRate(Float interestRate) {
         this.interestRate = interestRate;
     }
 }

@@ -171,7 +171,7 @@ public class AccountServiceImpl implements AccountService {
      * @param interestRate String
      */
     @Override
-    public Account createSavingAccount(String entityNumber, String branchNumber, BigDecimal amount, Long primaryOwnerId, Long secondaryOwnerId, String secretKey, String minimumBalance, String interestRate) {
+    public Account createSavingAccount(String entityNumber, String branchNumber, BigDecimal amount, Long primaryOwnerId, Long secondaryOwnerId, String secretKey, BigDecimal minimumBalance, Float interestRate) {
         SavingAccount savingAccount;
 
 
@@ -190,9 +190,9 @@ public class AccountServiceImpl implements AccountService {
                             secretKey, LocalDate.now(), Status.ACTIVE, AccountType.SAVING,LocalDate.now()));
                     savingAccount.setAccountNumber(savingAccount.getEntityNumber() + savingAccount.getBranchNumber() + savingAccount.getId().toString());
                     if (minimumBalance != null) {
-                        savingAccount.setMinimumBalance(new BigDecimal(minimumBalance));
+                        savingAccount.setMinimumBalance(minimumBalance);
                     } else if (interestRate != null) {
-                        savingAccount.setInterestRate(Float.valueOf(interestRate));
+                        savingAccount.setInterestRate(interestRate);
                     }
                     return savingAccountRepository.save(savingAccount);
                 }
@@ -201,9 +201,9 @@ public class AccountServiceImpl implements AccountService {
                         secretKey, LocalDate.now(), Status.ACTIVE, AccountType.SAVING,LocalDate.now()));
                 savingAccount.setAccountNumber(savingAccount.getEntityNumber() + savingAccount.getBranchNumber() + savingAccount.getId().toString());
                 if (minimumBalance != null) {
-                    savingAccount.setMinimumBalance(new BigDecimal(minimumBalance));
+                    savingAccount.setMinimumBalance(minimumBalance);
                 } else if (interestRate != null) {
-                    savingAccount.setInterestRate(Float.valueOf(interestRate));
+                    savingAccount.setInterestRate(interestRate);
                 }
                 return savingAccountRepository.save(savingAccount);
             }
@@ -221,7 +221,7 @@ public class AccountServiceImpl implements AccountService {
      * @param interestRate String
      */
     @Override
-    public Account createCreditCardAccount(String entityNumber, String branchNumber, BigDecimal amount, Long primaryOwnerId, Long secondaryOwnerId, String credit_limit, String interestRate) {
+    public Account createCreditCardAccount(String entityNumber, String branchNumber, BigDecimal amount, Long primaryOwnerId, Long secondaryOwnerId, BigDecimal credit_limit, Float interestRate) {
         CreditCardAccount creditCardAccount;
 
 
@@ -241,10 +241,10 @@ public class AccountServiceImpl implements AccountService {
                             AccountType.CREDIT_CARD,LocalDate.now()));
                     creditCardAccount.setAccountNumber(creditCardAccount.getEntityNumber() + creditCardAccount.getBranchNumber() + creditCardAccount.getId().toString());
                     if (credit_limit != null) {
-                        creditCardAccount.setCreditLimit(new BigDecimal(credit_limit));
+                        creditCardAccount.setCreditLimit(credit_limit);
 
                     } else if (interestRate != null) {
-                        creditCardAccount.setInterestRate(Float.valueOf(interestRate));
+                        creditCardAccount.setInterestRate(interestRate);
                     }
 
                     return creditCardAccountRepository.save(creditCardAccount);
@@ -254,9 +254,9 @@ public class AccountServiceImpl implements AccountService {
                         AccountType.CREDIT_CARD,LocalDate.now()));
                 creditCardAccount.setAccountNumber(creditCardAccount.getEntityNumber() + creditCardAccount.getBranchNumber() + creditCardAccount.getId().toString());
                 if (credit_limit != null) {
-                    creditCardAccount.setCreditLimit(new BigDecimal(credit_limit));
+                    creditCardAccount.setCreditLimit(credit_limit);
                 } else if (interestRate != null) {
-                    creditCardAccount.setInterestRate(Float.valueOf(interestRate));
+                    creditCardAccount.setInterestRate(interestRate);
                 }
                 return creditCardAccountRepository.save(creditCardAccount);
             }
