@@ -2,7 +2,6 @@ package com.deingun.bankingsystem.controller.interfaces;
 
 import com.deingun.bankingsystem.controller.dto.ThirdPartyTransactionDTO;
 import com.deingun.bankingsystem.controller.dto.TransactionDTO;
-import com.deingun.bankingsystem.enums.TransactionType;
 import com.deingun.bankingsystem.model.Transaction;
 import com.deingun.bankingsystem.security.CustomUserDetails;
 

@@ -5,7 +5,6 @@ import com.deingun.bankingsystem.controller.dto.CreditCardAccountDTO;
 import com.deingun.bankingsystem.controller.dto.SavingAccountDTO;
 import com.deingun.bankingsystem.controller.dto.TransactionDTO;
 import com.deingun.bankingsystem.controller.interfaces.AccountController;
-import com.deingun.bankingsystem.enums.Status;
 import com.deingun.bankingsystem.model.account.Account;
 import com.deingun.bankingsystem.security.CustomUserDetails;
 import com.deingun.bankingsystem.service.interfaces.AccountService;

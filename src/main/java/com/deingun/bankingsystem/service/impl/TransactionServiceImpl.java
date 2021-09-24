@@ -334,11 +334,7 @@ public class TransactionServiceImpl implements TransactionService {
         if (optionalAccount.get().getAccountType()==AccountType.CREDIT_CARD){
             return false;
         }else{
-            if (!transactionList.isEmpty()) {
-                    return true;
-                } else {
-                    return false;
-                }
+            return !transactionList.isEmpty();
         }
     }
 

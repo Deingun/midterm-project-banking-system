@@ -23,7 +23,6 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -355,6 +354,11 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
+    /**
+     * method to update status account
+     *
+     * @param accountNumber String
+     */
     @Override
     public void updateStatus(String accountNumber) {
         Optional<Account> optionalAccount = accountRepository.findByAccountNumber(accountNumber);

@@ -39,6 +39,12 @@ it on IntelliJ as you would any other project.
 The Application runs on the **BankingsystemApplication.java** archive. Before
 running the program you can create the databases in your local MySQL Workbench, for convenience testing the functionalities. 
 I have included a script in the [resources folder](/src/main/resources).
+#### Important: All the encrypted passwords of the users previously created in the database are: 123456
+If no data is inserted into the database, when the application is started, the following user with ADMIN profile is automatically generated:
+
+username: adminTest     
+
+password: 123456
 
 In the same way I include the Postman collection with the different http verbs: Banking System.postman_collection.
 
@@ -84,6 +90,9 @@ CreditCard Accounts have:
 - An interestRate
 - A penaltyFee
 - The system must have 3 types of Users: Admins and AccountHolders.
+
+
+##### Author's note:All accounts have an account number with "entity code", "branch code" and account number, generated automatically when creating a new account.
 
 #### AccountHolders
 
@@ -143,6 +152,7 @@ Admins should be able to access the balance for any account and to modify it.
 
 AccountHolders should be able to access their own account balance
 Account holders should be able to transfer money from any of their accounts to any other account (regardless of owner). The transfer should only be processed if the account has sufficient funds. The user must provide the Primary or Secondary owner name and the id of the account that should receive the transfer.
+##### Author's note: Transfers are made through automatically generated account numbers.
 
 #### Third-Party Users
 
@@ -157,6 +167,7 @@ Patterns that indicate fraud include:
 
 Transactions made in 24 hours total to more than 150% of the customers highest daily total transactions in any other 24 hour period.
 More than 2 transactions occurring on a single account within a 1 second period.
+##### Author's note: If there are no transfers in the database, fraud is detected when making more than 3 transfers in one day.
 
 ### Good Practices
 You must include the thorough unit and integration tests.

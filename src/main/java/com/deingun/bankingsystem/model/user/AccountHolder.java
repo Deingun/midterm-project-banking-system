@@ -7,7 +7,6 @@ import com.deingun.bankingsystem.utils.Address;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
 import java.time.LocalDate;
 import java.util.List;
 

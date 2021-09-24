@@ -5,10 +5,8 @@ import com.deingun.bankingsystem.controller.dto.ThirdPartyDTO;
 import com.deingun.bankingsystem.model.user.AccountHolder;
 import com.deingun.bankingsystem.model.user.ThirdParty;
 import com.deingun.bankingsystem.model.user.User;
-import com.deingun.bankingsystem.utils.Address;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController

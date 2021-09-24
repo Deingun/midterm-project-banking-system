@@ -7,8 +7,6 @@ import com.deingun.bankingsystem.utils.Money;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
-import javax.validation.constraints.DecimalMax;
-import javax.validation.constraints.DecimalMin;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;

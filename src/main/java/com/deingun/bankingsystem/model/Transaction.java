@@ -1,6 +1,5 @@
 package com.deingun.bankingsystem.model;
 
-import com.deingun.bankingsystem.enums.TransactionType;
 import com.deingun.bankingsystem.model.account.Account;
 import com.deingun.bankingsystem.model.user.ThirdParty;
 import com.deingun.bankingsystem.model.user.User;

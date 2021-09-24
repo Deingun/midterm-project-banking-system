@@ -6,7 +6,6 @@ import com.deingun.bankingsystem.utils.Money;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;

@@ -1,10 +1,7 @@
 package com.deingun.bankingsystem.repository.account;
 
 import com.deingun.bankingsystem.model.account.Account;
-import com.deingun.bankingsystem.model.account.CheckingAccount;
-import com.deingun.bankingsystem.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
