@@ -1,4 +1,4 @@
-# CRM - Data Layer
+# BANKING SYSTEM - MID-TERM PROJECT IRONHACK
 
 ### 📌 ABOUT
 
