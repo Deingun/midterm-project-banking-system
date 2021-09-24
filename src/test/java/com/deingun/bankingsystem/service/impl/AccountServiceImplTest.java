@@ -88,18 +88,18 @@ class AccountServiceImplTest {
         Money balance = new Money(new BigDecimal("1000"));
         BigDecimal minimumBalance = new BigDecimal("1000").setScale(3, RoundingMode.HALF_EVEN);
 
-        accountHolderTest1 = new AccountHolder("accountHolderTest1", passwordEncoder.encode("123456"), LocalDate.now(), "NameTest1", "11111111A", LocalDate.of(1980, 10, 5), addressTest, "test@gmail.com");
-        accountHolderTest2 = new AccountHolder("accountHolderTest2", passwordEncoder.encode("123456"), LocalDate.now(), "NameTest2", "22222222F", LocalDate.of(1990, 2, 15), addressTest, "test@gmail.com");
-        accountHolderTest3 = new AccountHolder("accountHolderTest3", passwordEncoder.encode("123456"), LocalDate.now(), "NameTest3", "33333333F", LocalDate.of(2000, 2, 15), addressTest, "test@gmail.com");
+        accountHolderTest1 = new AccountHolder("accountHolderTest1", passwordEncoder.encode("123456"), LocalDate.now(), "NameTest1", "11111111A", LocalDate.now().minusYears(41), addressTest, "test@gmail.com");
+        accountHolderTest2 = new AccountHolder("accountHolderTest2", passwordEncoder.encode("123456"), LocalDate.now(), "NameTest2", "22222222F", LocalDate.now().minusYears(31), addressTest, "test@gmail.com");
+        accountHolderTest3 = new AccountHolder("accountHolderTest3", passwordEncoder.encode("123456"), LocalDate.now(), "NameTest3", "33333333F", LocalDate.now().minusYears(21), addressTest, "test@gmail.com");
         accountHolderRepository.saveAll(List.of(accountHolderTest1, accountHolderTest2, accountHolderTest3));
 
 
         checkingAccountTest1 = new CheckingAccount("0049", "1500", balance, accountHolderTest1, accountHolderTest2, "123abc",
-                LocalDate.now(), Status.ACTIVE, AccountType.CHECKING,LocalDate.of(2021, 8, 23));
+                LocalDate.now(), Status.ACTIVE, AccountType.CHECKING,LocalDate.now().minusMonths(1));
         checkingAccountTest2 = new CheckingAccount("0049", "2020", balance, accountHolderTest2, accountHolderTest1, "123abc",
                 LocalDate.now(), Status.ACTIVE, AccountType.CHECKING,LocalDate.now());
         checkingAccountTest3 = new CheckingAccount("0049", "2020", new Money(new BigDecimal("200")), accountHolderTest1,null, "123abc",
-                LocalDate.now(), Status.ACTIVE, AccountType.CHECKING,LocalDate.of(2021, 7, 15));
+                LocalDate.now(), Status.ACTIVE, AccountType.CHECKING,LocalDate.now().minusMonths(2));
 
 
         checkingAccountRepository.saveAll(List.of(checkingAccountTest1, checkingAccountTest2,checkingAccountTest3));
@@ -108,8 +108,8 @@ class AccountServiceImplTest {
         checkingAccountTest3.setAccountNumber(checkingAccountTest3.getEntityNumber() + checkingAccountTest3.getBranchNumber() + checkingAccountTest3.getId().toString());
         checkingAccountRepository.saveAll(List.of(checkingAccountTest1, checkingAccountTest2, checkingAccountTest3));
 
-        creditCardAccountTest1 = new CreditCardAccount("0049", "1500", balance, accountHolderTest1, accountHolderTest2, AccountType.CREDIT_CARD,LocalDate.of(2021,6,20));
-        creditCardAccountTest2 = new CreditCardAccount("0049", "2020", balance, accountHolderTest2, accountHolderTest1, new BigDecimal("500"), 0.12F, AccountType.CREDIT_CARD,LocalDate.of(2021,8,20));
+        creditCardAccountTest1 = new CreditCardAccount("0049", "1500", balance, accountHolderTest1, accountHolderTest2, AccountType.CREDIT_CARD,LocalDate.now().minusMonths(3));
+        creditCardAccountTest2 = new CreditCardAccount("0049", "2020", balance, accountHolderTest2, accountHolderTest1, new BigDecimal("500"), 0.12F, AccountType.CREDIT_CARD,LocalDate.now().minusMonths(1));
 
 
         creditCardAccountRepository.saveAll(List.of(creditCardAccountTest1, creditCardAccountTest2));
@@ -118,8 +118,8 @@ class AccountServiceImplTest {
         creditCardAccountRepository.saveAll(List.of(creditCardAccountTest1, creditCardAccountTest2));
 
         savingAccountTest1 = new SavingAccount("0049", "1500", balance, accountHolderTest1, accountHolderTest2, "123abc", minimumBalance, LocalDate.now(), Status.ACTIVE, 0.0050F, AccountType.SAVING, LocalDate.now());
-        savingAccountTest2 = new SavingAccount("0049", "1500", balance, accountHolderTest2, accountHolderTest1, "123abc", minimumBalance, LocalDate.of(2020,8,20), Status.ACTIVE, AccountType.SAVING, LocalDate.of(2020,8,20));
-        savingAccountTest3 = new SavingAccount("0049", "1500", new Money(new BigDecimal("2000")), accountHolderTest2, accountHolderTest1, "123abc", minimumBalance, LocalDate.of(2015,8,20), Status.ACTIVE, AccountType.SAVING,LocalDate.of(2019,8,20));
+        savingAccountTest2 = new SavingAccount("0049", "1500", balance, accountHolderTest2, accountHolderTest1, "123abc", minimumBalance, LocalDate.now().minusMonths(13), Status.ACTIVE, AccountType.SAVING, LocalDate.of(2020,8,20));
+        savingAccountTest3 = new SavingAccount("0049", "1500", new Money(new BigDecimal("2000")), accountHolderTest2, accountHolderTest1, "123abc", minimumBalance, LocalDate.now().minusYears(6), Status.ACTIVE, AccountType.SAVING,LocalDate.now().minusYears(2));
 
         savingAccountRepository.saveAll(List.of(savingAccountTest1, savingAccountTest2,savingAccountTest3));
         savingAccountTest1.setAccountNumber(savingAccountTest1.getEntityNumber() + savingAccountTest1.getBranchNumber() + savingAccountTest1.getId().toString());
@@ -163,7 +163,7 @@ class AccountServiceImplTest {
     void getAccountBalance_validAccount_AccountBalance() {
         customUserDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(accountHolderTest1.getUsername());
         String accountBalance = accountService.getAccountBalance(checkingAccountTest1.getAccountNumber(),customUserDetails);
-        assertEquals("US$ 1000.00",accountBalance);
+        assertEquals("US$ 988.00",accountBalance);
     }
 
     @Test
