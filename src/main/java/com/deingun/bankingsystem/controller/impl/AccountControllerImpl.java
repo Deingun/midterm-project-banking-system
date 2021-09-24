@@ -42,10 +42,10 @@ public class AccountControllerImpl implements AccountController {
         accountService.updateBalance(accountNumber, transactionDTO.getAmount());
     }
 
-    @PatchMapping("/accounts/status/{accountNumber}")
+    @PatchMapping("/status/{accountNumber}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateStatus(@PathVariable(name = "accountNumber") String accountNumber, @RequestBody String status) {
-        accountService.updateStatus(accountNumber, status);
+    public void updateStatus(@PathVariable(name = "accountNumber") String accountNumber) {
+        accountService.updateStatus(accountNumber);
     }
 
     @PostMapping("/checkingaccounts")

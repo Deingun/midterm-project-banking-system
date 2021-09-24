@@ -4,7 +4,6 @@ import com.deingun.bankingsystem.enums.AccountType;
 import com.deingun.bankingsystem.enums.Status;
 import com.deingun.bankingsystem.model.account.*;
 import com.deingun.bankingsystem.model.user.AccountHolder;
-import com.deingun.bankingsystem.model.user.User;
 import com.deingun.bankingsystem.repository.TransactionRepository;
 import com.deingun.bankingsystem.repository.account.*;
 import com.deingun.bankingsystem.repository.user.AccountHolderRepository;
@@ -18,15 +17,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.server.ResponseStatusException;
 
-import javax.validation.ConstraintViolationException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.time.Period;
 import java.util.List;
 import java.util.Optional;
 
@@ -100,11 +95,11 @@ class AccountServiceImplTest {
 
 
         checkingAccountTest1 = new CheckingAccount("0049", "1500", balance, accountHolderTest1, accountHolderTest2, "123abc",
-                LocalDate.now(), Status.ACTIVE, AccountType.CHECKING);
+                LocalDate.now(), Status.ACTIVE, AccountType.CHECKING,LocalDate.of(2021, 8, 23));
         checkingAccountTest2 = new CheckingAccount("0049", "2020", balance, accountHolderTest2, accountHolderTest1, "123abc",
-                LocalDate.now(), Status.ACTIVE, AccountType.CHECKING);
+                LocalDate.now(), Status.ACTIVE, AccountType.CHECKING,LocalDate.now());
         checkingAccountTest3 = new CheckingAccount("0049", "2020", new Money(new BigDecimal("200")), accountHolderTest1,null, "123abc",
-                LocalDate.now(), Status.ACTIVE, AccountType.CHECKING);
+                LocalDate.now(), Status.ACTIVE, AccountType.CHECKING,LocalDate.of(2021, 7, 15));
 
 
         checkingAccountRepository.saveAll(List.of(checkingAccountTest1, checkingAccountTest2,checkingAccountTest3));
@@ -145,7 +140,6 @@ class AccountServiceImplTest {
 
     @AfterEach
     void tearDown() {
-
         transactionRepository.deleteAll();
         checkingAccountRepository.deleteAll();
         creditCardAccountRepository.deleteAll();
@@ -165,35 +159,43 @@ class AccountServiceImplTest {
 
     }
 
-
     @Test
-    void getAccountBalance() {
+    void getAccountBalance_validAccount_AccountBalance() {
+        customUserDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(accountHolderTest1.getUsername());
+        String accountBalance = accountService.getAccountBalance(checkingAccountTest1.getAccountNumber(),customUserDetails);
+        assertEquals("US$ 1000.00",accountBalance);
     }
 
     @Test
     void createCheckingAccount() {
+        Account checkingAccount = accountService.createCheckingAccount("0049","1234",new BigDecimal(1000),
+                accountHolderTest1.getId(),accountHolderTest2.getId(),"test123");
+        Optional<Account> optionalCheckingAccount = accountRepository.findById(checkingAccount.getId());
+        assertTrue(optionalCheckingAccount.isPresent());
     }
 
     @Test
     void createSavingAccount() {
+        Account savingAccount = accountService.createSavingAccount("0049","1234",new BigDecimal(1000),
+                accountHolderTest1.getId(),accountHolderTest2.getId(),"test123",new BigDecimal(500),0.0025F);
+        Optional<Account> optionalSavingAccount = accountRepository.findById(savingAccount.getId());
+        assertTrue(optionalSavingAccount.isPresent());
     }
 
     @Test
     void createCreditCardAccount() {
+        Account creditCardAccount = accountService.createCreditCardAccount("0049","1234",new BigDecimal(1000),
+                accountHolderTest1.getId(),accountHolderTest2.getId(),new BigDecimal(5000),0.2F);
+        Optional<Account> optionalCreditCardAccount = accountRepository.findById(creditCardAccount.getId());
+        assertTrue(optionalCreditCardAccount.isPresent());
     }
 
     @Test
     void updateBalance() {
+        accountService.updateBalance(checkingAccountTest1.getAccountNumber(),new BigDecimal(12500));
+        Optional<Account> optionalCheckingAccount = accountRepository.findById(checkingAccountTest1.getId());
+        assertEquals(optionalCheckingAccount.get().getBalance().getAmount(), new BigDecimal(12500).setScale(2, RoundingMode.HALF_EVEN));
     }
-
-    @Test
-    void updateStatus_ValidStatus_StatusUpdate() {
-        accountService.updateStatus(checkingAccountTest1.getAccountNumber(),"frozen");
-        Optional<CheckingAccount> optionalCheckingAccount = checkingAccountRepository.findById(checkingAccountTest1.getId());
-        assertSame(optionalCheckingAccount.get().getStatus(), Status.FROZEN);
-    }
-
-
 
     @Test
     void applyInterestRate() {
@@ -203,5 +205,22 @@ class AccountServiceImplTest {
         assertEquals(new BigDecimal("2010.00").setScale(2, RoundingMode.HALF_EVEN),accountList.get(7).getBalance().getAmount());
         assertEquals(new BigDecimal("1050.01").setScale(2, RoundingMode.HALF_EVEN),accountList.get(3).getBalance().getAmount());
         assertEquals(new BigDecimal("1010.00").setScale(2, RoundingMode.HALF_EVEN),accountList.get(4).getBalance().getAmount());
+    }
+
+    @Test
+    void applyMonthlyMaintenanceFee() {
+        List<Account> accountList = accountRepository.findByPrimaryOwnerIdOrSecondaryOwnerId(accountHolderTest1.getId(),accountHolderTest1.getId());
+        accountService.applyMonthlyMaintenanceFee(accountList);
+        assertEquals(new BigDecimal("988.00").setScale(2, RoundingMode.HALF_EVEN),accountList.get(0).getBalance().getAmount());
+        assertEquals(new BigDecimal("1000.00").setScale(2, RoundingMode.HALF_EVEN),accountList.get(1).getBalance().getAmount());
+        assertEquals(new BigDecimal("176.00").setScale(2, RoundingMode.HALF_EVEN),accountList.get(2).getBalance().getAmount());
+
+    }
+
+    @Test
+    void updateStatus_ValidStatus_StatusUpdate() {
+        accountService.updateStatus(checkingAccountTest1.getAccountNumber());
+        Optional<CheckingAccount> optionalCheckingAccount = checkingAccountRepository.findById(checkingAccountTest1.getId());
+        assertSame(optionalCheckingAccount.get().getStatus(), Status.FROZEN);
     }
 }

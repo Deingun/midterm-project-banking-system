@@ -65,6 +65,7 @@ public class AccountServiceImpl implements AccountService {
             List<Account> accountList = accountRepository.findByPrimaryOwnerIdOrSecondaryOwnerId(optionalUser.get().getId(), optionalUser.get().getId());
             if (accountList.size() != 0) {
                 applyInterestRate(accountList);
+                applyMonthlyMaintenanceFee(accountList);
                 return accountList;
             }
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There are Accounts.");
@@ -73,10 +74,11 @@ public class AccountServiceImpl implements AccountService {
             return null;
         }
     }
+
     /**
      * method to get account Balance of one account of the active user in the app
      *
-     * @param accountNumber String
+     * @param accountNumber     String
      * @param customUserDetails CustomUserDetails
      */
     @Override
@@ -92,6 +94,7 @@ public class AccountServiceImpl implements AccountService {
                     throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Account number provided does not correspond to the active user in the application");
                 } else {
                     applyInterestRate(List.of(optionalAccount.get()));
+                    applyMonthlyMaintenanceFee(List.of(optionalAccount.get()));
                     return optionalAccount.get().getBalance().toString();
                 }
             } else {
@@ -99,6 +102,7 @@ public class AccountServiceImpl implements AccountService {
                     throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Account number provided does not correspond to the active user in the application");
                 } else {
                     applyInterestRate(List.of(optionalAccount.get()));
+                    applyMonthlyMaintenanceFee(List.of(optionalAccount.get()));
                     return optionalAccount.get().getBalance().toString();
                 }
             }
@@ -110,12 +114,12 @@ public class AccountServiceImpl implements AccountService {
     /**
      * method to create a new Checking account, if the primaryOwner is less than 24, a StudentChecking account it will be created otherwise a regular Checking Account it will be created.
      *
-     * @param entityNumber String
-     * @param branchNumber String
-     * @param amount BigDecimal
-     * @param primaryOwnerId Long
+     * @param entityNumber     String
+     * @param branchNumber     String
+     * @param amount           BigDecimal
+     * @param primaryOwnerId   Long
      * @param secondaryOwnerId Long
-     * @param secretKey String
+     * @param secretKey        String
      */
 
     @Override
@@ -124,82 +128,71 @@ public class AccountServiceImpl implements AccountService {
         CheckingAccount checkingAccount;
         StudentCheckingAccount studentCheckingAccount;
 
-            Money balance = new Money(amount);
-            Optional<AccountHolder> optionalPrimaryAccountHolder = accountHolderRepository.findById(primaryOwnerId);
-            if (optionalPrimaryAccountHolder.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Primary Owner does not exist");
-            } else if (secondaryOwnerId != null) {
-                Optional<AccountHolder> optionalSecondaryAccountHolder = accountHolderRepository.findById(secondaryOwnerId);
-                if (optionalSecondaryAccountHolder.isEmpty()) {
-                    throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Secondary Owner does not exist");
-                } else {
-                    if (DataValidation.validateAgeOfPrimaryOwner(optionalPrimaryAccountHolder.get())) {
-                        studentCheckingAccount = studentCheckingAccountRepository.save(new StudentCheckingAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), optionalSecondaryAccountHolder.get(), secretKey, LocalDate.now(), Status.ACTIVE, AccountType.STUDENT_CHECKING));
-                        studentCheckingAccount.setAccountNumber(studentCheckingAccount.getEntityNumber() + studentCheckingAccount.getBranchNumber() + studentCheckingAccount.getId().toString());
-                        return studentCheckingAccountRepository.save(studentCheckingAccount);
-
-                    } else {
-                        checkingAccount = checkingAccountRepository.save(new CheckingAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), optionalSecondaryAccountHolder.get(), secretKey, LocalDate.now(), Status.ACTIVE, AccountType.CHECKING));
-                        checkingAccount.setAccountNumber(checkingAccount.getEntityNumber() + checkingAccount.getBranchNumber() + checkingAccount.getId().toString());
-                        return checkingAccountRepository.save(checkingAccount);
-                    }
-
-                }
-            } else if (DataValidation.validateAgeOfPrimaryOwner(optionalPrimaryAccountHolder.get())) {
-                studentCheckingAccount = studentCheckingAccountRepository.save(new StudentCheckingAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), null, secretKey, LocalDate.now(), Status.ACTIVE, AccountType.STUDENT_CHECKING));
-                studentCheckingAccount.setAccountNumber(studentCheckingAccount.getEntityNumber() + studentCheckingAccount.getBranchNumber() + studentCheckingAccount.getId().toString());
-                return studentCheckingAccountRepository.save(studentCheckingAccount);
-
+        Money balance = new Money(amount);
+        Optional<AccountHolder> optionalPrimaryAccountHolder = accountHolderRepository.findById(primaryOwnerId);
+        if (optionalPrimaryAccountHolder.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Primary Owner does not exist");
+        } else if (secondaryOwnerId != null) {
+            Optional<AccountHolder> optionalSecondaryAccountHolder = accountHolderRepository.findById(secondaryOwnerId);
+            if (optionalSecondaryAccountHolder.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Secondary Owner does not exist");
             } else {
-                checkingAccount = checkingAccountRepository.save(new CheckingAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), null, secretKey, LocalDate.now(), Status.ACTIVE, AccountType.CHECKING));
-                checkingAccount.setAccountNumber(checkingAccount.getEntityNumber() + checkingAccount.getBranchNumber() + checkingAccount.getId().toString());
-                return checkingAccountRepository.save(checkingAccount);
+                if (DataValidation.validateAgeOfPrimaryOwner(optionalPrimaryAccountHolder.get())) {
+                    studentCheckingAccount = studentCheckingAccountRepository.save(new StudentCheckingAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), optionalSecondaryAccountHolder.get(), secretKey, LocalDate.now(), Status.ACTIVE, AccountType.STUDENT_CHECKING));
+                    studentCheckingAccount.setAccountNumber(studentCheckingAccount.getEntityNumber() + studentCheckingAccount.getBranchNumber() + studentCheckingAccount.getId().toString());
+                    return studentCheckingAccountRepository.save(studentCheckingAccount);
+
+                } else {
+                    checkingAccount = checkingAccountRepository.save(new CheckingAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), optionalSecondaryAccountHolder.get(), secretKey, LocalDate.now(), Status.ACTIVE, AccountType.CHECKING,LocalDate.now()));
+                    checkingAccount.setAccountNumber(checkingAccount.getEntityNumber() + checkingAccount.getBranchNumber() + checkingAccount.getId().toString());
+                    return checkingAccountRepository.save(checkingAccount);
+                }
 
             }
+        } else if (DataValidation.validateAgeOfPrimaryOwner(optionalPrimaryAccountHolder.get())) {
+            studentCheckingAccount = studentCheckingAccountRepository.save(new StudentCheckingAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), null, secretKey, LocalDate.now(), Status.ACTIVE, AccountType.STUDENT_CHECKING));
+            studentCheckingAccount.setAccountNumber(studentCheckingAccount.getEntityNumber() + studentCheckingAccount.getBranchNumber() + studentCheckingAccount.getId().toString());
+            return studentCheckingAccountRepository.save(studentCheckingAccount);
+
+        } else {
+            checkingAccount = checkingAccountRepository.save(new CheckingAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), null, secretKey, LocalDate.now(), Status.ACTIVE, AccountType.CHECKING, LocalDate.now()));
+            checkingAccount.setAccountNumber(checkingAccount.getEntityNumber() + checkingAccount.getBranchNumber() + checkingAccount.getId().toString());
+            return checkingAccountRepository.save(checkingAccount);
+
+        }
 
     }
 
     /**
      * method to create a new Saving account
      *
-     * @param entityNumber String
-     * @param branchNumber String
-     * @param amount BigDecimal
-     * @param primaryOwnerId Long
+     * @param entityNumber     String
+     * @param branchNumber     String
+     * @param amount           BigDecimal
+     * @param primaryOwnerId   Long
      * @param secondaryOwnerId Long
-     * @param secretKey String
-     * @param minimumBalance String
-     * @param interestRate String
+     * @param secretKey        String
+     * @param minimumBalance   String
+     * @param interestRate     String
      */
     @Override
     public Account createSavingAccount(String entityNumber, String branchNumber, BigDecimal amount, Long primaryOwnerId, Long secondaryOwnerId, String secretKey, BigDecimal minimumBalance, Float interestRate) {
         SavingAccount savingAccount;
 
 
-            Money balance = new Money(amount);
-            Optional<AccountHolder> optionalPrimaryAccountHolder = accountHolderRepository.findById(primaryOwnerId);
+        Money balance = new Money(amount);
+        Optional<AccountHolder> optionalPrimaryAccountHolder = accountHolderRepository.findById(primaryOwnerId);
 
-            if (optionalPrimaryAccountHolder.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Primary Owner does not exist");
+        if (optionalPrimaryAccountHolder.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Primary Owner does not exist");
 
-            } else if (secondaryOwnerId != null) {
-                Optional<AccountHolder> optionalSecondaryAccountHolder = accountHolderRepository.findById(secondaryOwnerId);
-                if (optionalSecondaryAccountHolder.isEmpty()) {
-                    throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Secondary Owner does not exist");
-                } else {
-                    savingAccount = savingAccountRepository.save(new SavingAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), optionalSecondaryAccountHolder.get(),
-                            secretKey, LocalDate.now(), Status.ACTIVE, AccountType.SAVING,LocalDate.now()));
-                    savingAccount.setAccountNumber(savingAccount.getEntityNumber() + savingAccount.getBranchNumber() + savingAccount.getId().toString());
-                    if (minimumBalance != null) {
-                        savingAccount.setMinimumBalance(minimumBalance);
-                    } else if (interestRate != null) {
-                        savingAccount.setInterestRate(interestRate);
-                    }
-                    return savingAccountRepository.save(savingAccount);
-                }
+        } else if (secondaryOwnerId != null) {
+            Optional<AccountHolder> optionalSecondaryAccountHolder = accountHolderRepository.findById(secondaryOwnerId);
+            if (optionalSecondaryAccountHolder.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Secondary Owner does not exist");
             } else {
-                savingAccount = savingAccountRepository.save(new SavingAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), null,
-                        secretKey, LocalDate.now(), Status.ACTIVE, AccountType.SAVING,LocalDate.now()));
+                savingAccount = savingAccountRepository.save(new SavingAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), optionalSecondaryAccountHolder.get(),
+                        secretKey, LocalDate.now(), Status.ACTIVE, AccountType.SAVING, LocalDate.now()));
                 savingAccount.setAccountNumber(savingAccount.getEntityNumber() + savingAccount.getBranchNumber() + savingAccount.getId().toString());
                 if (minimumBalance != null) {
                     savingAccount.setMinimumBalance(minimumBalance);
@@ -208,59 +201,71 @@ public class AccountServiceImpl implements AccountService {
                 }
                 return savingAccountRepository.save(savingAccount);
             }
+        } else {
+            savingAccount = savingAccountRepository.save(new SavingAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), null,
+                    secretKey, LocalDate.now(), Status.ACTIVE, AccountType.SAVING, LocalDate.now()));
+            savingAccount.setAccountNumber(savingAccount.getEntityNumber() + savingAccount.getBranchNumber() + savingAccount.getId().toString());
+            if (minimumBalance != null) {
+                savingAccount.setMinimumBalance(minimumBalance);
+            } else if (interestRate != null) {
+                savingAccount.setInterestRate(interestRate);
+            }
+            return savingAccountRepository.save(savingAccount);
+        }
 
     }
+
     /**
      * method to create a new Credit Card account
      *
-     * @param entityNumber String
-     * @param branchNumber String
-     * @param amount BigDecimal
-     * @param primaryOwnerId Long
+     * @param entityNumber     String
+     * @param branchNumber     String
+     * @param amount           BigDecimal
+     * @param primaryOwnerId   Long
      * @param secondaryOwnerId Long
-     * @param credit_limit String
-     * @param interestRate String
+     * @param credit_limit     String
+     * @param interestRate     String
      */
     @Override
     public Account createCreditCardAccount(String entityNumber, String branchNumber, BigDecimal amount, Long primaryOwnerId, Long secondaryOwnerId, BigDecimal credit_limit, Float interestRate) {
         CreditCardAccount creditCardAccount;
 
 
-            Money balance = new Money(amount);
-            Optional<AccountHolder> optionalPrimaryAccountHolder = accountHolderRepository.findById(primaryOwnerId);
+        Money balance = new Money(amount);
+        Optional<AccountHolder> optionalPrimaryAccountHolder = accountHolderRepository.findById(primaryOwnerId);
 
-            if (optionalPrimaryAccountHolder.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Primary Owner does not exist");
+        if (optionalPrimaryAccountHolder.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Primary Owner does not exist");
 
-            } else if (secondaryOwnerId != null) {
-                Optional<AccountHolder> optionalSecondaryAccountHolder = accountHolderRepository.findById(secondaryOwnerId);
-                if (optionalSecondaryAccountHolder.isEmpty()) {
-                    throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Secondary Owner does not exist");
-                } else {
-
-                    creditCardAccount = creditCardAccountRepository.save(new CreditCardAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), optionalSecondaryAccountHolder.get(),
-                            AccountType.CREDIT_CARD,LocalDate.now()));
-                    creditCardAccount.setAccountNumber(creditCardAccount.getEntityNumber() + creditCardAccount.getBranchNumber() + creditCardAccount.getId().toString());
-                    if (credit_limit != null) {
-                        creditCardAccount.setCreditLimit(credit_limit);
-
-                    } else if (interestRate != null) {
-                        creditCardAccount.setInterestRate(interestRate);
-                    }
-
-                    return creditCardAccountRepository.save(creditCardAccount);
-                }
+        } else if (secondaryOwnerId != null) {
+            Optional<AccountHolder> optionalSecondaryAccountHolder = accountHolderRepository.findById(secondaryOwnerId);
+            if (optionalSecondaryAccountHolder.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Secondary Owner does not exist");
             } else {
-                creditCardAccount = creditCardAccountRepository.save(new CreditCardAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), null,
-                        AccountType.CREDIT_CARD,LocalDate.now()));
+
+                creditCardAccount = creditCardAccountRepository.save(new CreditCardAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), optionalSecondaryAccountHolder.get(),
+                        AccountType.CREDIT_CARD, LocalDate.now()));
                 creditCardAccount.setAccountNumber(creditCardAccount.getEntityNumber() + creditCardAccount.getBranchNumber() + creditCardAccount.getId().toString());
                 if (credit_limit != null) {
                     creditCardAccount.setCreditLimit(credit_limit);
+
                 } else if (interestRate != null) {
                     creditCardAccount.setInterestRate(interestRate);
                 }
+
                 return creditCardAccountRepository.save(creditCardAccount);
             }
+        } else {
+            creditCardAccount = creditCardAccountRepository.save(new CreditCardAccount(entityNumber, branchNumber, balance, optionalPrimaryAccountHolder.get(), null,
+                    AccountType.CREDIT_CARD, LocalDate.now()));
+            creditCardAccount.setAccountNumber(creditCardAccount.getEntityNumber() + creditCardAccount.getBranchNumber() + creditCardAccount.getId().toString());
+            if (credit_limit != null) {
+                creditCardAccount.setCreditLimit(credit_limit);
+            } else if (interestRate != null) {
+                creditCardAccount.setInterestRate(interestRate);
+            }
+            return creditCardAccountRepository.save(creditCardAccount);
+        }
 
     }
 
@@ -268,7 +273,7 @@ public class AccountServiceImpl implements AccountService {
      * method to Update Balance of any account by Admin User
      *
      * @param accountNumber String
-     * @param amount BigDecimal
+     * @param amount        BigDecimal
      */
     @Override
     public void updateBalance(String accountNumber, BigDecimal amount) {
@@ -295,11 +300,11 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void applyInterestRate(List<Account> accountList) {
 
-        for (Account account: accountList) {
-            if(account.getAccountType().equals(AccountType.SAVING)){
+        for (Account account : accountList) {
+            if (account.getAccountType().equals(AccountType.SAVING)) {
                 SavingAccount savingAccount = (SavingAccount) account;
-                Period period = Period.between(savingAccount.getLastInterestRateDate(),LocalDate.now());
-                if(period.getYears()>0){
+                Period period = Period.between(savingAccount.getLastInterestRateDate(), LocalDate.now());
+                if (period.getYears() > 0) {
                     BigDecimal interestAmount = (savingAccount.getBalance().getAmount())
                             .multiply(BigDecimal.valueOf(savingAccount.getInterestRate()))
                             .multiply(new BigDecimal(period.getYears()));
@@ -309,14 +314,14 @@ public class AccountServiceImpl implements AccountService {
                     savingAccountRepository.save(savingAccount);
                 }
             }
-            if(account.getAccountType().equals(AccountType.CREDIT_CARD)){
+            if (account.getAccountType().equals(AccountType.CREDIT_CARD)) {
                 CreditCardAccount creditCardAccount = (CreditCardAccount) account;
-                Period period = Period.between(creditCardAccount.getLastInterestRateDate(),LocalDate.now());
-                if(period.getMonths()>0){
+                Period period = Period.between(creditCardAccount.getLastInterestRateDate(), LocalDate.now());
+                if (period.getMonths() > 0) {
 
                     BigDecimal interestAmount = (creditCardAccount.getBalance().getAmount())
-                            .multiply(BigDecimal.valueOf(creditCardAccount.getInterestRate())).divide(new BigDecimal(12),2,RoundingMode.HALF_EVEN)
-                            .multiply(new BigDecimal(period.getMonths()).add(new BigDecimal(period.getYears()*12)));
+                            .multiply(BigDecimal.valueOf(creditCardAccount.getInterestRate())).divide(new BigDecimal(12), 2, RoundingMode.HALF_EVEN)
+                            .multiply(new BigDecimal(period.getMonths()).add(new BigDecimal(period.getYears() * 12)));
                     BigDecimal newBalance = creditCardAccount.getBalance().increaseAmount(interestAmount);
                     creditCardAccount.setBalance(new Money(newBalance));
                     creditCardAccount.setLastInterestRateDate(LocalDate.now());
@@ -326,39 +331,66 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
+    /**
+     * method to apply monthly Maintenance Fee if applicable
+     *
+     * @param accountList List<Account>
+     */
     @Override
-    public void updateStatus(String accountNumber, String status) {
+    public void applyMonthlyMaintenanceFee(List<Account> accountList) {
+
+        for (Account account : accountList) {
+            if (account.getAccountType().equals(AccountType.CHECKING)) {
+                CheckingAccount checkingAccount = (CheckingAccount) account;
+                Period period = Period.between(checkingAccount.getLastMonthlyFeeDate(), LocalDate.now());
+                if (period.getMonths() > 0) {
+
+                    BigDecimal maintenanceFee = checkingAccount.getMonthlyMaintenanceFee().multiply(new BigDecimal(period.getMonths()));
+                    BigDecimal newBalance = checkingAccount.getBalance().decreaseAmount(maintenanceFee);
+                    checkingAccount.setBalance(new Money(newBalance));
+                    checkingAccount.setLastMonthlyFeeDate(LocalDate.now());
+                    checkingAccountRepository.save(checkingAccount);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void updateStatus(String accountNumber) {
         Optional<Account> optionalAccount = accountRepository.findByAccountNumber(accountNumber);
         if (optionalAccount.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Account number provided does not exist");
         } else {
 
-            status = status.toUpperCase(Locale.ROOT);
-               switch (status) {
-
-                       case "FROZEN":
-
-                   case "ACTIVE":
-                       if (optionalAccount.get() instanceof CheckingAccount) {
-                               CheckingAccount checkingAccount = (CheckingAccount) optionalAccount.get();
-                               checkingAccount.setStatus(Status.valueOf(status));
-                               checkingAccountRepository.save(checkingAccount);
-                           } else if (optionalAccount.get() instanceof StudentCheckingAccount) {
-                               StudentCheckingAccount studentCheckingAccount = (StudentCheckingAccount) optionalAccount.get();
-                               studentCheckingAccount.setStatus(Status.valueOf(status));
-                               studentCheckingAccountRepository.save(studentCheckingAccount);
-                           } else if (optionalAccount.get() instanceof SavingAccount) {
-                               SavingAccount savingAccount = (SavingAccount) optionalAccount.get();
-                               savingAccount.setStatus(Status.valueOf(status));
-                               savingAccountRepository.save(savingAccount);
-                           }
-                           break;
-
-                       default: throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Incorrect Status, must be FROZEN OR ACTIVE");
-
-                   }
+            if (optionalAccount.get() instanceof CheckingAccount) {
+                CheckingAccount checkingAccount = (CheckingAccount) optionalAccount.get();
+                if (checkingAccount.getStatus() == Status.ACTIVE) {
+                    checkingAccount.setStatus(Status.FROZEN);
+                } else {
+                    checkingAccount.setStatus(Status.ACTIVE);
+                }
+                checkingAccountRepository.save(checkingAccount);
+            } else if (optionalAccount.get() instanceof StudentCheckingAccount) {
+                StudentCheckingAccount studentCheckingAccount = (StudentCheckingAccount) optionalAccount.get();
+                if (studentCheckingAccount.getStatus() == Status.ACTIVE) {
+                    studentCheckingAccount.setStatus(Status.FROZEN);
+                } else {
+                    studentCheckingAccount.setStatus(Status.ACTIVE);
+                }
+                studentCheckingAccount.setStatus(Status.FROZEN);
+                studentCheckingAccountRepository.save(studentCheckingAccount);
+            } else if (optionalAccount.get() instanceof SavingAccount) {
+                SavingAccount savingAccount = (SavingAccount) optionalAccount.get();
+                if (savingAccount.getStatus() == Status.ACTIVE) {
+                    savingAccount.setStatus(Status.FROZEN);
+                } else {
+                    savingAccount.setStatus(Status.ACTIVE);
+                }
+                savingAccountRepository.save(savingAccount);
+            }
 
         }
-    }
 
+    }
 }
+

@@ -305,11 +305,14 @@ public class TransactionServiceImpl implements TransactionService {
 
                 BigInteger transactionDay = (BigInteger) transactionList.get(0)[0];
                 if (transactionDay.compareTo(MAXTRANSACTIONSCONTROL)>0 ) {
-
-                    List<Object[]> maxTransactionOnOneDayList = transactionRepository.maxTotalTransactionOneDay();
-                    BigInteger maxTransactionOnOneDay = (BigInteger) maxTransactionOnOneDayList.get(0)[0];
-                    BigInteger maxTransactionOnOneDayAllowed = (maxTransactionOnOneDay.multiply(new BigInteger("150"))).divide(new BigInteger("150"));
-                    return transactionDay.compareTo(maxTransactionOnOneDayAllowed) > 0;
+                    try{
+                        List<Object[]> maxTransactionOnOneDayList = transactionRepository.maxTotalTransactionOneDay();
+                        BigInteger maxTransactionOnOneDay = (BigInteger) maxTransactionOnOneDayList.get(0)[0];
+                        BigInteger maxTransactionOnOneDayAllowed = (maxTransactionOnOneDay.multiply(new BigInteger("150"))).divide(new BigInteger("150"));
+                        return transactionDay.compareTo(maxTransactionOnOneDayAllowed) > 0;
+                    }catch(IndexOutOfBoundsException e){
+                        return true;
+                    }
                 } else {
                     return false;
                 }

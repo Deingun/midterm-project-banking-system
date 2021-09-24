@@ -97,11 +97,11 @@ class AccountControllerImplTest {
         adminRepository.save(adminTest1);
 
         checkingAccountTest1 = new CheckingAccount("0049", "1500", balance, accountHolderTest1, accountHolderTest2, "123abc",
-                LocalDate.now(), Status.ACTIVE, AccountType.CHECKING);
+                LocalDate.now(), Status.ACTIVE, AccountType.CHECKING,LocalDate.now());
         checkingAccountTest2 = new CheckingAccount("0049", "2020", balance, accountHolderTest2, accountHolderTest1, "123abc",
-                LocalDate.now(), Status.ACTIVE,AccountType.CHECKING);
+                LocalDate.now(), Status.ACTIVE,AccountType.CHECKING,LocalDate.now());
         checkingAccountTest3 = new CheckingAccount("0049", "3030", balance, accountHolderTest2, null, "123abc",
-                LocalDate.now(), Status.ACTIVE,AccountType.CHECKING);
+                LocalDate.now(), Status.ACTIVE,AccountType.CHECKING,LocalDate.now());
 
         checkingAccountRepository.saveAll(List.of(checkingAccountTest1, checkingAccountTest2,checkingAccountTest3));
         checkingAccountTest1.setAccountNumber(checkingAccountTest1.getEntityNumber() + checkingAccountTest1.getBranchNumber() + checkingAccountTest1.getId().toString());

@@ -32,6 +32,8 @@ public class CheckingAccount extends Account {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status;
+    @Column(name = "last_monthly_fee_date")
+    private LocalDate lastMonthlyFeeDate;
 
     @OneToMany(mappedBy = "originAccount", fetch = FetchType.LAZY)
     @JsonBackReference
@@ -44,11 +46,12 @@ public class CheckingAccount extends Account {
     public CheckingAccount() {
     }
 
-    public CheckingAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, LocalDate creationDate, Status status, AccountType accountType) {
+    public CheckingAccount(String entityNumber, String branchNumber, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, LocalDate creationDate, Status status, AccountType accountType, LocalDate lastMonthlyFeeDate) {
         super(entityNumber, branchNumber, balance, primaryOwner,secondaryOwner, accountType);
         this.secretKey = secretKey;
         this.creationDate = creationDate;
         this.status = status;
+        this.lastMonthlyFeeDate = lastMonthlyFeeDate;
     }
 
     @Override
@@ -93,4 +96,11 @@ public class CheckingAccount extends Account {
         this.status = status;
     }
 
+    public LocalDate getLastMonthlyFeeDate() {
+        return lastMonthlyFeeDate;
+    }
+
+    public void setLastMonthlyFeeDate(LocalDate lastMonthlyFeeDate) {
+        this.lastMonthlyFeeDate = lastMonthlyFeeDate;
+    }
 }

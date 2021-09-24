@@ -104,11 +104,11 @@ class TransactionServiceImplTest {
 
 
         checkingAccountTest1 = new CheckingAccount("0049", "1500", balance, accountHolderTest1, accountHolderTest2, "123abc",
-                LocalDate.now(), Status.ACTIVE, AccountType.CHECKING);
+                LocalDate.now(), Status.ACTIVE, AccountType.CHECKING,LocalDate.now());
         checkingAccountTest2 = new CheckingAccount("0049", "2020", balance, accountHolderTest2, accountHolderTest1, "123abc",
-                LocalDate.now(), Status.ACTIVE, AccountType.CHECKING);
+                LocalDate.now(), Status.ACTIVE, AccountType.CHECKING,LocalDate.now());
         checkingAccountTest3 = new CheckingAccount("0049", "2020", new Money(new BigDecimal("200")), accountHolderTest1,null, "123abc",
-                LocalDate.now(), Status.ACTIVE, AccountType.CHECKING);
+                LocalDate.now(), Status.ACTIVE, AccountType.CHECKING,LocalDate.now());
 
 
         checkingAccountRepository.saveAll(List.of(checkingAccountTest1, checkingAccountTest2,checkingAccountTest3));
