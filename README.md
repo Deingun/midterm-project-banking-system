@@ -2,7 +2,7 @@
 
 ### 📌 ABOUT
 
-This project is the Ironhack Web Development Bootcamp mid-term project.In this project we have created a banking system.
+This project is the Ironhack Web Development Bootcamp mid-term project. In this project we have created a banking system.
 
 ## :computer: Technology Stack
 
