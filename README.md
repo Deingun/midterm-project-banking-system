@@ -92,7 +92,7 @@ CreditCard Accounts have:
 - The system must have 3 types of Users: Admins and AccountHolders.
 
 
-##### Author's note:All accounts have an account number with "entity code", "branch code" and account number, generated automatically when creating a new account.
+##### Author's note: All accounts have an account number with "entity code", "branch code" and account number, generated automatically when creating a new account.
 
 #### AccountHolders
 
