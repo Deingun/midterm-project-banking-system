@@ -12,7 +12,7 @@ The programming language of this repository is **Java 16.0.1**, therefore must h
 To check your version of the software, run the following function on your local machine:
 
 ```
-java -version
+java -version 16.0.1
 ```
 
 Other tools used in the development of the project:
