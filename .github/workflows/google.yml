@@ -19,10 +19,10 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.G_K_PROJECT }}
-  GKE_CLUSTER: cluster-1    # TODO: update to cluster name
+  GKE_CLUSTER: github-actions-example    # TODO: update to cluster name
   GKE_ZONE: us-central1-c   # TODO: update to cluster zone
-  DEPLOYMENT_NAME: gke-test # TODO: update to deployment name
-  IMAGE: static-site
+  DEPLOYMENT_NAME: -g-k-deployment-example # TODO: update to deployment name
+  IMAGE: github-actions-gk-image
 
 jobs:
   setup-build-publish-deploy:
@@ -37,8 +37,8 @@ jobs:
     # Setup gcloud CLI
     - uses: google-github-actions/setup-gcloud@v0.2.0
       with:
-        service_account_key: ${{ secrets.GKE_SA_KEY }}
-        project_id: ${{ secrets.GKE_PROJECT }}
+        service_account_key: ${{ secrets.G_K_KEY }}
+        project_id: ${{ secrets.G_K_PROJECT }}
 
     # Configure Docker to use the gcloud command-line tool as a credential
     # helper for authentication
